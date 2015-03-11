@@ -55,7 +55,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interfaces\IDateTrackable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SamesoundContext.cs" />
   </ItemGroup>

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Samesound.Data.Interfaces
+namespace Samesound.Core.Interfaces
 {
     public interface IDateTrackable
     {
