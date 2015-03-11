@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
 using Samesound.Core.Models;
-using Samesound.Data.Interfaces;
+using Samesound.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Samesound.Core;
 
 namespace Samesound.Data
 {
@@ -55,5 +56,7 @@ namespace Samesound.Data
         {
             return new SamesoundContext();
         }
+
+        public virtual DbSet<Channel> Channels { get; set; }
     }
 }
