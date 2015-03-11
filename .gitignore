@@ -1,2 +1,4 @@
 packages/
 *.dll
+obj/
+bin/
