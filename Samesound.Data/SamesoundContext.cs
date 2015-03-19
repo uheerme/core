@@ -58,5 +58,6 @@ namespace Samesound.Data
         }
 
         public virtual DbSet<Channel> Channels { get; set; }
+        public virtual DbSet<Music>   Musics   { get; set; }
     }
 }
