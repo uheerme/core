@@ -20,7 +20,7 @@ namespace Samesound.ViewModels
 
         [Required]
         [Range(0, int.MaxValue)]
-        public int LengthInMinutes { get; set; }
+        public int LengthInSeconds { get; set; }
 
         [Required]
         public int ChannelId { get; set; }
@@ -31,7 +31,7 @@ namespace Samesound.ViewModels
             {
                 Name            = m.Name,
                 SizeInBytes     = m.SizeInBytes,
-                LengthInMinutes = m.LengthInMinutes,
+                LengthInSeconds = m.LengthInSeconds,
                 ChannelId       = m.ChannelId
             };
         }
@@ -52,7 +52,7 @@ namespace Samesound.ViewModels
 
         [Required]
         [Range(0, int.MaxValue)]
-        public int LengthInMinutes { get; set; }
+        public int LengthInSeconds { get; set; }
 
         [Required]
         public int ChannelId { get; set; }
@@ -61,7 +61,7 @@ namespace Samesound.ViewModels
         {
             c.Name            = Name;
             c.SizeInBytes     = SizeInBytes;
-            c.LengthInMinutes = LengthInMinutes;
+            c.LengthInSeconds = LengthInSeconds;
             c.ChannelId       = ChannelId;
         }
     }
@@ -71,7 +71,7 @@ namespace Samesound.ViewModels
         public int    Id   { get; set; }
         public string Name { get; set; }
         public int SizeInBytes     { get; set; }
-        public int LengthInMinutes { get; set; }
+        public int LengthInSeconds { get; set; }
         public int ChannelId       { get; set; }
         public DateTime  DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
@@ -83,7 +83,7 @@ namespace Samesound.ViewModels
                 Id                = c.Id,
                 Name              = c.Name,
                 SizeInBytes       = c.SizeInBytes,
-                LengthInMinutes   = c.LengthInMinutes,
+                LengthInSeconds   = c.LengthInSeconds,
                 ChannelId         = c.ChannelId,
                 DateCreated       = c.DateCreated,
                 DateUpdated       = c.DateUpdated

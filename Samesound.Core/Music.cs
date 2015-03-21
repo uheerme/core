@@ -16,7 +16,7 @@ namespace Samesound.Core
 
         public string Name     { get; set; }
         public int SizeInBytes { get; set; }
-        public int LengthInMinutes { get; set; }
+        public int LengthInSeconds { get; set; }
 
         [ForeignKey("Channel")]
         public int ChannelId { get; set; }
