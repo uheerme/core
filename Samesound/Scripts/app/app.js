@@ -10,5 +10,5 @@ var samesoundApp = angular
         //$locationProvider.hashPrefix('#');
     }])
     .constant('config', {
-        apiUrl: 'https://localhost:44300/api/'
+        apiUrl: '/api/'
     });
