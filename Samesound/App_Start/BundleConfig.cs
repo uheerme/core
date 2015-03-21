@@ -24,9 +24,11 @@ namespace Samesound
             bundles.Add(new ScriptBundle("~/bundles/angular").Include(
                 "~/Scripts/angular.js",
                 "~/Scripts/angular-route.js",
+                "~/Scripts/angular-ui-router.js",
                 "~/Scripts/angular-resources.js",
                 "~/Scripts/angular-animate.js",
-                "~/Scripts/app/app.js"));
+                "~/Scripts/app/app.js",
+                "~/Scripts/app/modules/home/*.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
