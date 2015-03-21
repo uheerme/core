@@ -25,7 +25,7 @@ namespace Samesound
                 "~/Scripts/angular.js",
                 "~/Scripts/angular-route.js",
                 "~/Scripts/angular-ui-router.js",
-                "~/Scripts/angular-resources.js",
+                "~/Scripts/angular-resource.js",
                 "~/Scripts/angular-animate.js",
                 "~/Scripts/app/app.js",
                 "~/Scripts/app/modules/home/*.js",
@@ -33,6 +33,7 @@ namespace Samesound
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/paper.min.css",
+                      "~/Content/toastr.min.css",
                       "~/Content/site.css"));
         }
     }

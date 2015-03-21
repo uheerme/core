@@ -4,15 +4,11 @@
 'use strict';
 
 var samesoundApp = angular
-    .module('samesoundApp', [
-        'ngRoute',
-        'ui.router',
-        'ngAnimate'
-    ])
+    .module('samesoundApp', ['ngResource', 'ngRoute', 'ui.router', 'ngAnimate'])
     .config(['$locationProvider', function ($locationProvider) {
         //$locationProvider.html5Mode(true);
         //$locationProvider.hashPrefix('#');
     }])
     .constant('config', {
-        url: 'http://localhost:1330/'
+        apiUrl: 'http://localhost:1330/api/'
     });
