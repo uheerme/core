@@ -28,10 +28,11 @@ namespace Samesound
                 "~/Scripts/angular-resources.js",
                 "~/Scripts/angular-animate.js",
                 "~/Scripts/app/app.js",
-                "~/Scripts/app/modules/home/*.js"));
+                "~/Scripts/app/modules/home/*.js",
+                "~/Scripts/app/modules/channels/*.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/bootstrap.css",
+                      "~/Content/paper.min.css",
                       "~/Content/site.css"));
         }
     }
