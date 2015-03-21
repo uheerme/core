@@ -5,7 +5,7 @@ namespace Samesound.Data.Migrations
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<Samesound.Data.SamesoundContext>
+    public sealed class Configuration : DbMigrationsConfiguration<Samesound.Data.SamesoundContext>
     {
         public Configuration()
         {

@@ -1,4 +1,5 @@
 ﻿using Samesound.Data;
+using Samesound.Data.Migrations;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -23,7 +24,8 @@ namespace Samesound
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            Database.SetInitializer<SamesoundContext>(null);
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<SamesoundContext, Configuration>());
+            new SamesoundContext().Database.Initialize(true);
         }
     }
 }
