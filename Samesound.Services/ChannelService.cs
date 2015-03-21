@@ -1,5 +1,6 @@
 ﻿using Samesound.Core;
 using Samesound.Data;
+using Samesound.Services.Exceptions;
 using Samesound.Services.Infrastructure;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,28 @@ namespace Samesound.Services
 
             channel.Playing = music;
 
+            return await Update(channel);
+        }
+
+        public override async Task<Channel> Add(Channel channel)
+        {
+            if (Db.Channels.Any(c => c.Owner == channel.Owner))
+            {
+                throw new OwnerAlreadyHasAnActiveChannelException("{"+ channel.Name + "} -> {"+ channel.Owner +"}");
+            }
+
+            return await base.Add(channel);
+        }
+
+        public virtual async Task<int> Deactivate(Channel channel)
+        {
+            if (!channel.IsActive())
+            {
+                throw new ChannelIsAlreadyDeactivatedException("{" + channel.Id + "}");
+            }
+
+            channel.DateDeactivated = DateTime.Now;
+            
             return await Update(channel);
         }
     }

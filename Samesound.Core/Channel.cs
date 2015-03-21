@@ -13,6 +13,11 @@ namespace Samesound.Core
             Musics = new List<Music>();
         }
 
+        public bool IsActive()
+        {
+            return DateDeactivated == null;
+        }
+
         [Key]
         public int Id { get; set; }
 
@@ -33,5 +38,7 @@ namespace Samesound.Core
         public DateTime DateCreated { get; set; }
 
         public DateTime? DateUpdated { get; set; }
+        
+        public DateTime? DateDeactivated { get; set; }
     }
 }

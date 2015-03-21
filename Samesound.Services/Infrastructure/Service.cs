@@ -30,6 +30,12 @@ namespace Samesound.Services.Infrastructure
         {
             return await Db.Set<TEntity>().FindAsync(keyValues);
         }
+        public virtual async Task<TEntity> FindOrFail(params object[] keyValues)
+        {
+            var result = await Find(keyValues);
+            if (result == null) throw new KeyNotFoundException(keyValues.ToString());
+            return result;
+        }
         public virtual async Task<TEntity> Add(TEntity entity)
         {
             Db.Set<TEntity>().Add(entity);

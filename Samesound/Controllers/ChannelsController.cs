@@ -11,6 +11,7 @@ using System.Linq;
 
 namespace Samesound.Controllers
 {
+    [RoutePrefix("api/Channels")]
     public class ChannelsController : ApiController
     {
         private ChannelService _channels;
@@ -123,6 +124,29 @@ namespace Samesound.Controllers
             catch (Exception e)
             {
                 ModelState.AddModelError(e.GetType().ToString(), e.Message);
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        [Route("{id}/deactivate")]
+        [ResponseType(typeof(ChannelResultViewModel))]
+        public async Task<IHttpActionResult> PostDeactivateChannel(int id)
+        {
+            try
+            {
+                var channel = await _channels.FindOrFail(id);
+            
+                await _channels.Deactivate(channel);
+                return Ok((ChannelResultViewModel)channel);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError(e.ToString(), e.Message);
             }
 
             return BadRequest(ModelState);

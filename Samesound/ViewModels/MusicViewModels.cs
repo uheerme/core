@@ -78,7 +78,7 @@ namespace Samesound.ViewModels
 
         public static explicit operator MusicResultViewModel(Music c)
         {
-            return new MusicResultViewModel
+            return c == null ? null : new MusicResultViewModel
             {
                 Id                = c.Id,
                 Name              = c.Name,

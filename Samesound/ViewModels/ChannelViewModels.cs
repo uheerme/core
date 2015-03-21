@@ -18,12 +18,12 @@ namespace Samesound.ViewModels
         public string Owner { get; set; }
 
         [Required]
-        [StringLength(256, MinimumLength=32)]
+        [StringLength(256, MinimumLength=7)]
         public string NetworkIdentifier { get; set; }
 
         public static explicit operator Channel(ChannelCreateViewModel m)
         {
-            return new Channel
+            return m == null ? null : new Channel
             {
                 Name  = m.Name,
                 Owner = m.Owner,
@@ -55,10 +55,11 @@ namespace Samesound.ViewModels
         public MusicResultViewModel Playing { get; set; }
         public DateTime  DateCreated  { get; set; }
         public DateTime? DateUpdated { get; set; }
+        public DateTime? DateDeactivated { get; set; }
 
         public static explicit operator ChannelResultViewModel(Channel c)
         {
-            return new ChannelResultViewModel
+            return c == null ? null : new ChannelResultViewModel
             {
                 Id                = c.Id,
                 Name              = c.Name,
@@ -66,12 +67,12 @@ namespace Samesound.ViewModels
                 NetworkIdentifier = c.NetworkIdentifier,
                 DateCreated       = c.DateCreated,
                 DateUpdated       = c.DateUpdated,
+                DateDeactivated   = c.DateDeactivated,
                 
                 Musics = c.Musics
                     .Select(m => (MusicResultViewModel)m)
                     .ToList(),
                 Playing = (MusicResultViewModel)c.Playing
-                
             };
         }
     }
