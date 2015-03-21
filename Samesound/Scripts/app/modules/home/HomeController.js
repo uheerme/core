@@ -1,5 +1,5 @@
 ﻿
 samesoundApp
-    .controller('HomeController', function ($scope) {
+    .controller('HomeController', ['$scope', function ($scope) {
         
-    })
+    }])

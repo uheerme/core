@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/jpg" href="@Url.Content("~/Content/favicon.jpg")" />
 
-    <title>@ViewBag.Title</title>
+    <title>@(ViewBag.Title ?? "SameSound")</title>
 
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
