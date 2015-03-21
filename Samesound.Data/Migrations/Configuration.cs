@@ -10,6 +10,7 @@ namespace Samesound.Data.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = true;
             ContextKey = "Samesound.Data.SamesoundContext";
         }
 

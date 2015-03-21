@@ -23,9 +23,6 @@ namespace Samesound
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<SamesoundContext, Configuration>());
-            new SamesoundContext().Database.Initialize(true);
         }
     }
 }
