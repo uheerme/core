@@ -55,9 +55,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\ChannelIsAlreadyDeactivated.cs" />
     <Compile Include="MusicService.cs" />
     <Compile Include="ChannelService.cs" />
     <Compile Include="Infrastructure\Service.cs" />
+    <Compile Include="Exceptions\OwnerAlreadyHasAnActiveChannelException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
