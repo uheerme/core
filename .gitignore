@@ -2,3 +2,4 @@ packages/
 *.dll
 obj/
 bin/
+.idea/

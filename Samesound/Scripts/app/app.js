@@ -6,6 +6,7 @@
 var samesoundApp = angular
     .module('samesoundApp', [
         'ngRoute',
+        'ui.router',
         'ngAnimate'
     ])
     .constant('config', {

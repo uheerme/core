@@ -10,6 +10,8 @@ namespace Samesound.Controllers
     {
         public ActionResult Index()
         {
+            ViewBag.Title = "SameSound";
+
             return View();
         }
     }

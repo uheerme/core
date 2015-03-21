@@ -3,37 +3,17 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/jpg" href="@Url.Content("~/Content/favicon.jpg")" />
+
     <title>@ViewBag.Title</title>
+
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body ng-app="samesoundApp">
-    <div class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a href="/" class="navbar-brand">SameSound</a>
-            </div>
-            <div class="navbar-collapse collapse pull-right">
-                <ul class="nav navbar-nav">
-                    <li><a href="/Help">API</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    
-        @RenderBody()
-
-        @*<br />
-        <footer>
-            <p>
-            <span class="glyphicon glyphicon-copyright-mark"></span>
-             @DateTime.Now.Year - SameSound</p>
-        </footer>*@
+    <div ui-view="navbar"></div>
+    @RenderBody()
+    <div ui-view="footer"></div>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
