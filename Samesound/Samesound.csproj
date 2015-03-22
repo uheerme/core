@@ -29,6 +29,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Samesound.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -326,6 +327,9 @@
     <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\app\app.js" />
+    <Content Include="Scripts\app\modules\musics\musics.html" />
+    <Content Include="Scripts\app\modules\musics\musics.js" />
+    <Content Include="Scripts\app\modules\musics\MusicsController.js" />
     <Content Include="Scripts\app\modules\channels\channels.html" />
     <Content Include="Scripts\app\modules\channels\channels.js" />
     <Content Include="Scripts\app\modules\channels\ChannelsController.js" />
