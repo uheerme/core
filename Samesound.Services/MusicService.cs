@@ -1,10 +1,13 @@
 ﻿using Samesound.Core;
 using Samesound.Data;
 using Samesound.Services.Infrastructure;
+using Samesound.Services.Providers;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Samesound.Services
 {
@@ -19,6 +22,20 @@ namespace Samesound.Services
                 .Skip(skip)
                 .Take(take)
                 .ToListAsync();
+        }
+
+        public override async Task<Music> Add(Music entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual async Task<Music> Add(Music music, HttpPostedFileBase file)
+        {
+            new MusicUploadProvider(music.ChannelId)
+                .Init()
+                .Save(file, music.Name);
+
+            return await base.Add(music);
         }
     }
 }

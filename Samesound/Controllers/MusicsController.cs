@@ -113,7 +113,7 @@ namespace Samesound.Controllers
                     throw new ValidationException();
                 }
 
-                var music = await _musics.Add((Music)model);
+                var music = await _musics.Add((Music)model, model.Stream);
                 return CreatedAtRoute("DefaultApi", new { id = music.Id }, (MusicResultViewModel)music);
             }
             catch (ValidationException)

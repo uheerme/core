@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 
-namespace Samesound.Providers
+namespace Samesound.Services.Providers
 {
     public class MusicUploadProvider
     {
@@ -12,34 +12,28 @@ namespace Samesound.Providers
         protected string _directory;
         protected bool   _override;
         protected bool   _cacheOperations;
-        protected List<HttpPostedFileBase> _musics;
+        protected Dictionary<string, HttpPostedFileBase> _musics;
 
         public bool IsInitiated { get; private set; }
 
-        public MusicUploadProvider(int channelId, bool cacheOperations) : this(channelId, cacheOperations, false) { }
-        public MusicUploadProvider(int channelId, bool cacheOperations, bool @override)
+        public MusicUploadProvider(int channelId, bool cacheOperations = false, bool @override = false)
             : this(Path.Combine(DEFAULT_DIRECTORY, channelId.ToString()), cacheOperations, @override) { }
         public MusicUploadProvider(string directory, bool cacheOperations, bool @override)
         {
             _directory       = directory;
             _cacheOperations = cacheOperations;
             _override        = @override;
-            _musics = new List<HttpPostedFileBase>();
+            _musics = new Dictionary<string, HttpPostedFileBase>();
         }
 
         public virtual MusicUploadProvider Init()
-        {
-            if (Directory.Exists(_directory) && _override)
-            {
-                Directory.Delete(_directory, true);
-            }
-            
+        {         
             Directory.CreateDirectory(_directory);
             IsInitiated = true;
             return this;
         }
 
-        public virtual MusicUploadProvider Save(HttpPostedFileBase music)
+        public virtual MusicUploadProvider Save(HttpPostedFileBase music, string name = null)
         {
             if (!IsInitiated)
             {
@@ -48,10 +42,17 @@ namespace Samesound.Providers
 
             if (music == null || music.ContentLength == 0)
             {
-                throw new ApplicationException("Cannot save a invalid/empty music: " + music.FileName);
+                throw new ApplicationException("Cannot save a invalid/empty music: " + name);
             }
 
-            _musics.Add(music);
+            if (string.IsNullOrEmpty(name)) { name = music.FileName; }
+
+            if (_musics.ContainsKey(name) && !_override)
+            {
+                throw new ApplicationException("Cannot override already existing music: " + name + ".");
+            }
+            
+            _musics[name] = music;
 
             if (!_cacheOperations)
             {
@@ -61,15 +62,15 @@ namespace Samesound.Providers
             return this;
         }
 
-        public virtual MusicUploadProvider Remove(HttpPostedFileBase music)
+        public virtual MusicUploadProvider Remove(string name)
         {
-            if (_musics.Contains(music))
+            if (_musics.ContainsKey(name))
             {
-                _musics.Remove(music);
+                _musics.Remove(name);
             }
             else
             {
-                var name = Path.Combine(_directory, music.FileName);
+                name = Path.Combine(_directory, name);
                 if (File.Exists(name))
                 {
                     File.Delete(name);
@@ -81,10 +82,12 @@ namespace Samesound.Providers
 
         public virtual MusicUploadProvider Commit()
         {
-            foreach (var music in _musics)
+            foreach (var entry in _musics)
             {
-                var name = Path.Combine(_directory, music.FileName);
-                music.SaveAs(name);
+                var name  = entry.Key;
+                var music = entry.Value;
+
+                music.SaveAs(Path.Combine(_directory, name));
             }
 
             _musics.Clear();
