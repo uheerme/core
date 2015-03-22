@@ -21,12 +21,10 @@
                         </div>
                         <div class="form-group">
                             <input type="text" ng-model="channel.NetworkIdentifier" class="form-control"
-                                   placeholder="200.302.xxx.xx" />
+                                   placeholder="xxx.xxx.xxx.xxx" />
                         </div>
                         <div class="form-group text-right">
-                            <button class="btn btn-primary">
-                                Open channel
-                            </button>
+                            <button class="btn btn-primary">Open channel</button>
                         </div>
                     </fieldset>
                 </form>
@@ -36,7 +34,9 @@
         <div class="col-sm-4" ng-repeat="channel in channels">
             <div class="well">
                 <h4>
-                    {{ channel.Name }}
+                    <a href="#/channels/{{ channel.Id }}/dashboard">
+                        {{ channel.Name }}
+                    </a>
                 </h4>
                 <p>
                     <strong>{{ channel.Owner }}</strong>, at {{ channel.NetworkIdentifier }}.

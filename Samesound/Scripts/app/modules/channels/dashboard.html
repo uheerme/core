@@ -1,0 +1,55 @@
+﻿<div class="container">
+    <h1>
+        {{ channel.Name }}
+        <small>#{{ channel.Id }}</small>
+    </h1>
+    <h2>
+        Playlist
+    </h2>
+    <p>
+        ...
+    </p>
+    <h2>
+        Connected users
+    </h2>
+    <p>
+        ...
+    </p>
+    <h2>
+        Upload new songs
+    </h2>
+
+    <div ng-file-drop ng-model="files" class="drop-box well text-center"
+         drag-over-class="dragover" ng-multiple="true" allow-dir="true"
+         accept=".jpg,.png,.jpeg">
+        <div class="void"></div>
+        <h2>
+            <span class="glyphicon glyphicon-cloud-upload"></span><br />
+            <small>Drop multiple files or folders here.</small>
+        </h2>
+        <div class="void"></div>
+    </div>
+
+    <div class="text-right">
+        <button class="btn btn-lg btn-default" ng-multiple="true" ng-file-select ng-model="files">
+            <span class="glyphicon glyphicon-search"></span>
+            Select files
+        </button>
+        <button class="btn btn-lg btn-primary" ng-click="upload()" ng-class="{disabled: !files || !files.length}">
+            <span class="glyphicon glyphicon-cloud-upload"></span> Upload
+        </button>
+    </div>
+    <br /><br />
+
+    <div ng-repeat="file in files">
+        <div class="well upload-item">
+            <span class="pull-right" ng-click="cancel(file)">
+                <span class="glyphicon glyphicon-remove"></span>
+            </span>
+            <strong>{{ file.name }}</strong>
+            {{ (file.size/1048576).toFixed(2) }} MBs
+        </div>
+    </div>
+
+
+</div>

@@ -27,6 +27,7 @@ namespace Samesound
                 "~/Scripts/angular-ui-router.js",
                 "~/Scripts/angular-resource.js",
                 "~/Scripts/angular-animate.js",
+                "~/Scripts/angular-file-upload-all.min.js",
                 "~/Scripts/app/app.js",
                 "~/Scripts/app/modules/home/*.js",
                 "~/Scripts/app/modules/channels/*.js",

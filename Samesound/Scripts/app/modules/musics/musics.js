@@ -9,6 +9,4 @@ angular.module('samesoundApp')
                     templateUrl: 'Scripts/app/modules/musics/musics.html',
                     controller: 'MusicsController'
                 });
-
-            $urlRouterProvider.otherwise('/')
         }])

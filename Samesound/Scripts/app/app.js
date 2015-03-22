@@ -4,7 +4,7 @@
 'use strict';
 
 var samesoundApp = angular
-    .module('samesoundApp', ['ngResource', 'ngRoute', 'ui.router', 'ngAnimate'])
+    .module('samesoundApp', ['ngResource', 'ngRoute', 'ui.router', 'ngAnimate', 'angularFileUpload'])
     .config(['$locationProvider', function ($locationProvider) {
         //$locationProvider.html5Mode(true);
         //$locationProvider.hashPrefix('#');
