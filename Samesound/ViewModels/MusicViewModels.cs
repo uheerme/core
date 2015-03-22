@@ -15,12 +15,7 @@ namespace Samesound.ViewModels
         public string Name     { get; set; }
 
         [Required]
-        [Range(0, int.MaxValue)]
-        public int SizeInBytes { get; set; }
-
-        [Required]
-        [Range(0, int.MaxValue)]
-        public int LengthInSeconds { get; set; }
+        public HttpPostedFileBase Stream { get; set; }
 
         [Required]
         public int ChannelId { get; set; }
@@ -30,8 +25,7 @@ namespace Samesound.ViewModels
             return new Music
             {
                 Name            = m.Name,
-                SizeInBytes     = m.SizeInBytes,
-                LengthInSeconds = m.LengthInSeconds,
+                SizeInBytes     = m.Stream.ContentLength,
                 ChannelId       = m.ChannelId
             };
         }
@@ -47,12 +41,7 @@ namespace Samesound.ViewModels
         public string Name { get; set; }
 
         [Required]
-        [Range(0, int.MaxValue)]
-        public int SizeInBytes { get; set; }
-
-        [Required]
-        [Range(0, int.MaxValue)]
-        public int LengthInSeconds { get; set; }
+        public HttpPostedFileBase Stream { get; set; }
 
         [Required]
         public int ChannelId { get; set; }
@@ -60,8 +49,7 @@ namespace Samesound.ViewModels
         public void Update(Music c)
         {
             c.Name            = Name;
-            c.SizeInBytes     = SizeInBytes;
-            c.LengthInSeconds = LengthInSeconds;
+            c.SizeInBytes     = Stream.ContentLength;
             c.ChannelId       = ChannelId;
         }
     }
