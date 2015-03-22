@@ -29,7 +29,8 @@ namespace Samesound
                 "~/Scripts/angular-animate.js",
                 "~/Scripts/app/app.js",
                 "~/Scripts/app/modules/home/*.js",
-                "~/Scripts/app/modules/channels/*.js"));
+                "~/Scripts/app/modules/channels/*.js",
+                "~/Scripts/app/modules/musics/*.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/paper.min.css",

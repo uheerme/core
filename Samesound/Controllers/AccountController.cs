@@ -53,6 +53,10 @@ namespace Samesound.Controllers
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
 
         // GET api/Account/UserInfo
+        /// <summary>
+        /// Get information about the currently authenticated user.
+        /// </summary>
+        /// <returns>The UserInfoViewModel that represents the currently authenticated user.</returns>
         [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
         [Route("UserInfo")]
         public UserInfoViewModel GetUserInfo()
@@ -68,6 +72,10 @@ namespace Samesound.Controllers
         }
 
         // POST api/Account/Logout
+        /// <summary>
+        /// Log out the authenticated user and remove its permissions.
+        /// </summary>
+        /// <returns>A response with status code equals to 200.</returns>
         [Route("Logout")]
         public IHttpActionResult Logout()
         {
@@ -76,6 +84,12 @@ namespace Samesound.Controllers
         }
 
         // GET api/Account/ManageInfo?returnUrl=%2F&generateState=true
+        /// <summary>
+        /// Get manage information about the authenticated user.
+        /// </summary>
+        /// <param name="returnUrl">The return URL used by external login providers.</param>
+        /// <param name="generateState">Defines if a state should be generated.</param>
+        /// <returns>The ManageInfoViewModel associated with the authenticated user.</returns>
         [Route("ManageInfo")]
         public async Task<ManageInfoViewModel> GetManageInfo(string returnUrl, bool generateState = false)
         {
@@ -116,6 +130,11 @@ namespace Samesound.Controllers
         }
 
         // POST api/Account/ChangePassword
+        /// <summary>
+        /// Change the password of the authenticated user.
+        /// </summary>
+        /// <param name="model">The view model that represents the change password operation.</param>
+        /// <returns>A Response with status code equals to 200, if succeeded. A BadRequest with the errors, otherwise.</returns>
         [Route("ChangePassword")]
         public async Task<IHttpActionResult> ChangePassword(ChangePasswordBindingModel model)
         {
@@ -136,6 +155,11 @@ namespace Samesound.Controllers
         }
 
         // POST api/Account/SetPassword
+        /// <summary>
+        /// Set the password of the currently authenticated user. This operation will fail if the user already has a password.
+        /// </summary>
+        /// <param name="model">The view model that represents the set password operation.</param>
+        /// <returns>A Response with status code equals to 200, if succeeded. A BadRequest with the errors, otherwise.</returns>
         [Route("SetPassword")]
         public async Task<IHttpActionResult> SetPassword(SetPasswordBindingModel model)
         {
@@ -155,6 +179,11 @@ namespace Samesound.Controllers
         }
 
         // POST api/Account/AddExternalLogin
+        /// <summary>
+        /// Associate a third party account to the current , such as Google, Facebook or Twitter.
+        /// </summary>
+        /// <param name="model">The view model that contains the external access token used in the association.</param>
+        /// <returns>A Response with status code equals to 200, if succeeded. A BadRequest with the errors, otherwise.</returns>
         [Route("AddExternalLogin")]
         public async Task<IHttpActionResult> AddExternalLogin(AddExternalLoginBindingModel model)
         {
@@ -193,6 +222,11 @@ namespace Samesound.Controllers
         }
 
         // POST api/Account/RemoveLogin
+        /// <summary>
+        /// Unlink a third party authentication provider from the authenticated user's account.
+        /// </summary>
+        /// <param name="model">The view model that represents the auth provider that will be removed.</param>
+        /// <returns>A Response with status code equals to 200, if succeeded. A BadRequest with the errors, otherwise.</returns>
         [Route("RemoveLogin")]
         public async Task<IHttpActionResult> RemoveLogin(RemoveLoginBindingModel model)
         {
@@ -320,6 +354,11 @@ namespace Samesound.Controllers
         }
 
         // POST api/Account/Register
+        /// <summary>
+        /// Register a new Account.
+        /// </summary>
+        /// <param name="model">Holds basic information about the new account.</param>
+        /// <returns>A Response with status code equals to 200, if succeeded. A BadRequest with the errors, otherwise.</returns>
         [AllowAnonymous]
         [Route("Register")]
         public async Task<IHttpActionResult> Register(RegisterBindingModel model)
@@ -342,6 +381,11 @@ namespace Samesound.Controllers
         }
 
         // POST api/Account/RegisterExternal
+        /// <summary>
+        /// Register a new Account from a third party authentication provider.
+        /// </summary>
+        /// <param name="model">Holds basic information about the new account.</param>
+        /// <returns>A Response with status code equals to 200, if succeeded. A BadRequest with the errors, otherwise.</returns>
         [OverrideAuthentication]
         [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
         [Route("RegisterExternal")]

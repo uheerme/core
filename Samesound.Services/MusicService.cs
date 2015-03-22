@@ -37,5 +37,15 @@ namespace Samesound.Services
 
             return await base.Add(music);
         }
+
+        public virtual async Task<ICollection<Music>> OfChannel(int channelId, int skip, int take)
+        {
+            return await Db.Musics
+                .Where(m => m.ChannelId == channelId)
+                .OrderBy(m => m.Id)
+                .Take(take)
+                .Skip(skip)
+                .ToListAsync();
+        }
     }
 }

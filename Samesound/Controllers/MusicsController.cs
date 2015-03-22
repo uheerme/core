@@ -11,7 +11,6 @@ using System.Linq;
 
 namespace Samesound.Controllers
 {
-    [Route("api/Channels/{channelId}/Musics")]
     public class MusicsController : ApiController
     {
         private MusicService _musics;
@@ -22,11 +21,11 @@ namespace Samesound.Controllers
         }
 
         /// <summary>
-        /// Get a list with <paramref name="take"/> musics, ignoring the first <paramref name="skip"/> entries.
+        /// Get all musics currently on the database.
         /// </summary>
         /// <param name="skip">The number of musics to ignore.</param>
-        /// <param name="take">The maximum number of music in the returned list.</param>
-        /// <returns>ICollection<MusicResultViewModel></returns>
+        /// <param name="take">The maximum length of the collection retrieved.</param>
+        /// <returns>A collection of MusicResultViewModel.</returns>
         public async Task<ICollection<MusicResultViewModel>> GetMusics(int skip = 0, int take = 100)
         {
             return (await _musics.Paginate(skip, take))
@@ -35,11 +34,10 @@ namespace Samesound.Controllers
         }
 
         /// <summary>
-        /// Retrieve a MusicResultViewModel with <paramref name="id"/>.
+        /// Retrieve a music with given Id.
         /// </summary>
         /// <param name="id">The id of the Music that will be retrieved.</param>
         /// <returns>MusicResultViewModel</returns>
-        [Route("api/Channels/{channelId}/Musics/{id}")]
         [ResponseType(typeof(MusicResultViewModel))]
         public async Task<IHttpActionResult> GetMusic(int id)
         {
@@ -60,10 +58,10 @@ namespace Samesound.Controllers
         }
 
         /// <summary>
-        /// Updates a Music with id model.Id.
+        /// Updates a given music Id.
         /// </summary>
         /// <param name="model">The view model for the Music to be updated.</param>
-        /// <returns>A empty response with HTTP code 200.</returns>
+        /// <returns>A Response with status code equals to 200.</returns>
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutMusic(MusicUpdateViewModel model)
         {
@@ -131,11 +129,10 @@ namespace Samesound.Controllers
         }
 
         /// <summary>
-        /// Delete a Music <paramref name="id"/>.
+        /// Delete a Music with a given Id.
         /// </summary>
         /// <param name="id">The id of the Music to be deleted.</param>
         /// <returns>The Music deleted.</returns>
-        [Route("api/Channels/{channelId}/Musics/{id}")]
         [ResponseType(typeof(MusicResultViewModel))]
         public async Task<IHttpActionResult> DeleteMusic(int id)
         {

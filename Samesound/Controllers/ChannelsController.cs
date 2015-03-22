@@ -15,10 +15,12 @@ namespace Samesound.Controllers
     public class ChannelsController : ApiController
     {
         private ChannelService _channels;
+        private MusicService   _musics;
 
-        public ChannelsController(ChannelService channels)
+        public ChannelsController(ChannelService channels, MusicService musics)
         {   
             _channels = channels;
+            _musics   = musics;
         }
 
         /// <summary>
@@ -35,7 +37,7 @@ namespace Samesound.Controllers
         }
 
         /// <summary>
-        /// Retrieve a ChannelResultViewModel with <paramref name="id"/>.
+        /// Retrieve a channel with a given Id.
         /// </summary>
         /// <param name="id">The id of the Channel that will be retrieved.</param>
         /// <returns>ChannelResultViewModel</returns>
@@ -59,10 +61,10 @@ namespace Samesound.Controllers
         }
 
         /// <summary>
-        /// Updates a Channel with id model.Id.
+        /// Updates a Channel with a given Id.
         /// </summary>
         /// <param name="model">The view model for the Channel to be updated.</param>
-        /// <returns>A empty response with HTTP code 200.</returns>
+        /// <returns>A response with a status code equals to 200.</returns>
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutChannel(ChannelUpdateViewModel model)
         {
@@ -129,6 +131,11 @@ namespace Samesound.Controllers
             return BadRequest(ModelState);
         }
 
+        /// <summary>
+        /// Deactivate a channel with given Id.
+        /// </summary>
+        /// <param name="id">The Id of the channel to be deactivated.</param>
+        /// <returns>The deactivated channel.</returns>
         [Route("{id}/deactivate")]
         [ResponseType(typeof(ChannelResultViewModel))]
         public async Task<IHttpActionResult> PostDeactivateChannel(int id)
@@ -153,7 +160,7 @@ namespace Samesound.Controllers
         }
 
         /// <summary>
-        /// Delete a Channel <paramref name="id"/>.
+        /// Delete a Channel with given Id.
         /// </summary>
         /// <param name="id">The id of the Channel to be deleted.</param>
         /// <returns>The Channel deleted.</returns>
@@ -181,6 +188,21 @@ namespace Samesound.Controllers
             }
 
             return BadRequest(ModelState);
+        }
+
+        /// <summary>
+        /// Retrieve a music collection associated with a Channel.
+        /// </summary>
+        /// <param name="id">The Id of the channel that contains the music collection.</param>
+        /// <param name="skip">The number of musics to ignore.</param>
+        /// <param name="take">The maximum length of the collection retrieved.</param>
+        /// <returns></returns>
+        [Route("{id}/Musics")]
+        public async Task<ICollection<MusicResultViewModel>> GetMusicOfChannel(int id, int skip = 0, int take = 100)
+        {
+            return (await _musics.OfChannel(id, skip, take))
+                .Select(m => (MusicResultViewModel)m)
+                .ToList();
         }
 
         protected override void Dispose(bool disposing)
