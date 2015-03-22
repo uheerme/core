@@ -2,6 +2,7 @@
 using Samesound.Data;
 using Samesound.Services.Exceptions;
 using Samesound.Services.Infrastructure;
+using Samesound.Services.Providers;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -52,8 +53,9 @@ namespace Samesound.Services
                 throw new ChannelIsAlreadyDeactivatedException("{" + channel.Id + "}");
             }
 
-            channel.DateDeactivated = DateTime.Now;
+            new MusicUploadProvider(channel.Id).RemoveAll();
             
+            channel.DateDeactivated = DateTime.Now;
             return await Update(channel);
         }
     }

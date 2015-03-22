@@ -62,6 +62,13 @@ namespace Samesound.Services.Providers
             return this;
         }
 
+        public virtual MusicUploadProvider RemoveAll()
+        {
+            Directory.Delete(_directory, recursive:true);
+            _musics.Clear();
+            return this;
+        }
+
         public virtual MusicUploadProvider Remove(string name)
         {
             if (_musics.ContainsKey(name))

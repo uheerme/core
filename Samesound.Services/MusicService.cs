@@ -38,6 +38,13 @@ namespace Samesound.Services
             return await base.Add(music);
         }
 
+        public override async Task<int> Delete(Music music)
+        {
+            new MusicUploadProvider(music.ChannelId)
+                .Remove(music.Name);
+            return await base.Delete(music);
+        }
+
         public virtual async Task<ICollection<Music>> OfChannel(int channelId, int skip, int take)
         {
             return await Db.Musics
