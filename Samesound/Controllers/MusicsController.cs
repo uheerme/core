@@ -11,6 +11,7 @@ using System.Linq;
 
 namespace Samesound.Controllers
 {
+    [Route("api/Channels/{channelId}/Musics")]
     public class MusicsController : ApiController
     {
         private MusicService _musics;
@@ -38,6 +39,7 @@ namespace Samesound.Controllers
         /// </summary>
         /// <param name="id">The id of the Music that will be retrieved.</param>
         /// <returns>MusicResultViewModel</returns>
+        [Route("api/Channels/{channelId}/Musics/{id}")]
         [ResponseType(typeof(MusicResultViewModel))]
         public async Task<IHttpActionResult> GetMusic(int id)
         {
@@ -133,6 +135,7 @@ namespace Samesound.Controllers
         /// </summary>
         /// <param name="id">The id of the Music to be deleted.</param>
         /// <returns>The Music deleted.</returns>
+        [Route("api/Channels/{channelId}/Musics/{id}")]
         [ResponseType(typeof(MusicResultViewModel))]
         public async Task<IHttpActionResult> DeleteMusic(int id)
         {
