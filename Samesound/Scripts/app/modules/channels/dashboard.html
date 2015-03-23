@@ -21,7 +21,7 @@
 
     <div ng-file-drop ng-model="files" class="drop-box well text-center"
          drag-over-class="dragover" ng-multiple="true" allow-dir="true"
-         accept=".jpg,.png,.jpeg">
+         ng-accept="'.wav,.mp3,.ogg'">
         <div class="void"></div>
         <h2>
             <span class="glyphicon glyphicon-cloud-upload"></span><br />
@@ -31,7 +31,7 @@
     </div>
 
     <div class="text-right">
-        <button class="btn btn-lg btn-default" ng-multiple="true" ng-file-select ng-model="files">
+        <button class="btn btn-lg btn-default" ng-multiple="true" ng-file-select ng-model="files" accept="'.wav,.mp3,.ogg'">
             <span class="glyphicon glyphicon-search"></span>
             Select files
         </button>
@@ -43,11 +43,20 @@
 
     <div ng-repeat="file in files">
         <div class="well upload-item">
-            <span class="pull-right" ng-click="cancel(file)">
+            <span class="pull-right" ng-click="remove(file)">
                 <span class="glyphicon glyphicon-remove"></span>
             </span>
-            <strong>{{ file.name }}</strong>
-            {{ (file.size/1048576).toFixed(2) }} MBs
+            <div class="row">
+                <div class="col-sm-6">
+                    <input ng-init="file.uploadName = file.name"
+                           ng-model="file.uploadName"
+                           type="text" class="form-control" placeholder="Name that will be displayed to your listeners" />
+                </div>
+            </div>
+            <div class="progress">
+                <div class="progress-bar progress-bar-default" style="width:{{ file.progressPercentage }}%"></div>
+            </div>
+            <span class="label label-info">{{ (file.size/1048576).toFixed(2) }} MBs</span>
         </div>
     </div>
 

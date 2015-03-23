@@ -21,12 +21,6 @@ namespace Samesound.ViewModels
         public string Name     { get; set; }
 
         /// <summary>
-        /// The music file that will be uploaded. Its name will be ignored.
-        /// </summary>
-        [Required]
-        public HttpPostedFileBase Stream { get; set; }
-
-        /// <summary>
         /// The id of the Channel that contains this Music.
         /// </summary>
         [Required]
@@ -37,7 +31,7 @@ namespace Samesound.ViewModels
             return new Music
             {
                 Name            = m.Name,
-                SizeInBytes     = m.Stream.ContentLength,
+                //SizeInBytes     = m.Stream.ContentLength,
                 ChannelId       = m.ChannelId
             };
         }
