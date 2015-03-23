@@ -53,7 +53,7 @@ namespace Samesound.Services
                 throw new ChannelIsAlreadyDeactivatedException("{" + channel.Id + "}");
             }
 
-            new MusicUploadProvider(channel.Id).RemoveAll();
+            MusicUploadProvider.RemoveAll(channel.Id);
             
             channel.DateDeactivated = DateTime.Now;
             return await Update(channel);

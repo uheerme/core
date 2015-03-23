@@ -15,7 +15,7 @@ samesoundApp.controller(
         }
 
         $scope.upload = function () {
-            if (!$scope.files || $scope.files.length) {
+            if (!$scope.files || !$scope.files.length) {
                 return;
             }
 

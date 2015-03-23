@@ -26,8 +26,7 @@ namespace Samesound.Services
 
         public override async Task<int> Delete(Music music)
         {
-            new MusicUploadProvider(music.ChannelId)
-                .Remove(music.Name);
+            MusicUploadProvider.Remove(music.ChannelId, music.Name);
             return await base.Delete(music);
         }
 

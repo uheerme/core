@@ -1,6 +1,7 @@
 ﻿using Samesound.Core;
 using Samesound.Providers;
 using Samesound.Services;
+using Samesound.Services.Providers;
 using Samesound.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -108,7 +109,7 @@ namespace Samesound.Controllers
         [ResponseType(typeof(MusicResultViewModel))]
         public async Task<IHttpActionResult> PostMusic()
         {
-            MusicCreateViewModel model = null;
+            MusicCreateViewModel model = new MusicCreateViewModel();
 
             try
             {
@@ -117,7 +118,9 @@ namespace Samesound.Controllers
                     throw new UnsupportedMediaTypeException("Invalid request. Did you forget to attach the song file?", Request.Content.Headers.ContentType);
                 }
 
-                model = await MusicUploadProvider.SaveFileInContext(Request);
+                var result = await MusicUploadProvider.SaveFileInContext(Request);
+                model.Name = result.Name;
+                model.ChannelId = result.ChannelId;
 
                 Validate(model);
                 if (!ModelState.IsValid)
