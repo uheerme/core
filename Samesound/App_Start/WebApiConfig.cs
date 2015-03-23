@@ -36,6 +36,8 @@ namespace Samesound
 
             config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             config.Formatters.Remove(config.Formatters.XmlFormatter);
+
+            //config.Formatters.Add(new UploadMultipartMediaTypeFormatter());
         }
     }
 }

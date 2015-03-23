@@ -565,7 +565,7 @@
             <param name="model">The view model for the Music to be updated.</param>
             <returns>A Response with status code equals to 200.</returns>
         </member>
-        <member name="M:Samesound.Controllers.MusicsController.PostMusic(Samesound.ViewModels.MusicCreateViewModel)">
+        <member name="M:Samesound.Controllers.MusicsController.PostMusic">
             <summary>
             Create a new Music.
             </summary>
@@ -623,6 +623,11 @@
             <param name="skip">The number of musics to ignore.</param>
             <param name="take">The maximum length of the collection retrieved.</param>
             <returns></returns>
+        </member>
+        <member name="T:Samesound.Providers.MusicUploadProvider">
+            <summary>
+            Provides support during the upload and removal of uploaded songs.
+            </summary>
         </member>
         <member name="T:Samesound.ViewModels.AddExternalLoginBindingModel">
             <summary>
@@ -692,11 +697,6 @@
         <member name="P:Samesound.ViewModels.MusicCreateViewModel.Name">
             <summary>
             The name that the new Music will assume. The music file will be renamed to match this name.
-            </summary>
-        </member>
-        <member name="P:Samesound.ViewModels.MusicCreateViewModel.Stream">
-            <summary>
-            The music file that will be uploaded. Its name will be ignored.
             </summary>
         </member>
         <member name="P:Samesound.ViewModels.MusicCreateViewModel.ChannelId">
