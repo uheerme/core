@@ -1,13 +1,15 @@
 ﻿using Samesound.Core;
+using Samesound.Providers;
 using Samesound.Services;
 using Samesound.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using System.Linq;
 
 namespace Samesound.Controllers
 {
@@ -104,25 +106,33 @@ namespace Samesound.Controllers
         /// <param name="model">The view model for the Music to be created.</param>
         /// <returns>A response with the created Music, if succeeded. A BadRequest response, otherwise.</returns>
         [ResponseType(typeof(MusicResultViewModel))]
-        public async Task<IHttpActionResult> PostMusic(MusicCreateViewModel model)
+        public async Task<IHttpActionResult> PostMusic()
         {
+            MusicCreateViewModel model = null;
+
             try
             {
+                if (!Request.Content.IsMimeMultipartContent())
+                {
+                    throw new UnsupportedMediaTypeException("Invalid request. Did you forget to attach the song file?", Request.Content.Headers.ContentType);
+                }
+
+                model = await MusicUploadProvider.SaveFileInContext(Request);
+
+                Validate(model);
                 if (!ModelState.IsValid)
                 {
                     throw new ValidationException();
                 }
 
-                var music = await _musics.Add((Music)model, model.Stream);
-                return CreatedAtRoute("DefaultApi", new { id = music.Id }, (MusicResultViewModel)music);
-            }
-            catch (ValidationException)
-            {
-                // All validations errors are already in ModelState.
+                var music = await _musics.Add((Music)model);
+
+                return Ok((MusicResultViewModel) music);
             }
             catch (Exception e)
             {
                 ModelState.AddModelError(e.GetType().ToString(), e.Message);
+                MusicUploadProvider.Remove(model.ChannelId, model.Name);
             }
 
             return BadRequest(ModelState);

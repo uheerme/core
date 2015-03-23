@@ -24,20 +24,6 @@ namespace Samesound.Services
                 .ToListAsync();
         }
 
-        public override async Task<Music> Add(Music entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual async Task<Music> Add(Music music, HttpPostedFileBase file)
-        {
-            new MusicUploadProvider(music.ChannelId)
-                .Init()
-                .Save(file, music.Name);
-
-            return await base.Add(music);
-        }
-
         public override async Task<int> Delete(Music music)
         {
             new MusicUploadProvider(music.ChannelId)

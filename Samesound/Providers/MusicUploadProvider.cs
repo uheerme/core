@@ -1,94 +1,82 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Samesound.Core;
+using Samesound.ViewModels;
+using System;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace Samesound.Providers
 {
-    public class MusicUploadProvider
+    /// <summary>
+    /// Provides support during the upload and removal of uploaded songs.
+    /// </summary>
+    public abstract class MusicUploadProvider
     {
         const string DEFAULT_DIRECTORY = "~/App_Data";
-        protected string _directory;
-        protected bool   _override;
-        protected bool   _cacheOperations;
-        protected List<HttpPostedFileBase> _musics;
 
-        public bool IsInitiated { get; private set; }
-
-        public MusicUploadProvider(int channelId, bool cacheOperations) : this(channelId, cacheOperations, false) { }
-        public MusicUploadProvider(int channelId, bool cacheOperations, bool @override)
-            : this(Path.Combine(DEFAULT_DIRECTORY, channelId.ToString()), cacheOperations, @override) { }
-        public MusicUploadProvider(string directory, bool cacheOperations, bool @override)
+        public static string ContextualizedDirectory(params string[] nodes)
         {
-            _directory       = directory;
-            _cacheOperations = cacheOperations;
-            _override        = @override;
-            _musics = new List<HttpPostedFileBase>();
+            return HttpContext.Current.Server.MapPath(Path.Combine(nodes));
         }
 
-        public virtual MusicUploadProvider Init()
+        public static async Task<MusicCreateViewModel> SaveFileInContext(HttpRequestMessage request)
         {
-            if (Directory.Exists(_directory) && _override)
+            // Transfer data to temporary location.
+            var provider = new MultipartFormDataStreamProvider(ContextualizedDirectory(DEFAULT_DIRECTORY));
+            await request.Content.ReadAsMultipartAsync(provider);
+
+            // Get the song's name and channel.
+            var name = provider.FormData.GetValues("Name").First();
+            var channelId = provider.FormData.GetValues("ChannelId").First();
+
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(channelId) || channelId == "0")
             {
-                Directory.Delete(_directory, true);
+                throw new ApplicationException("Uploaded data is invalid { name:" + name + ", channel:" + channelId + " }.");
             }
-            
-            Directory.CreateDirectory(_directory);
-            IsInitiated = true;
-            return this;
+
+            // Create the directory, if it does not exist.
+            var path = ContextualizedDirectory(DEFAULT_DIRECTORY, channelId);
+            Directory.CreateDirectory(path);
+
+            // Finally, move file to correct destination.
+            path = ContextualizedDirectory(DEFAULT_DIRECTORY, channelId, name);
+            var file = provider.FileData.First();
+            File.Move(file.LocalFileName, path);
+
+            return new MusicCreateViewModel
+            {
+                Name = name,
+                ChannelId = int.Parse(channelId)
+            };
         }
 
-        public virtual MusicUploadProvider Save(HttpPostedFileBase music)
+        public static void Remove(Music music)
         {
-            if (!IsInitiated)
-            {
-                throw new ApplicationException("Cannot save music in a non initiated MusicUploadProvider. Did you forget to call Init() first?");
-            }
-
-            if (music == null || music.ContentLength == 0)
-            {
-                throw new ApplicationException("Cannot save a invalid/empty music: " + music.FileName);
-            }
-
-            _musics.Add(music);
-
-            if (!_cacheOperations)
-            {
-                Commit();
-            }
-
-            return this;
+            Remove(music.ChannelId, music.Name);
         }
 
-        public virtual MusicUploadProvider Remove(HttpPostedFileBase music)
+        public static void Remove(int channelId, string name)
         {
-            if (_musics.Contains(music))
-            {
-                _musics.Remove(music);
-            }
-            else
-            {
-                var name = Path.Combine(_directory, music.FileName);
-                if (File.Exists(name))
-                {
-                    File.Delete(name);
-                }
-            }
+            var path = ContextualizedDirectory(
+                DEFAULT_DIRECTORY, channelId.ToString(), name
+            );
 
-            return this;
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
         }
 
-        public virtual MusicUploadProvider Commit()
+        public static void RemoveAll(int channelId)
         {
-            foreach (var music in _musics)
-            {
-                var name = Path.Combine(_directory, music.FileName);
-                music.SaveAs(name);
-            }
-
-            _musics.Clear();
-            return this;
+            Directory.Delete(
+                recursive: true,
+                path: ContextualizedDirectory(
+                    DEFAULT_DIRECTORY, channelId.ToString()
+                )
+            );
         }
     }
 }
