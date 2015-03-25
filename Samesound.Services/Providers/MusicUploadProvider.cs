@@ -18,68 +18,75 @@ namespace Samesound.Services.Providers
     public abstract class MusicUploadProvider
     {
         const string DEFAULT_DIRECTORY = "~/App_Data";
+        const string DEFAULT_TEMPORARY = "temporary";
 
-        public static string ContextualizedDirectory(params string[] nodes)
+        public static string ContextualizedPath(params string[] nodes)
         {
             return HttpContext.Current.Server.MapPath(Path.Combine(nodes));
         }
 
-        public static async Task<Music> SaveFileInContext(HttpRequestMessage request)
+        public static string TryToCreateDirectory(string directory, bool @override = false)
         {
-            // Transfer data to temporary location.
-            var provider = new MultipartFormDataStreamProvider(ContextualizedDirectory(DEFAULT_DIRECTORY));
-            await request.Content.ReadAsMultipartAsync(provider);
-
-            // Get the song's name and channel.
-            var name = provider.FormData.GetValues("Name").First();
-            var channelId = provider.FormData.GetValues("ChannelId").First();
-
-            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(channelId) || channelId == "0")
+            var path = ContextualizedPath(DEFAULT_DIRECTORY, directory);
+            if (Directory.Exists(path) && @override)
             {
-                throw new ApplicationException("Uploaded data is invalid { name:" + name + ", channel:" + channelId + " }.");
+                Directory.Delete(path, recursive: true);
             }
 
-            // Create the directory, if it does not exist.
-            var path = ContextualizedDirectory(DEFAULT_DIRECTORY, channelId);
             Directory.CreateDirectory(path);
-
-            // Finally, move file to correct destination.
-            path = ContextualizedDirectory(DEFAULT_DIRECTORY, channelId, name);
-            var file = provider.FileData.First();
-            File.Move(file.LocalFileName, path);
-
-            return new Music
-            {
-                Name = name,
-                ChannelId = int.Parse(channelId)
-            };
+            return path;
         }
 
-        public static void Remove(Music music)
+        public static void TryToRemoveMusic(Music music)
         {
-            Remove(music.ChannelId, music.Name);
+            TryToRemove(ContextualizedPath(DEFAULT_DIRECTORY, music.ChannelId.ToString(), music.Id.ToString()));
         }
-
-        public static void Remove(int channelId, string name)
+        public static void TryToRemoveTemporary(string fileName)
         {
-            var path = ContextualizedDirectory(
-                DEFAULT_DIRECTORY, channelId.ToString(), name
-            );
-
+            TryToRemove(ContextualizedPath(DEFAULT_DIRECTORY, DEFAULT_TEMPORARY, fileName));
+        }
+        public static void TryToRemove(string path)
+        {
             if (File.Exists(path))
             {
                 File.Delete(path);
             }
         }
-
         public static void RemoveAll(int channelId)
         {
             Directory.Delete(
                 recursive: true,
-                path: ContextualizedDirectory(
+                path: ContextualizedPath(
                     DEFAULT_DIRECTORY, channelId.ToString()
                 )
             );
+        }
+
+        public static async Task<MultipartFormDataStreamProvider> SaveFilesTemporarily(HttpContent content)
+        {
+            TryToCreateDirectory(DEFAULT_TEMPORARY);
+            
+            // Transfer data to temporary location.
+            var provider = new MultipartFormDataStreamProvider(ContextualizedPath(DEFAULT_DIRECTORY, DEFAULT_TEMPORARY));
+            await content.ReadAsMultipartAsync(provider);
+
+            return provider;
+        }
+
+        public static void FinishUpload(string temporaryFileName, Music music)
+        {
+            if (music.Id == 0 || string.IsNullOrEmpty(music.Name) || music.ChannelId == 0)
+            {
+                throw new ApplicationException("Uploaded data is invalid { Id:" + music.Id + ", Name:" + music.Name + ", Channel:" + music.ChannelId + " }.");
+            }
+
+            // Creates channel's directory, if it doesn't exist already.
+            var path = TryToCreateDirectory(music.ChannelId.ToString());
+
+            // Finally, move file to correct destination.
+            var fileRealName = Path.ChangeExtension(music.Id.ToString(), Path.GetExtension(music.Name));
+            path = Path.Combine(path, fileRealName);
+            File.Move(temporaryFileName, path);
         }
     }
 }

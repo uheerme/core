@@ -7,25 +7,25 @@ using System.Text;
 namespace Samesound.Services.Exceptions
 {
     /// <summary>
-    /// Thrown when a user already has an active channel and asks to open a second one.
+    /// Thrown whenever an already deactivated Channel is asked to deactivate.
     /// </summary>
-    public class OwnerAlreadyHasAnActiveChannelException : ApplicationException
+    public class ChannelIsAlreadyDeactivatedException : DeactivatedChannelException
     {
         // Summary:
-        //     Initializes a new instance of the System.OwnerAlreadyHasAnActiveChannelException class.
-        public OwnerAlreadyHasAnActiveChannelException() { }
+        //     Initializes a new instance of the System.ChannelIsAlreadyDeactivatedException class.
+        public ChannelIsAlreadyDeactivatedException() { }
         //
         // Summary:
-        //     Initializes a new instance of the System.OwnerAlreadyHasAnActiveChannelException class with
+        //     Initializes a new instance of the System.ChannelIsAlreadyDeactivatedException class with
         //     a specified error message.
         //
         // Parameters:
         //   message:
         //     A message that describes the error.
-        public OwnerAlreadyHasAnActiveChannelException(string message) : base(message) { }
+        public ChannelIsAlreadyDeactivatedException(string message) : base(message) { }
         //
         // Summary:
-        //     Initializes a new instance of the System.OwnerAlreadyHasAnActiveChannelException class with
+        //     Initializes a new instance of the System.ChannelIsAlreadyDeactivatedException class with
         //     serialized data.
         //
         // Parameters:
@@ -34,10 +34,10 @@ namespace Samesound.Services.Exceptions
         //
         //   context:
         //     The contextual information about the source or destination.
-        protected OwnerAlreadyHasAnActiveChannelException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+        protected ChannelIsAlreadyDeactivatedException(SerializationInfo info, StreamingContext context) : base(info, context) { }
         //
         // Summary:
-        //     Initializes a new instance of the System.OwnerAlreadyHasAnActiveChannelException class with
+        //     Initializes a new instance of the System.ChannelIsAlreadyDeactivatedException class with
         //     a specified error message and a reference to the inner exception that is
         //     the cause of this exception.
         //
@@ -49,6 +49,6 @@ namespace Samesound.Services.Exceptions
         //     The exception that is the cause of the current exception. If the innerException
         //     parameter is not a null reference, the current exception is raised in a catch
         //     block that handles the inner exception.
-        public OwnerAlreadyHasAnActiveChannelException(string message, Exception innerException) : base(message, innerException) { }
+        public ChannelIsAlreadyDeactivatedException(string message, Exception innerException) : base(message, innerException) { }
     }
 }

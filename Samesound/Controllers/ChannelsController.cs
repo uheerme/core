@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using System.Linq;
+using Samesound.Services.Providers;
 
 namespace Samesound.Controllers
 {

@@ -6,23 +6,26 @@ using System.Text;
 
 namespace Samesound.Services.Exceptions
 {
-    public class ChannelIsAlreadyDeactivatedException : ApplicationException
+    /// <summary>
+    /// Thrown if an Channel is already deactivated and an invalid operation is executed over it.
+    /// </summary>
+    public class DeactivatedChannelException : ApplicationException
     {
         // Summary:
-        //     Initializes a new instance of the System.ChannelIsAlreadyDeactivatedException class.
-        public ChannelIsAlreadyDeactivatedException() { }
+        //     Initializes a new instance of the System.DeactivatedChannelException class.
+        public DeactivatedChannelException() { }
         //
         // Summary:
-        //     Initializes a new instance of the System.ChannelIsAlreadyDeactivatedException class with
+        //     Initializes a new instance of the System.DeactivatedChannelException class with
         //     a specified error message.
         //
         // Parameters:
         //   message:
         //     A message that describes the error.
-        public ChannelIsAlreadyDeactivatedException(string message) : base(message) { }
+        public DeactivatedChannelException(string message) : base(message) { }
         //
         // Summary:
-        //     Initializes a new instance of the System.ChannelIsAlreadyDeactivatedException class with
+        //     Initializes a new instance of the System.DeactivatedChannelException class with
         //     serialized data.
         //
         // Parameters:
@@ -31,10 +34,10 @@ namespace Samesound.Services.Exceptions
         //
         //   context:
         //     The contextual information about the source or destination.
-        protected ChannelIsAlreadyDeactivatedException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+        protected DeactivatedChannelException(SerializationInfo info, StreamingContext context) : base(info, context) { }
         //
         // Summary:
-        //     Initializes a new instance of the System.ChannelIsAlreadyDeactivatedException class with
+        //     Initializes a new instance of the System.DeactivatedChannelException class with
         //     a specified error message and a reference to the inner exception that is
         //     the cause of this exception.
         //
@@ -46,6 +49,6 @@ namespace Samesound.Services.Exceptions
         //     The exception that is the cause of the current exception. If the innerException
         //     parameter is not a null reference, the current exception is raised in a catch
         //     block that handles the inner exception.
-        public ChannelIsAlreadyDeactivatedException(string message, Exception innerException) : base(message, innerException) { }
+        public DeactivatedChannelException(string message, Exception innerException) : base(message, innerException) { }
     }
 }

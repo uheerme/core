@@ -31,10 +31,6 @@ namespace Samesound.Core
 
         public virtual ICollection<Music> Musics { get; set; }
 
-        [ForeignKey("Playing")]
-        public int? MusicId { get; set; }
-        public virtual Music Playing { get; set; }
-
         public DateTime DateCreated { get; set; }
 
         public DateTime? DateUpdated { get; set; }

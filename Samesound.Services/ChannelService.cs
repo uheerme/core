@@ -31,14 +31,16 @@ namespace Samesound.Services
                 throw new ApplicationException();
             }
 
-            channel.Playing = music;
+            //channel.Playing = music;
 
             return await Update(channel);
         }
 
         public override async Task<Channel> Add(Channel channel)
         {
-            if (Db.Channels.Any(c => c.Owner == channel.Owner))
+            if (Db.Channels.Any(c => 
+                c.Owner == channel.Owner
+                && channel.DateDeactivated != null))
             {
                 throw new OwnerAlreadyHasAnActiveChannelException("{"+ channel.Name + "} -> {"+ channel.Owner +"}");
             }
@@ -54,9 +56,16 @@ namespace Samesound.Services
             }
 
             MusicUploadProvider.RemoveAll(channel.Id);
-            
+
             channel.DateDeactivated = DateTime.Now;
             return await Update(channel);
+        }
+
+        public override async Task<int> Delete(Channel channel)
+        {
+            MusicUploadProvider.RemoveAll(channel.Id);
+         
+            return await base.Delete(channel);
         }
     }
 }

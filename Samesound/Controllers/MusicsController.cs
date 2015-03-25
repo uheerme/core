@@ -17,7 +17,7 @@ namespace Samesound.Controllers
     public class MusicsController : ApiController
     {
         private MusicService _musics;
-
+        
         public MusicsController(MusicService musics)
         {   
             _musics = musics;
@@ -109,33 +109,58 @@ namespace Samesound.Controllers
         [ResponseType(typeof(MusicResultViewModel))]
         public async Task<IHttpActionResult> PostMusic()
         {
-            MusicCreateViewModel model = new MusicCreateViewModel();
-
             try
             {
                 if (!Request.Content.IsMimeMultipartContent())
                 {
-                    throw new UnsupportedMediaTypeException("Invalid request. Did you forget to attach the song file?", Request.Content.Headers.ContentType);
+                    throw new UnsupportedMediaTypeException("Did you forget to attach the song file?", Request.Content.Headers.ContentType);
                 }
 
-                var result = await MusicUploadProvider.SaveFileInContext(Request);
-                model.Name = result.Name;
-                model.ChannelId = result.ChannelId;
+                // Temporarily saves all uploaded songs.
+                var provider = await MusicUploadProvider.SaveFilesTemporarily(Request.Content);
 
-                Validate(model);
-                if (!ModelState.IsValid)
+                // Get the song's name and channel.
+                var names = provider.FormData.GetValues("Name");
+                var channelIds = provider.FormData.GetValues("ChannelId");
+                var files = provider.FileData;
+
+                var createdMusics = new List<MusicResultViewModel>();
+
+                if (names.Length != channelIds.Length)
                 {
-                    throw new ValidationException();
+                    throw new ApplicationException("The data passed is invalid.");
+                }
+                if (names.Length != files.Count)
+                {
+                    throw new ApplicationException("The number of entities does not match the number of uploaded files.");
                 }
 
-                var music = await _musics.Add((Music)model);
+                for (var i = 0; i < names.Length; i++)
+                {
+                    var m = new MusicCreateViewModel
+                    {
+                        Name = names[i],
+                        ChannelId = int.Parse(channelIds[i])
+                    };
 
-                return Ok((MusicResultViewModel) music);
+                    Validate(m);
+                    if (!ModelState.IsValid)
+                    {
+                        MusicUploadProvider.TryToRemoveTemporary(files[i].LocalFileName);
+                        continue;
+                    }
+
+                    var music = await _musics.Add((Music)m);
+                    MusicUploadProvider.FinishUpload(files[i].LocalFileName, music);
+
+                    createdMusics.Add((MusicResultViewModel)music);
+                }
+
+                return Ok(createdMusics);
             }
             catch (Exception e)
             {
                 ModelState.AddModelError(e.GetType().ToString(), e.Message);
-                MusicUploadProvider.Remove(model.ChannelId, model.Name);
             }
 
             return BadRequest(ModelState);

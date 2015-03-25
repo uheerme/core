@@ -1,5 +1,6 @@
 ﻿using Samesound.Core;
 using Samesound.Data;
+using Samesound.Services.Exceptions;
 using Samesound.Services.Infrastructure;
 using Samesound.Services.Providers;
 using System;
@@ -24,9 +25,23 @@ namespace Samesound.Services
                 .ToListAsync();
         }
 
+        public override async Task<Music> Add(Music music)
+        {
+            var channel = await Db.Channels.FindAsync(music.ChannelId);
+            if (!channel.IsActive())
+            {
+                throw new DeactivatedChannelException(
+                    "Cannot insert a music on a deactivated channel {channel's id:" + channel.Id + "}."
+                );
+            }
+
+            return await base.Add(music);
+        }
+
         public override async Task<int> Delete(Music music)
         {
-            MusicUploadProvider.Remove(music.ChannelId, music.Name);
+            MusicUploadProvider.TryToRemoveMusic(music);
+
             return await base.Delete(music);
         }
 
