@@ -40,9 +40,11 @@ namespace Samesound.Services
         {
             if (Db.Channels.Any(c => 
                 c.Owner == channel.Owner
-                && channel.DateDeactivated != null))
+                && channel.DateDeactivated == null))
             {
-                throw new OwnerAlreadyHasAnActiveChannelException("{"+ channel.Name + "} -> {"+ channel.Owner +"}");
+                throw new OwnerAlreadyHasAnActiveChannelException(
+                    "Owner already has an active channel (channel's name:"+ channel.Name + "). To create a new channel, close this one first"
+                );
             }
 
             return await base.Add(channel);
@@ -52,7 +54,7 @@ namespace Samesound.Services
         {
             if (!channel.IsActive())
             {
-                throw new ChannelIsAlreadyDeactivatedException("{" + channel.Id + "}");
+                throw new ChannelIsAlreadyDeactivatedException("The channel #" + channel.Id + " cannot be deactivated, since its state is not active.");
             }
 
             MusicUploadProvider.RemoveAll(channel.Id);
