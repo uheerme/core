@@ -54,12 +54,11 @@ namespace Samesound.Services.Providers
         }
         public static void RemoveAll(int channelId)
         {
-            Directory.Delete(
-                recursive: true,
-                path: ContextualizedPath(
-                    DEFAULT_DIRECTORY, channelId.ToString()
-                )
-            );
+            var path = ContextualizedPath(DEFAULT_DIRECTORY, channelId.ToString());
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, recursive: true);
+            }
         }
 
         public static async Task<MultipartFormDataStreamProvider> SaveFilesTemporarily(HttpContent content)
