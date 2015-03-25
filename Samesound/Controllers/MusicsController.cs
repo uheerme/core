@@ -156,7 +156,10 @@ namespace Samesound.Controllers
                     createdMusics.Add((MusicResultViewModel)music);
                 }
 
-                return Ok(createdMusics);
+                if (ModelState.IsValid)
+                {
+                    return Ok(createdMusics);
+                }
             }
             catch (Exception e)
             {
