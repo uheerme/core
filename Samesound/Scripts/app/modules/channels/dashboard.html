@@ -6,14 +6,40 @@
     <h2>
         Playlist
     </h2>
-    <p>
-        ...
-    </p>
+    <div ng-show="!channel.Musics.length" class="well text-center">
+        <h2>
+            <small>
+                <span class="glyphicon glyphicon-thumbs-down"></span>
+                Bad, bad DJ! No songs were added yet!
+            </small>
+        </h2>
+    </div>
+    <div ng-repeat="music in channel.Musics" class="well well-list-item">
+        <h5>
+            {{ music.Name }}
+            <small>
+                #{{ music.Id }}
+            </small>
+            <button ng-click="music.expanded = !music.expanded"
+                    ng-hide="music.expanded"
+                    class="btn btn-info pull-right">
+                <span class="glyphicon glyphicon-option-horizontal"></span>
+            </button>
+        </h5>
+        <p ng-show="music.expanded">
+            Added on {{ music.DateCreated }}.<br />
+            {{ music.LengthInSeconds }} seconds.<br />
+            {{ music.SizeInBytes }} bytes.
+        </p>
+    </div>
     <h2>
         Connected users
     </h2>
     <p>
-        ...
+        <button ng-click="toastr.error('I\'m not ready!', 'Don\'t click me!')"
+                class="btn btn-primary">
+            <span class="glyphicon glyphicon-option-horizontal"></span>
+        </button>
     </p>
     <h2>
         Upload new songs
@@ -42,8 +68,8 @@
     <br /><br />
 
     <div ng-repeat="file in files">
-        <div class="well upload-item">
-            <span class="pull-right" ng-click="remove(file)">
+        <div class="well well-list-item">
+            <span class="pull-right" ng-click="removeFromUploadQueue(file)">
                 <span class="glyphicon glyphicon-remove"></span>
             </span>
             <div class="row">

@@ -4,14 +4,13 @@ samesoundApp.controller(
     ['$http', '$scope', '$resource', '$upload', 'config', 'channel',
         function ($http, $scope, $resource, $upload, config, channel) {
         $scope.channel = channel;
+        $scope.toastr = toastr
 
         $scope.cancel = function (file) {
             //
         }
 
-        console.log($scope.channel);
-
-        $scope.remove = function (file) {
+        $scope.removeFromUploadQueue = function (file) {
             var indexOf = $scope.files.indexOf(file);
             $scope.files.splice(indexOf, 1);
         }
@@ -37,7 +36,9 @@ samesoundApp.controller(
 
                 }).success(function (data, status, headers, config) {
                     toastr.success(config.file.uploadName + ' uploaded!');
-                    $scope.remove(file);
+
+                    $scope.removeFromUploadQueue(file);
+                    $scope.channel.Musics.concat(data);
 
                 }).error(function (data, status, headers, config) {
                     console.log(data);
