@@ -9,6 +9,8 @@ samesoundApp.controller(
             //
         }
 
+        console.log($scope.channel);
+
         $scope.remove = function (file) {
             var indexOf = $scope.files.indexOf(file);
             $scope.files.splice(indexOf, 1);
