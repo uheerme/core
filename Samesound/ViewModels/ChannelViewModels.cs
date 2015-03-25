@@ -122,8 +122,8 @@ namespace Samesound.ViewModels
                 
                 Musics = c.Musics
                     .Select(m => (MusicResultViewModel)m)
-                    .ToList(),
-                Playing = (MusicResultViewModel)c.Playing
+                    .ToList()
+                //Playing = (MusicResultViewModel)c.Playing
             };
         }
     }

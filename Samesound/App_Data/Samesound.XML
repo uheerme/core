@@ -624,11 +624,6 @@
             <param name="take">The maximum length of the collection retrieved.</param>
             <returns></returns>
         </member>
-        <member name="T:Samesound.Providers.MusicUploadProvider">
-            <summary>
-            Provides support during the upload and removal of uploaded songs.
-            </summary>
-        </member>
         <member name="T:Samesound.ViewModels.AddExternalLoginBindingModel">
             <summary>
             View model used during a third party authentication process.
