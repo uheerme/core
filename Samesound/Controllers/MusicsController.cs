@@ -104,11 +104,13 @@ namespace Samesound.Controllers
         /// <summary>
         /// Create a new Music.
         /// </summary>
-        /// <param name="model">The view model for the Music to be created.</param>
         /// <returns>A response with the created Music, if succeeded. A BadRequest response, otherwise.</returns>
         [ResponseType(typeof(MusicResultViewModel))]
         public async Task<IHttpActionResult> PostMusic()
         {
+            var model = new MusicCreateViewModel();
+            MultipartFormDataStreamProvider provider = null;
+
             try
             {
                 if (!Request.Content.IsMimeMultipartContent())
@@ -117,53 +119,41 @@ namespace Samesound.Controllers
                 }
 
                 // Temporarily saves all uploaded songs.
-                var provider = await MusicUploadProvider.SaveFilesTemporarily(Request.Content);
+                provider = await MusicUploadProvider.SaveFilesTemporarily(Request.Content);
 
                 // Get the song's name and channel.
-                var names = provider.FormData.GetValues("Name");
-                var channelIds = provider.FormData.GetValues("ChannelId");
+                model.Name      = provider.FormData.GetValues("Name").First();
+                model.ChannelId = int.Parse(provider.FormData.GetValues("ChannelId").First());
+
+                // Let's ignore all files except the first.
                 var files = provider.FileData;
-
-                var createdMusics = new List<MusicResultViewModel>();
-
-                if (names.Length != channelIds.Length)
+                var file = files.First();
+                
+                // Check if all form information makes sense.
+                Validate(model);
+                if (!ModelState.IsValid)
                 {
-                    throw new ApplicationException("The data passed is invalid.");
-                }
-                if (names.Length != files.Count)
-                {
-                    throw new ApplicationException("The number of entities does not match the number of uploaded files.");
+                    throw new ValidationException();
                 }
 
-                for (var i = 0; i < names.Length; i++)
-                {
-                    var m = new MusicCreateViewModel
-                    {
-                        Name = names[i],
-                        ChannelId = int.Parse(channelIds[i])
-                    };
+                var music = await _musics.Add((Music)model);
 
-                    Validate(m);
-                    if (!ModelState.IsValid)
-                    {
-                        MusicUploadProvider.TryToRemoveTemporary(files[i].LocalFileName);
-                        continue;
-                    }
+                // No exceptions were thrown, the music is in the database! Let's make it official.
+                MusicUploadProvider.FinishUpload(file.LocalFileName, music);
 
-                    var music = await _musics.Add((Music)m);
-                    MusicUploadProvider.FinishUpload(files[i].LocalFileName, music);
-
-                    createdMusics.Add((MusicResultViewModel)music);
-                }
-
-                if (ModelState.IsValid)
-                {
-                    return Ok(createdMusics);
-                }
+                return Ok((MusicResultViewModel)music);
+            }
+            catch (ValidationException)
+            {
+                //
             }
             catch (Exception e)
             {
                 ModelState.AddModelError(e.GetType().ToString(), e.Message);
+            }
+            finally
+            {
+                MusicUploadProvider.TryToRemoveTemporaries(provider.FileData);
             }
 
             return BadRequest(ModelState);
