@@ -41,9 +41,16 @@ namespace Samesound.Services.Providers
         {
             TryToRemove(ContextualizedPath(DEFAULT_DIRECTORY, music.ChannelId.ToString(), music.Id.ToString()));
         }
-        public static void TryToRemoveTemporary(string fileName)
+        public static void TryToRemoveTemporary(string localFileName)
         {
-            TryToRemove(ContextualizedPath(DEFAULT_DIRECTORY, DEFAULT_TEMPORARY, fileName));
+            TryToRemove(localFileName);
+        }
+        public static void TryToRemoveTemporaries(ICollection<MultipartFileData> files)
+        {
+            foreach (var file in files)
+            {
+                TryToRemoveTemporary(file.LocalFileName);
+            }
         }
         public static void TryToRemove(string path)
         {
