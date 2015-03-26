@@ -29,6 +29,7 @@ namespace Samesound
                 "~/Scripts/angular-animate.js",
                 "~/Scripts/angular-file-upload-all.min.js",
                 "~/Scripts/app/app.js",
+                "~/Scripts/app/utils/*.js",
                 "~/Scripts/app/modules/home/*.js",
                 "~/Scripts/app/modules/channels/*.js",
                 "~/Scripts/app/modules/musics/*.js"));
