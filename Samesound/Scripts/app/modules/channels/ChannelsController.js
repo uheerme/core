@@ -1,8 +1,8 @@
 ﻿
 samesoundApp
     .controller('ChannelsController',
-        ['$http', '$scope', '$resource', 'config',
-        function ($http, $scope, $resource, config) {
+        ['$http', '$scope', '$resource', 'config', 'Validator',
+        function ($http, $scope, $resource, config, Validator) {
 
             var Channel = $resource(config.apiUrl + 'channels/:Id');
 
@@ -15,9 +15,11 @@ samesoundApp
                         $scope.channels.push(createdChannel)
                         toastr.success($scope.channel.Name + ' successfully created!')
                     },
-                    function (data) {
-                        console.log(data);
-                        toastr.error('Opps! Something went wrong!')
+                    function (response) {
+                        Validator.
+                            take(response.data, response.status).
+                            toastErrors().
+                            otherwiseToastError();
                     })
             }
 
@@ -30,8 +32,10 @@ samesoundApp
                         toastr.success(deactivatedChannel.Name + ' successfully deactivated!');
                     })
                     .error(function (data) {
-                        console.log(data);
-                        toastr.error('Opps! Something went wrong!');
+                        Validator.
+                            take(response.data, response.status).
+                            toastErrors().
+                            otherwiseToastError();
                     });
             }
 
