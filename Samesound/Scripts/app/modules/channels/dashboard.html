@@ -36,55 +36,55 @@
         Connected users
     </h2>
     <p>
-        <button ng-click="toastr.error('I\'m not ready!', 'Don\'t click me!')"
+        <button ng-click="underConstruction()"
                 class="btn btn-primary">
             <span class="glyphicon glyphicon-option-horizontal"></span>
         </button>
     </p>
-    <h2>
-        Upload new songs
-    </h2>
-
-    <div ng-file-drop ng-model="files" class="drop-box well text-center"
-         drag-over-class="dragover" ng-multiple="true" allow-dir="true"
-         ng-accept="'.wav,.mp3,.ogg'">
-        <div class="void"></div>
+    <div ng-hide="channel.DateDeactivated">
         <h2>
-            <span class="glyphicon glyphicon-cloud-upload"></span><br />
-            <small>Drop multiple files or folders here.</small>
+            Upload new songs
         </h2>
-        <div class="void"></div>
-    </div>
 
-    <div class="text-right">
-        <button class="btn btn-lg btn-default" ng-multiple="true" ng-file-select ng-model="files" accept="'.wav,.mp3,.ogg'">
-            <span class="glyphicon glyphicon-search"></span>
-            Select files
-        </button>
-        <button class="btn btn-lg btn-primary" ng-click="upload()" ng-class="{disabled: !files || !files.length}">
-            <span class="glyphicon glyphicon-cloud-upload"></span> Upload
-        </button>
-    </div>
-    <br /><br />
+        <div ng-file-drop ng-model="files" class="drop-box well text-center"
+             drag-over-class="dragover" ng-multiple="true" allow-dir="true"
+             ng-accept="'.wav,.mp3,.ogg'">
+            <div class="void"></div>
+            <h2>
+                <span class="glyphicon glyphicon-cloud-upload"></span><br />
+                <small>Drop multiple files or folders here.</small>
+            </h2>
+            <div class="void"></div>
+        </div>
 
-    <div ng-repeat="file in files">
-        <div class="well well-list-item">
-            <span class="pull-right" ng-click="removeFromUploadQueue(file)">
-                <span class="glyphicon glyphicon-remove"></span>
-            </span>
-            <div class="row">
-                <div class="col-sm-6">
-                    <input ng-init="file.uploadName = file.name"
-                           ng-model="file.uploadName"
-                           type="text" class="form-control" placeholder="Name that will be displayed to your listeners" />
+        <div class="text-right">
+            <button class="btn btn-lg btn-default" ng-multiple="true" ng-file-select ng-model="files" accept="'.wav,.mp3,.ogg'">
+                <span class="glyphicon glyphicon-search"></span>
+                Select files
+            </button>
+            <button class="btn btn-lg btn-primary" ng-click="upload()" ng-class="{disabled: !files || !files.length}">
+                <span class="glyphicon glyphicon-cloud-upload"></span> Upload
+            </button>
+        </div>
+        <br /><br />
+
+        <div ng-repeat="file in files">
+            <div class="well well-list-item">
+                <span class="pull-right" ng-click="removeFromUploadQueue(file)">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </span>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <input ng-init="file.uploadName = file.name"
+                               ng-model="file.uploadName"
+                               type="text" class="form-control" placeholder="Name that will be displayed to your listeners" />
+                    </div>
                 </div>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-default" style="width:{{ file.progressPercentage }}%"></div>
+                </div>
+                <span class="label label-info">{{ (file.size/1048576).toFixed(2) }} MBs</span>
             </div>
-            <div class="progress">
-                <div class="progress-bar progress-bar-default" style="width:{{ file.progressPercentage }}%"></div>
-            </div>
-            <span class="label label-info">{{ (file.size/1048576).toFixed(2) }} MBs</span>
         </div>
     </div>
-
-
 </div>
