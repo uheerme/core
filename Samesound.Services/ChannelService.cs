@@ -40,10 +40,10 @@ namespace Samesound.Services
         {
             if (Db.Channels.Any(c => 
                 c.Owner == channel.Owner
-                && channel.DateDeactivated == null))
+                && c.DateDeactivated == null))
             {
                 throw new OwnerAlreadyHasAnActiveChannelException(
-                    "Owner already has an active channel (channel's name:"+ channel.Name + "). To create a new channel, close this one first"
+                    "Owner already has an active channel ("+ channel.Name + "). To create a new channel, close this one first."
                 );
             }
 
