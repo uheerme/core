@@ -569,7 +569,6 @@
             <summary>
             Create a new Music.
             </summary>
-            <param name="model">The view model for the Music to be created.</param>
             <returns>A response with the created Music, if succeeded. A BadRequest response, otherwise.</returns>
         </member>
         <member name="M:Samesound.Controllers.MusicsController.DeleteMusic(System.Int32)">
