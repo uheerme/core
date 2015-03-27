@@ -5,6 +5,7 @@ using Samesound.Services.Providers;
 using Samesound.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net.Http;
@@ -108,8 +109,8 @@ namespace Samesound.Controllers
         [ResponseType(typeof(MusicResultViewModel))]
         public async Task<IHttpActionResult> PostMusic()
         {
-            var model = new MusicCreateViewModel();
             MultipartFormDataStreamProvider provider = null;
+            MultipartFileData file = null;
 
             try
             {
@@ -122,12 +123,20 @@ namespace Samesound.Controllers
                 provider = await MusicUploadProvider.SaveFilesTemporarily(Request.Content);
 
                 // Get the song's name and channel.
+                var model       = new MusicCreateViewModel();
                 model.Name      = provider.FormData.GetValues("Name").First();
                 model.ChannelId = int.Parse(provider.FormData.GetValues("ChannelId").First());
-
-                // Let's ignore all files except the first.
-                var files = provider.FileData;
-                var file = files.First();
+                
+                try
+                {
+                    // Let's ignore all files except the first.
+                    var files = provider.FileData;
+                    file = files.First();
+                }
+                catch (SystemException)
+                {
+                    throw new ApplicationException("Did you forget to attach the song file?");
+                }
                 
                 // Check if all form information makes sense.
                 Validate(model);
@@ -143,18 +152,14 @@ namespace Samesound.Controllers
 
                 return Ok((MusicResultViewModel)music);
             }
-            //catch (ValidationException e)
-            //{
-            //    //
-            //}
-            catch (Exception e)
-            {
-                MusicUploadProvider.TryToRemoveTemporaries(provider.FileData);
-                throw e;
-            }
+            catch (ValidationException) { }
+            catch (Exception e) { ModelState.AddModelError(e.GetType().ToString(), e); }
             finally
             {
-                MusicUploadProvider.TryToRemoveTemporaries(provider.FileData);
+                if (provider != null)
+                {
+                    MusicUploadProvider.TryToRemoveTemporaries(provider.FileData);
+                }
             }
 
             return BadRequest(ModelState);
