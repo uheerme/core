@@ -143,13 +143,14 @@ namespace Samesound.Controllers
 
                 return Ok((MusicResultViewModel)music);
             }
-            catch (ValidationException)
-            {
-                //
-            }
+            //catch (ValidationException e)
+            //{
+            //    //
+            //}
             catch (Exception e)
             {
-                ModelState.AddModelError(e.GetType().ToString(), e.Message);
+                MusicUploadProvider.TryToRemoveTemporaries(provider.FileData);
+                throw e;
             }
             finally
             {

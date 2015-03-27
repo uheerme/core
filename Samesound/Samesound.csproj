@@ -343,7 +343,8 @@
     <Content Include="Scripts\app\shared\navbar.html" />
     <Content Include="Content\toastr.scss" />
     <Content Include="Content\toastr.less" />
-    <None Include="Properties\PublishProfiles\samesound.pubxml" />
+    <None Include="Properties\PublishProfiles\samesound-amazon.pubxml" />
+    <None Include="Properties\PublishProfiles\samesound-azure.pubxml" />
     <Content Include="Scripts\app\utils\validator.js" />
     <Content Include="Scripts\errors.json" />
     <Content Include="Scripts\angular-touch.min.js.map" />
