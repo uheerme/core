@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -153,7 +154,7 @@ namespace Samesound.Controllers
                 return Ok((MusicResultViewModel)music);
             }
             catch (ValidationException) { }
-            catch (Exception e) { ModelState.AddModelError(e.GetType().ToString(), e); }
+            catch (Exception e) { ModelState.AddModelError(e.GetType().ToString(), e.Message); }
             finally
             {
                 if (provider != null)
