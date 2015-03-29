@@ -25,13 +25,26 @@ namespace Samesound.ViewModels
         /// </summary>
         [Required]
         public int ChannelId { get; set; }
+
+        /// <summary>
+        /// The length of the music in seconds.
+        /// This property is read-only and will be ignored when sent to the server.
+        /// </summary>
+        public int LengthInSeconds { get; set; }
+
+        /// <summary>
+        /// The size of the file which represents the music.
+        /// This property is read-only and will be ignored when sent to the server.
+        /// </summary>
+        public int SizeInBytes { get; set; }
         
         public static explicit operator Music(MusicCreateViewModel m)
         {
             return new Music
             {
                 Name            = m.Name,
-                //SizeInBytes     = m.Stream.ContentLength,
+                LengthInSeconds = m.LengthInSeconds,
+                SizeInBytes     = m.SizeInBytes,
                 ChannelId       = m.ChannelId
             };
         }
@@ -48,20 +61,34 @@ namespace Samesound.ViewModels
         [Required]
         public int Id { get; set; }
 
+        /// <summary>
+        /// The name that the new Music will assume. The music file will be renamed to match this name.
+        /// </summary>
         [Required]
         [StringLength(128, MinimumLength = 4)]
         public string Name { get; set; }
 
-        [Required]
-        public HttpPostedFileBase Stream { get; set; }
-
+        /// <summary>
+        /// The id of the Channel that contains this Music.
+        /// </summary>
         [Required]
         public int ChannelId { get; set; }
+
+        /// <summary>
+        /// The length of the music in seconds.
+        /// This property is read-only and will be ignored when sent to the server.
+        /// </summary>
+        public int LengthInSeconds { get; set; }
+
+        /// <summary>
+        /// The size of the file which represents the music.
+        /// This property is read-only and will be ignored when sent to the server.
+        /// </summary>
+        public int SizeInBytes { get; set; }
         
         public void Update(Music c)
         {
             c.Name            = Name;
-            c.SizeInBytes     = Stream.ContentLength;
             c.ChannelId       = ChannelId;
         }
     }

@@ -40,7 +40,7 @@ samesoundApp
             }
 
             $scope.clear = function () {
-                $scope.channel = { Name: '', Owner: '', NetworkIdentifier: '' }
+                $scope.channel = { Name: '', Owner: '' }
             }
 
             $scope.clear()

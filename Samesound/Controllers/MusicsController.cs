@@ -1,4 +1,5 @@
-﻿using Samesound.Core;
+﻿using NAudio.Wave;
+using Samesound.Core;
 using Samesound.Providers;
 using Samesound.Services;
 using Samesound.Services.Providers;
@@ -11,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 
@@ -123,11 +125,6 @@ namespace Samesound.Controllers
                 // Temporarily saves all uploaded songs.
                 provider = await MusicUploadProvider.SaveFilesTemporarily(Request.Content);
 
-                // Get the song's name and channel.
-                var model       = new MusicCreateViewModel();
-                model.Name      = provider.FormData.GetValues("Name").First();
-                model.ChannelId = int.Parse(provider.FormData.GetValues("ChannelId").First());
-                
                 try
                 {
                     // Let's ignore all files except the first.
@@ -138,6 +135,16 @@ namespace Samesound.Controllers
                 {
                     throw new ApplicationException("Did you forget to attach the song file?");
                 }
+
+                // Get the song's name and channel.
+                var model = new MusicCreateViewModel();
+                model.Name = provider.FormData.GetValues("Name").First();
+                model.ChannelId = int.Parse(provider.FormData.GetValues("ChannelId").First());
+
+                var fileInfo = new Mp3FileReader(file.LocalFileName);
+                model.SizeInBytes = (int)fileInfo.Length;
+                model.LengthInSeconds = (int)fileInfo.TotalTime.TotalSeconds;
+                fileInfo.Close();
                 
                 // Check if all form information makes sense.
                 Validate(model);
