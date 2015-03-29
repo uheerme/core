@@ -4,12 +4,11 @@ using Samesound.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using System.Linq;
-using Samesound.Services.Providers;
-
+using Samesound.Extensions;
 namespace Samesound.Controllers
 {
     [RoutePrefix("api/Channels")]
@@ -112,6 +111,8 @@ namespace Samesound.Controllers
         {
             try
             {
+                model.NetworkIdentifier = Request.GetClientIpAddress();
+
                 if (!ModelState.IsValid)
                 {
                     throw new ValidationException();

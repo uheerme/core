@@ -27,10 +27,10 @@ namespace Samesound.ViewModels
         public string Owner { get; set; }
 
         /// <summary>
-        /// A string that uniquely identifies the network used by the Owner. It can be the real IP address, the MAC address or a combination of both.
+        /// A string that uniquely identifies the network used by the Owner.
+        /// It can be the real IP address, the MAC address or a combination of both.
+        /// This property is read-only and will be ignored when sent to the server.
         /// </summary>
-        [Required]
-        [StringLength(256, MinimumLength=7)]
         public string NetworkIdentifier { get; set; }
 
         public static explicit operator Channel(ChannelCreateViewModel m)
