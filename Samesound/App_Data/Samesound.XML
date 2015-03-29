@@ -698,6 +698,18 @@
             The id of the Channel that contains this Music.
             </summary>
         </member>
+        <member name="P:Samesound.ViewModels.MusicCreateViewModel.LengthInSeconds">
+            <summary>
+            The length of the music in seconds.
+            This property is read-only and will be ignored when sent to the server.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.MusicCreateViewModel.SizeInBytes">
+            <summary>
+            The size of the file which represents the music.
+            This property is read-only and will be ignored when sent to the server.
+            </summary>
+        </member>
         <member name="T:Samesound.ViewModels.MusicUpdateViewModel">
             <summary>
             The view model used to update Music entries in the database.
@@ -706,6 +718,28 @@
         <member name="P:Samesound.ViewModels.MusicUpdateViewModel.Id">
             <summary>
             The surrogate key that uniquely identifies a Music in the database.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.MusicUpdateViewModel.Name">
+            <summary>
+            The name that the new Music will assume. The music file will be renamed to match this name.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.MusicUpdateViewModel.ChannelId">
+            <summary>
+            The id of the Channel that contains this Music.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.MusicUpdateViewModel.LengthInSeconds">
+            <summary>
+            The length of the music in seconds.
+            This property is read-only and will be ignored when sent to the server.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.MusicUpdateViewModel.SizeInBytes">
+            <summary>
+            The size of the file which represents the music.
+            This property is read-only and will be ignored when sent to the server.
             </summary>
         </member>
         <member name="T:Samesound.ViewModels.MusicResultViewModel">
@@ -765,7 +799,9 @@
         </member>
         <member name="P:Samesound.ViewModels.ChannelCreateViewModel.NetworkIdentifier">
             <summary>
-            A string that uniquely identifies the network used by the Owner. It can be the real IP address, the MAC address or a combination of both.
+            A string that uniquely identifies the network used by the Owner.
+            It can be the real IP address, the MAC address or a combination of both.
+            This property is read-only and will be ignored when sent to the server.
             </summary>
         </member>
         <member name="T:Samesound.ViewModels.ChannelUpdateViewModel">
