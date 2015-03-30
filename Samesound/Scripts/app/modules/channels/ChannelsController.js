@@ -6,7 +6,7 @@ samesoundApp
 
             var Channel = $resource(config.apiUrl + 'channels/:Id');
 
-            $scope.channels = Channel.query()
+            $scope.channels = Channel.query();
 
             $scope.create = function () {
                 Channel

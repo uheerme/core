@@ -3,7 +3,7 @@ samesoundApp.controller(
     'ChannelDashboardController',
     ['$http', '$scope', '$resource', '$upload', 'config', 'channel', 'Validator',
         function ($http, $scope, $resource, $upload, config, channel, Validator) {
-            $scope.channel = channel;;
+            $scope.channel = channel;
             $scope.underConstruction = function () {
                 toastr.error('I\'m not ready!', 'Don\'t click me!');
             }

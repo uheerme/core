@@ -1,18 +1,29 @@
-﻿<div class="container-fluid">
+﻿<div class="container">
+    <div class="text-center">
+        <img src="/Content/favicon.jpg" alt="SameSound logo image" class="img-responsive center-block" style="max-width:100px" />
+        <h1>SameSound</h1>
+    </div>
+    <hr />
+    <div class="void"></div>
+    <h1>
+        Welcome!
+        <small>Check it out: these are all the channels close to you.</small>
+    </h1>
     <div class="row">
-        <div class="col-sm-12">
-            <div class="text-center">
-                <img src="/Content/favicon.jpg" alt="SameSound logo image" class="img-responsive center-block" style="max-width:100px" />
-                <h1>SameSound</h1>
+        <div ng-repeat="channel in channels" class="col-md-12">
+            <div class="well">
+                <h5>
+                    <a href="#/listen/{{ channel.Id }}">{{ channel.Name }}</a>
+                </h5>
+                <p>
+                    <strong>{{ channel.Owner }}</strong>'s.
+                </p>
             </div>
-            <hr />
-            <div class="void"></div>
-            <h2>
-                Welcome!
-            </h2>
-            <p>
-                <a href="#channels" class="btn btn-lg btn-primary">Channels</a>
-            </p>
         </div>
     </div>
+    <p>
+        <a href="#channels" class="btn btn-lg btn-primary">
+            <span class="glyphicon glyphicon-list"></span>
+            All channels</a>
+    </p>
 </div>
