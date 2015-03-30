@@ -68,28 +68,14 @@ namespace Samesound.ViewModels
         [StringLength(128, MinimumLength = 4)]
         public string Name { get; set; }
 
-        /// <summary>
-        /// The id of the Channel that contains this Music.
-        /// </summary>
-        [Required]
-        public int ChannelId { get; set; }
-
-        /// <summary>
-        /// The length of the music in seconds.
-        /// This property is read-only and will be ignored when sent to the server.
-        /// </summary>
-        public int LengthInSeconds { get; set; }
-
-        /// <summary>
-        /// The size of the file which represents the music.
-        /// This property is read-only and will be ignored when sent to the server.
-        /// </summary>
-        public int SizeInBytes { get; set; }
-        
         public void Update(Music c)
         {
-            c.Name            = Name;
-            c.ChannelId       = ChannelId;
+            if (c.Id != Id)
+            {
+                throw new ApplicationException("Cannot update a music with Id that does not match the view-model Id.");
+            }
+
+            c.Name = Name;
         }
     }
 
@@ -140,5 +126,17 @@ namespace Samesound.ViewModels
                 DateUpdated       = c.DateUpdated
             };
         }
+    }
+
+    /// <summary>
+    /// The view model used to request the stream of a Music's file.
+    /// </summary>
+    public class MusicDownloadViewModel
+    {
+        /// <summary>
+        /// The surrogate key that uniquely identifies a Music in the database.
+        /// </summary>
+        [Required]
+        public int Id { get; set; }
     }
 }
