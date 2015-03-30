@@ -187,7 +187,7 @@ namespace Samesound.Controllers
         /// Request for the stream of a specific Music's file.
         /// </summary>
         /// <returns></returns>
-        [Route("api/Musics/Stream")]
+        [Route("api/Musics/{Id}/Stream")]
         public async Task<HttpResponseMessage> GetMusicStream([FromUri] MusicDownloadViewModel model)
         {
             try
