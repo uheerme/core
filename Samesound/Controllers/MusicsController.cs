@@ -8,9 +8,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
@@ -18,10 +21,17 @@ using System.Web.Http.Description;
 
 namespace Samesound.Controllers
 {
+    /// <summary>
+    /// The Music resource's controller.
+    /// </summary>
     public class MusicsController : ApiController
     {
         private MusicService _musics;
         
+        /// <summary>
+        /// Constructor for Music resource's controller.
+        /// </summary>
+        /// <param name="musics">The music service which will be injected.</param>
         public MusicsController(MusicService musics)
         {   
             _musics = musics;
@@ -171,6 +181,77 @@ namespace Samesound.Controllers
             }
 
             return BadRequest(ModelState);
+        }
+
+        /// <summary>
+        /// Request for the stream of a specific Music's file.
+        /// </summary>
+        /// <returns></returns>
+        [Route("api/Musics/Stream")]
+        public async Task<HttpResponseMessage> GetMusicStream([FromUri] MusicDownloadViewModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new ValidationException();
+                }
+
+                var music = await _musics.Find(model.Id);
+                var provider = new MusicStreamProvider(music);
+                var fileInfo = MusicStreamProvider.GetFileInfo(music);
+                var length = fileInfo.Length;
+
+                var rangeHeader = Request.Headers.Range;
+                var response = new HttpResponseMessage();
+
+                response.Headers.AcceptRanges.Add("bytes");
+
+                // The request will be treated as normal request if there is no Range header.
+                if (rangeHeader == null || !rangeHeader.Ranges.Any())
+                {
+                    response.Content = provider.StreamFileEntirely();
+                    response.StatusCode = HttpStatusCode.OK;
+                }
+                else
+                {
+                    long start = 0, end = 0;
+
+                    // 1. If the unit is not 'bytes'.
+                    // 2. If there are multiple ranges in header value.
+                    // 3. If start or end position is greater than file length.
+                    if (rangeHeader.Unit != "bytes" || rangeHeader.Ranges.Count > 1 ||
+                        !MusicStreamProvider.TryReadRangeItem(rangeHeader.Ranges.First(), fileInfo.Length, out start, out end))
+                    {
+                        response.StatusCode = HttpStatusCode.RequestedRangeNotSatisfiable;
+                        response.Content = new StreamContent(Stream.Null);  // No content for this status.
+                        response.Content.Headers.ContentRange = new ContentRangeHeaderValue(fileInfo.Length);
+                        response.Content.Headers.ContentType = MusicStreamProvider.GetMimeNameFromExtension(fileInfo.Extension);
+
+                        return response;
+                    }
+
+                    // We are now ready to produce partial content.
+                    response.Content = provider.StreamFilePartially(start, end);
+                    response.Content.Headers.ContentRange = new ContentRangeHeaderValue(start, end, fileInfo.Length);
+                    response.StatusCode = HttpStatusCode.PartialContent;
+
+                    length = end - start + 1;
+                }
+
+                response.Content.Headers.ContentLength = length;
+                return response;
+            }
+            catch (ValidationException)
+            {
+                //
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError(e.GetType().ToString(), e.Message);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState);
         }
 
         /// <summary>

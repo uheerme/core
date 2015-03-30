@@ -66,6 +66,8 @@
     <Compile Include="Infrastructure\Service.cs" />
     <Compile Include="Exceptions\OwnerAlreadyHasAnActiveChannelException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\MusicProvider.cs" />
+    <Compile Include="Providers\MusicStreamProvider.cs" />
     <Compile Include="Providers\MusicUploadProvider.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -15,16 +15,8 @@ namespace Samesound.Services.Providers
     /// <summary>
     /// Provides support during the upload and removal of uploaded songs.
     /// </summary>
-    public abstract class MusicUploadProvider
+    public abstract class MusicUploadProvider : MusicProvider
     {
-        const string DEFAULT_DIRECTORY = "~/App_Data";
-        const string DEFAULT_TEMPORARY = "temporary";
-
-        public static string ContextualizedPath(params string[] nodes)
-        {
-            return HttpContext.Current.Server.MapPath(Path.Combine(nodes));
-        }
-
         public static string TryToCreateDirectory(string directory, bool @override = false)
         {
             var path = ContextualizedPath(DEFAULT_DIRECTORY, directory);
