@@ -595,7 +595,27 @@
             <param name="id">The id of the Music to be deleted.</param>
             <returns>The Music deleted.</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Samesound.Controllers.ChannelsController.GetChannels(System.Int32,System.Int32)" -->
+        <member name="T:Samesound.Controllers.ChannelsController">
+            <summary>
+            The Channel's resource controller.
+            </summary>
+        </member>
+        <member name="M:Samesound.Controllers.ChannelsController.GetChannels(System.Int32,System.Int32)">
+            <summary>
+            Get a list of channels.
+            </summary>
+            <param name="skip">The number of channels to ignore.</param>
+            <param name="take">The maximum number of channels in the returned list.</param>
+            <returns>The collection of channels.</returns>
+        </member>
+        <member name="M:Samesound.Controllers.ChannelsController.GetActiveChannels(System.Int32,System.Int32)">
+            <summary>
+            Get a list of active channels, descendingly ordered by their Id.
+            </summary>
+            <param name="skip">The number of channels to ignore.</param>
+            <param name="take">The maximum number of channels in the returned list.</param>
+            <returns>The collection of active channels.</returns>
+        </member>
         <member name="M:Samesound.Controllers.ChannelsController.GetChannel(System.Int32)">
             <summary>
             Retrieve a channel with a given Id.
