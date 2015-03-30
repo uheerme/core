@@ -543,6 +543,17 @@
             <param name="model">Holds basic information about the new account.</param>
             <returns>A Response with status code equals to 200, if succeeded. A BadRequest with the errors, otherwise.</returns>
         </member>
+        <member name="T:Samesound.Controllers.MusicsController">
+            <summary>
+            The Music resource's controller.
+            </summary>
+        </member>
+        <member name="M:Samesound.Controllers.MusicsController.#ctor(Samesound.Services.MusicService)">
+            <summary>
+            Constructor for Music resource's controller.
+            </summary>
+            <param name="musics">The music service which will be injected.</param>
+        </member>
         <member name="M:Samesound.Controllers.MusicsController.GetMusics(System.Int32,System.Int32)">
             <summary>
             Get all musics currently on the database.
@@ -570,6 +581,12 @@
             Create a new Music.
             </summary>
             <returns>A response with the created Music, if succeeded. A BadRequest response, otherwise.</returns>
+        </member>
+        <member name="M:Samesound.Controllers.MusicsController.GetMusicStream(Samesound.ViewModels.MusicDownloadViewModel)">
+            <summary>
+            Request for the stream of a specific Music's file.
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:Samesound.Controllers.MusicsController.DeleteMusic(System.Int32)">
             <summary>
@@ -725,23 +742,6 @@
             The name that the new Music will assume. The music file will be renamed to match this name.
             </summary>
         </member>
-        <member name="P:Samesound.ViewModels.MusicUpdateViewModel.ChannelId">
-            <summary>
-            The id of the Channel that contains this Music.
-            </summary>
-        </member>
-        <member name="P:Samesound.ViewModels.MusicUpdateViewModel.LengthInSeconds">
-            <summary>
-            The length of the music in seconds.
-            This property is read-only and will be ignored when sent to the server.
-            </summary>
-        </member>
-        <member name="P:Samesound.ViewModels.MusicUpdateViewModel.SizeInBytes">
-            <summary>
-            The size of the file which represents the music.
-            This property is read-only and will be ignored when sent to the server.
-            </summary>
-        </member>
         <member name="T:Samesound.ViewModels.MusicResultViewModel">
             <summary>
             The view model used to display Music entries.
@@ -780,6 +780,16 @@
         <member name="P:Samesound.ViewModels.MusicResultViewModel.DateUpdated">
             <summary>
             The moment when the Music was last updated. If it never were, this value will be null.
+            </summary>
+        </member>
+        <member name="T:Samesound.ViewModels.MusicDownloadViewModel">
+            <summary>
+            The view model used to request the stream of a Music's file.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.MusicDownloadViewModel.Id">
+            <summary>
+            The surrogate key that uniquely identifies a Music in the database.
             </summary>
         </member>
         <member name="T:Samesound.ViewModels.ChannelCreateViewModel">
