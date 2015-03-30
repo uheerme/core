@@ -24,6 +24,16 @@ namespace Samesound.Services
                 .ToListAsync();
         }
 
+        public virtual async Task<ICollection<Channel>> ActiveChannels(int skip, int take)
+        {
+            return await Db.Channels
+                .Where(c => c.DateDeactivated == null)
+                .OrderByDescending(c => c.Id)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+        }
+
         public virtual async Task<int> Play(Channel channel, Music music)
         {
             if (!channel.Musics.Any(m => m.Id == music.Id))

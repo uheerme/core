@@ -11,6 +11,9 @@ using System.Web.Http.Description;
 using Samesound.Extensions;
 namespace Samesound.Controllers
 {
+    /// <summary>
+    /// The Channel's resource controller.
+    /// </summary>
     [RoutePrefix("api/Channels")]
     public class ChannelsController : ApiController
     {
@@ -24,15 +27,29 @@ namespace Samesound.Controllers
         }
 
         /// <summary>
-        /// Get a list with <paramref name="take"/> channels, ignoring the first <paramref name="skip"/> entries.
+        /// Get a list of channels.
         /// </summary>
         /// <param name="skip">The number of channels to ignore.</param>
         /// <param name="take">The maximum number of channels in the returned list.</param>
-        /// <returns>ICollection<ChannelResultViewModel></returns>
+        /// <returns>The collection of channels.</returns>
         public async Task<ICollection<ChannelResultViewModel>> GetChannels(int skip = 0, int take = 100)
         {
             return (await _channels.Paginate(skip, take))
-                .Select(p => (ChannelResultViewModel)p)
+                .Select(c => (ChannelResultViewModel)c)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Get a list of active channels, descendingly ordered by their Id.
+        /// </summary>
+        /// <param name="skip">The number of channels to ignore.</param>
+        /// <param name="take">The maximum number of channels in the returned list.</param>
+        /// <returns>The collection of active channels.</returns>
+        [Route("Active")]
+        public async Task<ICollection<ChannelResultViewModel>> GetActiveChannels(int skip = 0, int take = 100)
+        {
+            return (await _channels.ActiveChannels(skip, take))
+                .Select(c => (ChannelResultViewModel)c)
                 .ToList();
         }
 
