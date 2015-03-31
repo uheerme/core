@@ -44,12 +44,19 @@ namespace Samesound.Services.Providers
                 TryToRemoveTemporary(file.LocalFileName);
             }
         }
-        public static void TryToRemove(string path)
+        public static bool TryToRemove(string path)
         {
-            if (File.Exists(path))
+            try
             {
-                File.Delete(path);
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                    return true;
+                }
             }
+            catch (IOException) { }
+            
+            return false;
         }
         public static void RemoveAll(int channelId)
         {
