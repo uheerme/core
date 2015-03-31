@@ -1,21 +1,16 @@
-﻿using NAudio.Wave;
-using Samesound.Core;
-using Samesound.Providers;
+﻿using Samesound.Core;
 using Samesound.Services;
 using Samesound.Services.Providers;
 using Samesound.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 
@@ -147,14 +142,12 @@ namespace Samesound.Controllers
                 }
 
                 // Get the song's name and channel.
-                var model = new MusicCreateViewModel();
-                model.Name = provider.FormData.GetValues("Name").First();
+                var model       = new MusicCreateViewModel();
+                model.Name      = provider.FormData.GetValues("Name").First();
                 model.ChannelId = int.Parse(provider.FormData.GetValues("ChannelId").First());
 
-                var fileInfo = new Mp3FileReader(file.LocalFileName);
+                var fileInfo      = new FileInfo(file.LocalFileName);
                 model.SizeInBytes = (int)fileInfo.Length;
-                model.LengthInSeconds = (int)fileInfo.TotalTime.TotalSeconds;
-                fileInfo.Close();
                 
                 // Check if all form information makes sense.
                 Validate(model);
