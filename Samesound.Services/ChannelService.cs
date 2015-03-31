@@ -21,6 +21,7 @@ namespace Samesound.Services
                 .OrderBy(c => c.Id)
                 .Skip(skip)
                 .Take(take)
+                .Include(c => c.Musics)
                 .ToListAsync();
         }
 
@@ -31,6 +32,7 @@ namespace Samesound.Services
                 .OrderByDescending(c => c.Id)
                 .Skip(skip)
                 .Take(take)
+                .Include(c => c.Musics)
                 .ToListAsync();
         }
 
