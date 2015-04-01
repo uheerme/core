@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
@@ -17,25 +18,41 @@ namespace Samesound.Services.Providers
         public const string DEFAULT_TEMPORARY = "temporary";
         public const int DEFAULT_BUFFER_SIZE = 65536;
         
-        private static Dictionary<string, string> _mimeNames;
-        public static Dictionary<string, string> MimeNames
+        private static Dictionary<string, string> _mediaTypes;
+        public static Dictionary<string, string> MediaTypes
         {
             get
             {
-                if (_mimeNames == null)
+                if (_mediaTypes == null)
                 {
-                    _mimeNames = new Dictionary<string, string>();
+                    _mediaTypes = new Dictionary<string, string>();
 
-                    _mimeNames.Add(".mp3", "audio/mpeg");
-                    _mimeNames.Add(".mp4", "video/mp4");
-                    _mimeNames.Add(".ogg", "application/ogg");
-                    _mimeNames.Add(".ogv", "video/ogg");
-                    _mimeNames.Add(".oga", "audio/ogg");
-                    _mimeNames.Add(".wav", "audio/x-wav");
-                    _mimeNames.Add(".webm", "video/webm");
+                    _mediaTypes.Add(".mp3", "audio/mpeg");
+                    _mediaTypes.Add(".ogg", "application/ogg");
+                    _mediaTypes.Add(".oga", "audio/ogg");
+                    _mediaTypes.Add(".wav", "audio/x-wav");
                 }
 
-                return _mimeNames;
+                return _mediaTypes;
+            }
+        }
+        private static Dictionary<string, string> _extensions;
+        public static Dictionary<string, string> Extensions
+        {
+            get
+            {
+                if (_extensions == null)
+                {
+                    _extensions = new Dictionary<string, string>();
+
+                    _extensions.Add("audio/mpeg", ".mp3");
+                    _extensions.Add("audio/mp3", ".mp3");
+                    _extensions.Add("application/ogg", ".ogg");
+                    _extensions.Add("audio/ogg", ".oga");
+                    _extensions.Add("audio/x-wav", ".wav");
+                }
+
+                return _extensions;
             }
         }
 
@@ -69,10 +86,20 @@ namespace Samesound.Services.Providers
         {
             string value;
             return new MediaTypeHeaderValue(
-                    MimeNames.TryGetValue(ext.ToLowerInvariant(), out value)
+                    MediaTypes.TryGetValue(ext.ToLowerInvariant(), out value)
                     ? value
                     : MediaTypeNames.Application.Octet
                 );
+        }
+
+        public static string SupportedMediaTypesToString()
+        {
+            var result = "";
+            foreach (var pair in MediaTypes)
+            {
+                result += " " + pair.Value;
+            }
+            return result;
         }
     }
 }

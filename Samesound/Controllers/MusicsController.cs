@@ -22,13 +22,13 @@ namespace Samesound.Controllers
     public class MusicsController : ApiController
     {
         private MusicService _musics;
-        
+
         /// <summary>
         /// Constructor for Music resource's controller.
         /// </summary>
         /// <param name="musics">The music service which will be injected.</param>
         public MusicsController(MusicService musics)
-        {   
+        {
             _musics = musics;
         }
 
@@ -142,13 +142,25 @@ namespace Samesound.Controllers
                 }
 
                 // Get the song's name and channel.
-                var model       = new MusicCreateViewModel();
-                model.Name      = provider.FormData.GetValues("Name").First();
+                var model = new MusicCreateViewModel();
+                model.Name = provider.FormData.GetValues("Name").First();
                 model.ChannelId = int.Parse(provider.FormData.GetValues("ChannelId").First());
 
-                var fileInfo      = new FileInfo(file.LocalFileName);
+                try
+                {
+                    var extension = MusicProvider.Extensions[file.Headers.ContentType.MediaType];
+                    model.Name = Path.ChangeExtension(model.Name, extension);
+                }
+                catch (KeyNotFoundException)
+                {
+                    throw new NotSupportedException("The file's mediatype {"
+                        + file.Headers.ContentType.MediaType + "} is not supported. Supported types are:"
+                        + MusicProvider.SupportedMediaTypesToString() + ".");
+                }
+
+                var fileInfo = new FileInfo(file.LocalFileName);
                 model.SizeInBytes = (int)fileInfo.Length;
-                
+
                 // Check if all form information makes sense.
                 Validate(model);
                 if (!ModelState.IsValid)
