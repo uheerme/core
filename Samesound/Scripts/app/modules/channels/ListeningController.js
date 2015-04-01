@@ -1,11 +1,14 @@
 ﻿
 samesoundApp
     .controller('ListeningController',
-        ['$scope', 'channel', 'MusicLoadingPolicy', 'config',
-        function ($scope, channel, MusicLoadingPolicy, config) {
+        ['$scope', 'channel', 'MusicLoader', 'config',
+        function ($scope, channel, MusicLoader, config) {
+            MusicLoader.initialize($scope);
+
             $scope.playing = false;
             $scope.streaming = [];
             $scope.channel = channel;
+
 
             $scope.play = function (audio) {
                 if (!audio) return false;
@@ -32,34 +35,42 @@ samesoundApp
                     return $scope.pause(audioTag);
             }
 
-            $scope.load = function (music) {
-                if (MusicLoadingPolicy.shouldLoad(music)) {
-                    music.Source = config.apiUrl + 'Musics/' + music.Id + '/Stream';
-                    $scope.streaming.push(music);
-                    MusicLoadingPolicy.load(music);
-                }
-            }
+            $scope.tryToLoad = MusicLoader.tryToLoad
 
-            for (var i = 0; i < $scope.channel.Musics.length; i++) {
-                $scope.load($scope.channel.Musics[i]);
+            var result = true, i = 0;
+            while (i < $scope.channel.Musics.length && result) {
+                var result = $scope.tryToLoad($scope.channel.Musics[i++]);
             }
         }])
 
 samesoundApp
-    .factory('MusicLoadingPolicy', function () {
-        var maxMusicsLoadedAtOnce = 3,
+    .factory('MusicLoader', ['config', function (config) {
+        var _$scope,
+            maxMusicsLoadedAtOnce = 3,
             downloading = [];
 
-        function load(music) {
-            downloading.push(music);
+        function initialize($scope) {
+            _$scope = $scope;
+            return this;
         }
 
+        function tryToLoad(music, closure) {
+            if (!shouldLoad(music))
+                return false;
+
+            downloading.push(music);
+            music.Source = config.apiUrl + 'Musics/' + music.Id + '/Stream';
+            _$scope.streaming.push(music);
+        }
+
+        // Defines the policy about sound loadings.
         function shouldLoad(music) {
             return maxMusicsLoadedAtOnce > downloading.length;
         }
 
         return {
-            load: load,
+            initialize: initialize,
+            tryToLoad: tryToLoad,
             shouldLoad: shouldLoad
         };
-    })
+    }])
