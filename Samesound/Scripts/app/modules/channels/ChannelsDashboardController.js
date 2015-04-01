@@ -4,10 +4,7 @@ samesoundApp.controller(
     ['$http', '$scope', '$resource', '$upload', 'config', 'channel', 'Validator',
         function ($http, $scope, $resource, $upload, config, channel, Validator) {
             $scope.channel = channel;
-            $scope.underConstruction = function () {
-                toastr.error('I\'m not ready!', 'Don\'t click me!');
-            }
-
+            $scope.numberOfFilesBeingUploaded = 0;
             $scope.cancel = function (file) {
                 //
             }
@@ -23,6 +20,7 @@ samesoundApp.controller(
                 }
 
                 for (var i = 0; i < $scope.files.length; i++) {
+                    $scope.numberOfFilesBeingUploaded++;
                     var file = $scope.files[i];
 
                     $upload.upload({
@@ -49,6 +47,7 @@ samesoundApp.controller(
 
                     }).finally(function () {
                         $scope.removeFromUploadQueue(file);
+                        $scope.numberOfFilesBeingUploaded--;
                     });
                 }
             };
