@@ -18,7 +18,8 @@ namespace Samesound.Services
         public virtual async Task<ICollection<Channel>> Paginate(int skip, int take)
         {
             return await Db.Channels
-                .OrderBy(c => c.Id)
+                .OrderBy(c => c.DateDeactivated)
+                .ThenByDescending(c => c.Id)
                 .Skip(skip)
                 .Take(take)
                 .Include(c => c.Musics)
