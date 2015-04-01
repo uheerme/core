@@ -20,16 +20,15 @@
             <div ng-repeat="music in channel.Musics" class="well well-list-item">
                 <h5>
                     {{ music.Name }}
-                    <small>
-                        #{{ music.Id }}
-                    </small>
+                    <small>#{{ music.Id }}</small>
+
                     <button ng-click="music.expanded = !music.expanded"
                             ng-hide="music.expanded"
                             class="btn btn-info pull-right">
                         <span class="glyphicon glyphicon-option-horizontal"></span>
                     </button>
                 </h5>
-                <p ng-show="!music.expanded">
+                <p ng-show="music.expanded">
                     <span class="label label-info">
                         Added on {{ music.DateCreated }}.
                     </span>&nbsp;

@@ -3,63 +3,61 @@
         Channels
     </h1>
 
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="well">
-                <form ng-submit="create()">
-                    <fieldset>
-                        <legend>
-                            Open a channel
-                        </legend>
-                        <div class="form-group">
-                            <input type="text" ng-model="channel.Name" class="form-control"
-                                   placeholder="Kyle's channel'" />
-                        </div>
-                        <div class="form-group">
-                            <input type="text" ng-model="channel.Owner" class="form-control"
-                                   placeholder="kyle@email.com" />
-                        </div>
-                        <div class="form-group text-right">
-                            <button class="btn btn-primary">Open channel</button>
-                        </div>
-                    </fieldset>
-                </form>
-            </div>
-        </div>
-
-        <div class="col-sm-4" ng-repeat="channel in channels">
-            <div class="well">
-                <h4>
-                    <a href="#/channels/{{ channel.Id }}">
-                        {{ channel.Name }}
-                    </a>
-                </h4>
-                <p>
-                    <strong>{{ channel.Owner }}</strong>, at {{ channel.NetworkIdentifier }}.
-                </p>
-                <p>
-                    Created at {{ channel.DateCreated }}. <br />
-                    <span ng-show="channel.DateUpdated">
-                        Updated at {{ channel.DateUpdated }}. <br />
-                    </span>
-                    <span ng-show="channel.DateDeactivated">
-                        Deactivated at {{ channel.DateDeactivated }}.
-                    </span>
-                </p>
-                <p>
-                    <button ng-hide="channel.DateDeactivated"
-                            ng-click="deactivate(channel)"
-                            class="btn btn-danger" title="Deactivate channel {{ channel.Name }}.">
-                        <span class="glyphicon glyphicon-trash"></span>
-                    </button>
-                </p>
-            </div>
-        </div>
+    <div class="well">
+        <form ng-submit="create()">
+            <fieldset>
+                <legend>
+                    Open a channel
+                </legend>
+                <div class="form-group">
+                    <input type="text" ng-model="channel.Name" class="form-control"
+                           placeholder="Kyle's channel'" />
+                </div>
+                <div class="form-group">
+                    <input type="text" ng-model="channel.Owner" class="form-control"
+                           placeholder="kyle@email.com" />
+                </div>
+                <div class="form-group text-right">
+                    <button class="btn btn-primary">Open channel</button>
+                </div>
+            </fieldset>
+        </form>
     </div>
+
     <div ng-hide="channels.$resolved">
         <div class="alert alert-dismissible alert-info">
             <button type="button" class="close" data-dismiss="alert">×</button>
             <strong>Loading...</strong> Wait while we crunch all avaiable channels for you.
+        </div>
+    </div>
+
+    <div class="well">
+        <form>
+            <div class="form-group">
+                <input type="search" class="form-control" ng-model="search"
+                       placeholder="Channels' name, owner, active:true" />
+            </div>
+        </form>
+    </div>
+    <div class="row">
+        <div ng-repeat="channel in channels | filter: search" class="col-md-6">
+            <div class="well">
+                <h4>
+                    <a href="#/channels/{{ channel.Id }}">{{ channel.Name }}</a>
+                </h4>
+                <strong>{{ channel.Owner }}</strong>, at {{ channel.NetworkIdentifier }}.<br />
+                <a ng-show="!channel.DateDeactivated" href="#/listen/{{ channel.Id }}"
+                   title="Listen to channel {{ channel.Name }}."
+                   class="btn btn-primary"><span class="glyphicon glyphicon-headphones"></span></a>
+                <button ng-hide="channel.DateDeactivated"
+                        ng-click="deactivate(channel)"
+                        class="btn btn-danger" title="Deactivate channel {{ channel.Name }}.">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </button>
+                <label class="label label-info">Created at {{ channel.DateCreated }}</label>
+                <label ng-show="channel.DateUpdated" class="label label-info">Updated at {{ channel.DateUpdated }}</label>
+                <label ng-show="channel.DateDeactivated" class="label label-info">Deactivated at {{ channel.DateDeactivated }}</label>
+            </div>
         </div>
     </div>
 </div>
