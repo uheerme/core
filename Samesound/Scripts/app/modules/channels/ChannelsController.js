@@ -12,7 +12,7 @@ samesoundApp
                 Channel
                     .save($scope.channel,
                     function (createdChannel) {
-                        $scope.channels.push(createdChannel)
+                        $scope.channels.unshift(createdChannel)
                         toastr.success(createdChannel.Name + ' successfully created!')
                     },
                     function (response) {

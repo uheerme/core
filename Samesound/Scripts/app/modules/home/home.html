@@ -10,13 +10,16 @@
         <small>Check it out: these are all the channels close to you.</small>
     </h1>
     <div class="row">
-        <div ng-repeat="channel in channels" class="col-md-12">
+        <div ng-repeat="channel in channels" class="col-md-12 animate-list">
             <div class="well">
                 <h5>
-                    <a href="#/listen/{{ channel.Id }}">{{ channel.Name }}</a>
+                    <a href="#/channels/{{ channel.Id }}">{{ channel.Name }}</a>
                 </h5>
                 <p>
-                    <strong>{{ channel.Owner }}</strong>'s.
+                    <strong>{{ channel.Owner }}</strong>'s.<br />
+                    <a href="#/listen/{{ channel.Id }}"
+                       title="Listen to channel {{ channel.Name }}."
+                       class="btn btn-primary"><span class="glyphicon glyphicon-headphones"></span></a>
                 </p>
             </div>
         </div>

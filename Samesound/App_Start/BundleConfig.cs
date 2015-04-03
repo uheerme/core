@@ -22,11 +22,11 @@ namespace Samesound
                       "~/Scripts/respond.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/angular").Include(
-                "~/Scripts/angular.js",
-                "~/Scripts/angular-route.js",
-                "~/Scripts/angular-ui-router.js",
-                "~/Scripts/angular-resource.js",
-                "~/Scripts/angular-animate.js",
+                "~/Scripts/angular.min.js",
+                "~/Scripts/angular-route.min.js",
+                "~/Scripts/angular-ui-router.min.js",
+                "~/Scripts/angular-resource.min.js",
+                "~/Scripts/angular-animate.min.js",
                 "~/Scripts/angular-file-upload-all.min.js",
                 "~/Scripts/app/app.js",
                 "~/Scripts/app/utils/*.js",
