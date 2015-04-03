@@ -879,9 +879,14 @@
             The collection of Musics that belong to this Channel.
             </summary>
         </member>
-        <member name="P:Samesound.ViewModels.ChannelResultViewModel.Playing">
+        <member name="P:Samesound.ViewModels.ChannelResultViewModel.Current">
             <summary>
             The Music that is currently being played.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.ChannelResultViewModel.CurrentStartTime">
+            <summary>
+            The start timestamp of the current music.
             </summary>
         </member>
         <member name="P:Samesound.ViewModels.ChannelResultViewModel.DateCreated">
