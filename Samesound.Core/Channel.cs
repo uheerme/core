@@ -31,6 +31,9 @@ namespace Samesound.Core
 
         public virtual ICollection<Music> Musics { get; set; }
 
+        public int? CurrentId { get; set; }
+        public DateTime? CurrentStartTime { get; set; }
+
         public DateTime DateCreated { get; set; }
 
         public DateTime? DateUpdated { get; set; }

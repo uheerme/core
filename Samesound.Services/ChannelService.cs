@@ -41,22 +41,23 @@ namespace Samesound.Services
         {
             if (!channel.Musics.Any(m => m.Id == music.Id))
             {
-                throw new ApplicationException();
+                throw new MusicDoesNotBelongToChannelException("The music {" + music.Name + "} does not belong to the channel {" + channel.Name + "}.");
             }
 
-            //channel.Playing = music;
+            channel.CurrentId = music.Id;
+            channel.CurrentStartTime = DateTime.Now;
 
             return await Update(channel);
         }
 
         public override async Task<Channel> Add(Channel channel)
         {
-            if (Db.Channels.Any(c => 
+            if (Db.Channels.Any(c =>
                 c.Owner == channel.Owner
                 && c.DateDeactivated == null))
             {
                 throw new OwnerAlreadyHasAnActiveChannelException(
-                    "Owner already has an active channel ("+ channel.Name + "). To create a new channel, close this one first."
+                    "Owner already has an active channel (" + channel.Name + "). To create a new channel, close this one first."
                 );
             }
 
@@ -79,7 +80,7 @@ namespace Samesound.Services
         public override async Task<int> Delete(Channel channel)
         {
             MusicUploadProvider.RemoveAll(channel.Id);
-         
+
             return await base.Delete(channel);
         }
     }

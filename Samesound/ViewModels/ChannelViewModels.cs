@@ -94,7 +94,11 @@ namespace Samesound.ViewModels
         /// <summary>
         /// The Music that is currently being played.
         /// </summary>
-        public MusicResultViewModel Playing { get; set; }
+        public MusicResultViewModel Current { get; set; }
+        /// <summary>
+        /// The start timestamp of the current music.
+        /// </summary>
+        public DateTime? CurrentStartTime { get; set; }
         /// <summary>
         /// The moment when the Channel was created.
         /// </summary>
@@ -122,8 +126,8 @@ namespace Samesound.ViewModels
                 
                 Musics = c.Musics
                     .Select(m => (MusicResultViewModel)m)
-                    .ToList()
-                //Playing = (MusicResultViewModel)c.Playing
+                    .ToList(),
+                CurrentStartTime = c.CurrentStartTime
             };
         }
     }

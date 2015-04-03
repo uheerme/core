@@ -59,6 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\MusicDoesNotBelongToChannelException.cs" />
     <Compile Include="Exceptions\DeactivatedChannelException.cs" />
     <Compile Include="Exceptions\ChannelIsAlreadyDeactivatedException.cs" />
     <Compile Include="MusicService.cs" />
