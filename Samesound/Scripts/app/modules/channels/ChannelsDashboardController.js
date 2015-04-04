@@ -1,12 +1,37 @@
 ﻿
 samesoundApp.controller(
     'ChannelDashboardController',
-    ['$http', '$scope', '$resource', '$upload', 'config', 'channel', 'Validator',
-        function ($http, $scope, $resource, $upload, config, channel, Validator) {
+    ['$http', '$scope', '$upload', 'config', 'channel', 'Validator',
+        function ($http, $scope, $upload, config, channel, Validator) {         
+
             $scope.channel = channel;
             $scope.numberOfFilesBeingUploaded = 0;
+
             $scope.cancel = function (file) {
                 //
+            }
+
+            $scope.play = function (musicId) {
+                if (!$scope.channel.Musics.length) {
+                    toastr.warning('You can\'t start a empty playlist. Add some musics first.', 'Ops!');
+                    return;
+                }
+
+                musicId = musicId || $scope.channel.Musics[0].Id;
+
+                $http
+                    .post(config.apiUrl + 'Channels/' + $scope.channel.Id + '/Play/' + musicId)
+                    .success(function (data) {
+                        $scope.channel.CurrentId = data.CurrentId;
+                        $scope.channel.CurrentStartTime = data.CurrentStartTime;
+                    })
+                    .error(function (error) {
+                        console.log(error);
+                        Validator.
+                            take(error).
+                            toastErrors().
+                            otherwiseToastError();
+                    })
             }
 
             $scope.removeFromUploadQueue = function (file) {

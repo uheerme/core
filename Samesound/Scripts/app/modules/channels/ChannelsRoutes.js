@@ -14,8 +14,8 @@ angular.module('samesoundApp')
                     templateUrl: 'Scripts/app/modules/channels/dashboard.html',
                     controller: 'ChannelDashboardController',
                     resolve: {
-                        channel: function ($stateParams, $resource, config) {
-                            return $resource(config.apiUrl + 'channels/:Id')
+                        channel: function ($stateParams, ChannelResource, config) {
+                            return ChannelResource
                                 .get({ Id: $stateParams.id })
                                 .$promise;
                         }
@@ -26,8 +26,8 @@ angular.module('samesoundApp')
                     templateUrl: 'Scripts/app/modules/channels/listening.html',
                     controller: 'ListeningController',
                     resolve: {
-                        channel: function ($stateParams, $resource, config) {
-                            return $resource(config.apiUrl + 'channels/:Id')
+                        channel: function ($stateParams, ChannelResource, config) {
+                            return ChannelResource
                                 .get({ Id: $stateParams.id })
                                 .$promise;
                         }

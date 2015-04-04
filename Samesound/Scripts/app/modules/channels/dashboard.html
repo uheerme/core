@@ -12,13 +12,14 @@
                     <h2>Info</h2>
                     <div class="well">
                         <strong>
-                            Current status:
+                            Current play status:
                         </strong>
-                        <span class="label label-warning" ng-hide="channel.CurrentStartTime">
+                        <span ng-hide="channel.CurrentStartTime">
                             the playlist is stopped.
                         </span>
-                        <span class="label label-primary" ng-show="channel.CurrentStartTime">
-                            the channel is currently on playing.
+                        <span ng-show="channel.CurrentStartTime">
+                            currently playing #{{ channel.CurrentId }},
+                            started at {{ channel.CurrentStartTime }}.
                         </span>
                     </div>
                 </div>
@@ -28,13 +29,26 @@
                     </h2>
                     <div class="well">
                         <p>
-                            <button ng-click="play()"
-                                    class="btn btn-primary"
-                                    title="Start playing musics in the channel. This operation requires a non-empty playlist."
-                                    ng-class="{'disabled':!channel.Musics.length}">
-                                <span class="glyphicon glyphicon-play"></span>
-                                Start
-                            </button>
+                            <div class="btn-group">
+                                <button ng-click="play()"
+                                        class="btn btn-primary"
+                                        title="Start playing musics in the channel. This operation requires a non-empty playlist."
+                                        ng-class="{'disabled':!channel.Musics.length}">
+                                    <span class="glyphicon glyphicon-play"></span>
+                                    Start
+                                </button>
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false"
+                                        ng-class="{'disabled':!channel.Musics.length}">
+                                    <span class="glyphicon glyphicon-menu-down"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li ng-repeat="music in channel.Musics">
+                                        <a href="" ng-click="play(music.Id)">{{ music.Name }}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            
                         </p>
                         <p>
                             <button class="btn btn-danger"
