@@ -250,6 +250,7 @@
     <Compile Include="Controllers\MusicsController.cs" />
     <Compile Include="Controllers\ChannelsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Extensions\HttpRequestMessageExtensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -334,19 +335,20 @@
     <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\app\app.js" />
+    <Content Include="Scripts\app\modules\channels\Channel.js" />
     <Content Include="Scripts\app\modules\channels\ListeningController.js" />
     <Content Include="Scripts\app\modules\channels\ChannelsDashboardController.js" />
     <Content Include="Scripts\app\modules\channels\dashboard.html" />
     <Content Include="Scripts\app\modules\channels\listening.html" />
     <Content Include="Scripts\app\modules\musics\musics.html" />
-    <Content Include="Scripts\app\modules\musics\musics.js" />
+    <Content Include="Scripts\app\modules\musics\MusicsRoutes.js" />
     <Content Include="Scripts\app\modules\musics\MusicsController.js" />
     <Content Include="Scripts\app\modules\channels\channels.html" />
-    <Content Include="Scripts\app\modules\channels\channels.js" />
+    <Content Include="Scripts\app\modules\channels\ChannelsRoutes.js" />
     <Content Include="Scripts\app\modules\channels\ChannelsController.js" />
     <Content Include="Scripts\app\modules\home\HomeController.js" />
     <Content Include="Scripts\app\modules\home\home.html" />
-    <Content Include="Scripts\app\modules\home\home.js" />
+    <Content Include="Scripts\app\modules\home\HomeRoutes.js" />
     <Content Include="Scripts\app\shared\footer.html" />
     <Content Include="Scripts\app\shared\navbar.html" />
     <Content Include="Content\toastr.scss" />
