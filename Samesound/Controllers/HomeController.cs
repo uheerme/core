@@ -6,8 +6,15 @@ using System.Web.Mvc;
 
 namespace Samesound.Controllers
 {
+    /// <summary>
+    /// The web application's controller.
+    /// </summary>
     public class HomeController : Controller
     {
+        /// <summary>
+        /// The method that returns the Home view, which contains the angular.js application.
+        /// </summary>
+        /// <returns>The Home view.</returns>
         public ActionResult Index()
         {
             return View();
