@@ -20,6 +20,11 @@ namespace Samesound.Controllers
         private ChannelService _channels;
         private MusicService   _musics;
 
+        /// <summary>
+        /// Default ChannelsController constructor.
+        /// </summary>
+        /// <param name="channels">The ChannelService automaticly injected.</param>
+        /// <param name="musics">The MusicService automaticly injected.</param>
         public ChannelsController(ChannelService channels, MusicService musics)
         {   
             _channels = channels;
@@ -141,6 +146,42 @@ namespace Samesound.Controllers
             catch (ValidationException)
             {
                 // All validations errors are already in ModelState.
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError(e.GetType().ToString(), e.Message);
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        /// <summary>
+        /// Play a determined music.
+        /// </summary>
+        /// <param name="channelId">The Id of the Channel.</param>
+        /// <param name="musicId">The Id of the Music that should start playing.</param>
+        /// <returns>The Channel with the reference of the playing music.</returns>
+        [Route("{channelId}/Play/{musicId}")]
+        [ResponseType(typeof(ChannelCurrentResultViewModel))]
+        public async Task<IHttpActionResult> PostPlay([FromUri]int channelId, [FromUri]int musicId)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new ValidationException();
+                }
+
+                var channel = await _channels.FindOrFail(channelId);
+                var music   = await _musics.FindOrFail(musicId);
+
+                await _channels.Play(channel, music);
+
+                return Ok((ChannelCurrentResultViewModel)channel);
+            }
+            catch (ValidationException)
+            {
+                //
             }
             catch (Exception e)
             {
