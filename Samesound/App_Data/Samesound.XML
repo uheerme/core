@@ -4,6 +4,17 @@
         <name>Samesound</name>
     </assembly>
     <members>
+        <member name="T:Samesound.BundleConfig">
+            <summary>
+            Bundle configuration class.
+            </summary>
+        </member>
+        <member name="M:Samesound.BundleConfig.RegisterBundles(System.Web.Optimization.BundleCollection)">
+            <summary>
+            Register all bundles required for the web app.
+            </summary>
+            <param name="bundles">The bundle that will be configured.</param>
+        </member>
         <member name="M:Samesound.Areas.HelpPage.ApiDescriptionExtensions.GetFriendlyId(System.Web.Http.Description.ApiDescription)">
             <summary>
             Generates an URI-friendly ID for the <see cref="T:System.Web.Http.Description.ApiDescription"/>. E.g. "Get-Values-id_name" instead of "GetValues/{id}?name={name}"
@@ -600,6 +611,13 @@
             The Channel's resource controller.
             </summary>
         </member>
+        <member name="M:Samesound.Controllers.ChannelsController.#ctor(Samesound.Services.ChannelService,Samesound.Services.MusicService)">
+            <summary>
+            Default ChannelsController constructor.
+            </summary>
+            <param name="channels">The ChannelService automaticly injected.</param>
+            <param name="musics">The MusicService automaticly injected.</param>
+        </member>
         <member name="M:Samesound.Controllers.ChannelsController.GetChannels(System.Int32,System.Int32)">
             <summary>
             Get a list of channels.
@@ -637,6 +655,14 @@
             <param name="model">The view model for the Channel to be created.</param>
             <returns>A response with the created Channel, if succeeded. A BadRequest response, otherwise.</returns>
         </member>
+        <member name="M:Samesound.Controllers.ChannelsController.PostPlay(System.Int32,System.Int32)">
+            <summary>
+            Play a determined music.
+            </summary>
+            <param name="channelId">The Id of the Channel.</param>
+            <param name="musicId">The Id of the Music that should start playing.</param>
+            <returns>The Channel with the reference of the playing music.</returns>
+        </member>
         <member name="M:Samesound.Controllers.ChannelsController.PostDeactivateChannel(System.Int32)">
             <summary>
             Deactivate a channel with given Id.
@@ -659,6 +685,29 @@
             <param name="skip">The number of musics to ignore.</param>
             <param name="take">The maximum length of the collection retrieved.</param>
             <returns></returns>
+        </member>
+        <member name="T:Samesound.Controllers.HomeController">
+            <summary>
+            The web application's controller.
+            </summary>
+        </member>
+        <member name="M:Samesound.Controllers.HomeController.Index">
+            <summary>
+            The method that returns the Home view, which contains the angular.js application.
+            </summary>
+            <returns>The Home view.</returns>
+        </member>
+        <member name="T:Samesound.Controllers.StatusController">
+            <summary>
+            The controller responsible for reporting the API status.
+            </summary>
+        </member>
+        <member name="M:Samesound.Controllers.StatusController.GetCurrentTime">
+            <summary>
+            Get the current timestamp set in the server.
+            For synchronization purposes, please consider the round trip time-frame when requesting this route.
+            </summary>
+            <returns>A DateTime representing the current timestamp in the server.</returns>
         </member>
         <member name="T:Samesound.ViewModels.AddExternalLoginBindingModel">
             <summary>
@@ -879,9 +928,9 @@
             The collection of Musics that belong to this Channel.
             </summary>
         </member>
-        <member name="P:Samesound.ViewModels.ChannelResultViewModel.Current">
+        <member name="P:Samesound.ViewModels.ChannelResultViewModel.CurrentId">
             <summary>
-            The Music that is currently being played.
+            The Id of the Music that is currently being played.
             </summary>
         </member>
         <member name="P:Samesound.ViewModels.ChannelResultViewModel.CurrentStartTime">
@@ -902,6 +951,26 @@
         <member name="P:Samesound.ViewModels.ChannelResultViewModel.DateDeactivated">
             <summary>
             The moment when the Channel was deactivated. If this Channel is still active, this value will be null.
+            </summary>
+        </member>
+        <member name="T:Samesound.ViewModels.ChannelCurrentResultViewModel">
+            <summary>
+            The view model used to indicate which Music is currently being display in a Channel.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.ChannelCurrentResultViewModel.Id">
+            <summary>
+            The surrogate key that uniquely identifies a Channel in the database.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.ChannelCurrentResultViewModel.CurrentId">
+            <summary>
+            The Id of the Music that is currently being played.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.ChannelCurrentResultViewModel.CurrentStartTime">
+            <summary>
+            The start timestamp of the current music.
             </summary>
         </member>
     </members>

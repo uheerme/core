@@ -3,9 +3,15 @@ using System.Web.Optimization;
 
 namespace Samesound
 {
+    /// <summary>
+    /// Bundle configuration class.
+    /// </summary>
     public class BundleConfig
     {
-        // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
+        /// <summary>
+        /// Register all bundles required for the web app.
+        /// </summary>
+        /// <param name="bundles">The bundle that will be configured.</param>
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
