@@ -92,9 +92,9 @@ namespace Samesound.ViewModels
         /// </summary>
         public ICollection<MusicResultViewModel> Musics { get; set; }
         /// <summary>
-        /// The Music that is currently being played.
+        /// The Id of the Music that is currently being played.
         /// </summary>
-        public MusicResultViewModel Current { get; set; }
+        public int? CurrentId { get; set; }
         /// <summary>
         /// The start timestamp of the current music.
         /// </summary>
@@ -127,6 +127,35 @@ namespace Samesound.ViewModels
                 Musics = c.Musics
                     .Select(m => (MusicResultViewModel)m)
                     .ToList(),
+                CurrentId        = c.CurrentId,
+                CurrentStartTime = c.CurrentStartTime
+            };
+        }
+    }
+    /// <summary>
+    /// The view model used to indicate which Music is currently being display in a Channel.
+    /// </summary>
+    public class ChannelCurrentResultViewModel
+    {
+        /// <summary>
+        /// The surrogate key that uniquely identifies a Channel in the database.
+        /// </summary>
+        public int Id { get; set; }
+        /// <summary>
+        /// The Id of the Music that is currently being played.
+        /// </summary>
+        public int? CurrentId { get; set; }
+        /// <summary>
+        /// The start timestamp of the current music.
+        /// </summary>
+        public DateTime? CurrentStartTime { get; set; }
+
+        public static explicit operator ChannelCurrentResultViewModel(Channel c)
+        {
+            return c == null ? null : new ChannelCurrentResultViewModel
+            {
+                Id = c.Id,
+                CurrentId = c.CurrentId,
                 CurrentStartTime = c.CurrentStartTime
             };
         }
