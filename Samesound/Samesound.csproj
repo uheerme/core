@@ -263,6 +263,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\MusicViewModels.cs" />
     <Compile Include="ViewModels\ChannelViewModels.cs" />
+    <Compile Include="ViewModels\StatusViewModels.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\Samesound.XML" />
@@ -349,6 +350,7 @@
     <Content Include="Scripts\app\modules\home\HomeController.js" />
     <Content Include="Scripts\app\modules\home\home.html" />
     <Content Include="Scripts\app\modules\home\HomeRoutes.js" />
+    <Content Include="Scripts\app\modules\status\Status.js" />
     <Content Include="Scripts\app\shared\footer.html" />
     <Content Include="Scripts\app\shared\navbar.html" />
     <Content Include="Content\toastr.scss" />

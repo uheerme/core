@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Samesound.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -19,12 +20,15 @@ namespace Samesound.Controllers
         /// Get the current timestamp set in the server.
         /// For synchronization purposes, please consider the round trip time-frame when requesting this route.
         /// </summary>
-        /// <returns>A DateTime representing the current timestamp in the server.</returns>
+        /// <returns>A CurrentServerTimeViewModel containing the current timestamp in the server.</returns>
         [Route("Now")]
-        [ResponseType(typeof(DateTime))]
+        [ResponseType(typeof(CurrentServerTimeViewModel))]
         public IHttpActionResult GetCurrentTime()
         {
-            return Ok(DateTime.Now);
+            return Ok(new CurrentServerTimeViewModel
+            {
+                Now = DateTime.Now
+            });
         }
     }
 }
