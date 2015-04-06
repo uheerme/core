@@ -1,4 +1,4 @@
-﻿<div class="container">
+﻿<div class="container-fluid">
     <h1>
         {{ channel.Name }}
         <small>#{{ channel.Id }}</small>
@@ -8,17 +8,35 @@
     </h2>
 
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-3">
+            <h2>Info</h2>
             <div class="well">
-                <button ng-click="toogle()" class="btn btn-primary btn-lg btn-block">
-                    <span ng-show="playing" class="glyphicon glyphicon-pause"></span>
-                    <span ng-hide="playing" class="glyphicon glyphicon-play"></span>
+                <strong>Playing status:</strong>
+                <span ng-show="!channel.CurrentId">this channel isn't playing anything.</span>
+                <span ng-show="channel.CurrentId">currently playing 
+                    <strong>#{{ channel.CurrentId }}</strong>.
+                </span>
+                <div class="progress">
+                    <div id="player-progress-bar" class="progress-bar"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <h2>Actions</h2>
+            <div class="well">
+                <button ng-click="toogleMute()" class="btn btn-primary btn-lg">
+                    <span ng-show="mute" class="glyphicon glyphicon-volume-off"></span>
+                    <span ng-hide="mute" class="glyphicon glyphicon-music"></span>
                 </button>
             </div>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-6">
             <div ng-repeat="music in channel.Musics" class="well well-list-item">
                 <h5>
+                    <span ng-show="channel.CurrentId === music.Id"
+                          title="This music is currently on play!"
+                          class="glyphicon glyphicon-equalizer"></span>
+
                     {{ music.Name }}
                     <small>#{{ music.Id }}</small>
 
@@ -41,9 +59,5 @@
                 </p>
             </div>
         </div>
-    </div>
-    <div class="playlist-container">
-        <audio ng-repeat="music in streaming" ng-src="{{ music.Source }}"
-               id="music-{{ music.Id }}" preload="auto"></audio>
     </div>
 </div>
