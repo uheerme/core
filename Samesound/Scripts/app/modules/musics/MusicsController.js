@@ -11,8 +11,7 @@ samesoundApp
             $scope.musics = Music.query()
 
             $scope.create = function () {
-                Music
-                    .save($scope.music,
+                Music.save($scope.music,
                     function (createdMusic) {
                         $scope.musics.push(createdMusic)
                         toastr.success($scope.music.Name + ' successfully created!')
@@ -20,7 +19,8 @@ samesoundApp
                     function (data) {
                         console.log(data);
                         toastr.error('Opps! Something went wrong!')
-                    })
+                    }
+                );
             }
 
             $scope.clear = function () {
