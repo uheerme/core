@@ -28,7 +28,7 @@ namespace Samesound
                       "~/Scripts/respond.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/angular").Include(
-                "~/Scripts/angular.min.js",
+                "~/Scripts/angular.js",
                 "~/Scripts/angular-route.min.js",
                 "~/Scripts/angular-ui-router.min.js",
                 "~/Scripts/angular-resource.min.js",
@@ -38,7 +38,8 @@ namespace Samesound
                 "~/Scripts/app/utils/*.js",
                 "~/Scripts/app/modules/home/*.js",
                 "~/Scripts/app/modules/channels/*.js",
-                "~/Scripts/app/modules/musics/*.js"));
+                "~/Scripts/app/modules/musics/*.js",
+                "~/Scripts/app/modules/status/*.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/paper.min.css",

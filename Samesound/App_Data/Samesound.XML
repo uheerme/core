@@ -707,7 +707,7 @@
             Get the current timestamp set in the server.
             For synchronization purposes, please consider the round trip time-frame when requesting this route.
             </summary>
-            <returns>A DateTime representing the current timestamp in the server.</returns>
+            <returns>A CurrentServerTimeViewModel containing the current timestamp in the server.</returns>
         </member>
         <member name="T:Samesound.ViewModels.AddExternalLoginBindingModel">
             <summary>
