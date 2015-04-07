@@ -71,9 +71,46 @@ namespace Samesound.ViewModels
     }
 
     /// <summary>
-    /// The view model used to display Channel entries.
+    /// The view-model which represents a Channel entry with its Musics.
     /// </summary>
-    public class ChannelResultViewModel
+    public class ChannelResultViewModel : ChannelListResultViewModel
+    {
+        /// <summary>
+        /// The collection of Musics that belong to this Channel.
+        /// </summary>
+        public ICollection<MusicResultViewModel> Musics { get; set; }
+        /// <summary>
+        /// Explicit conversion from Channel to ChannelResultViewModel.
+        /// </summary>
+        /// <param name="c">The Channel that will be converted.</param>
+        /// <returns>The ChannelResultViewModel that represents the Channel c.</returns>
+        public static explicit operator ChannelResultViewModel(Channel c)
+        {
+            return c == null ? null : new ChannelResultViewModel
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Owner = c.Owner,
+                NetworkIdentifier = c.NetworkIdentifier,
+                Loops = c.Loops,
+                DateCreated = c.DateCreated,
+                DateUpdated = c.DateUpdated,
+                DateDeactivated = c.DateDeactivated,
+
+                Musics = c.Musics
+                    .Select(m => (MusicResultViewModel)m)
+                    .ToList(),
+
+                CurrentId = c.CurrentId,
+                CurrentStartTime = c.CurrentStartTime
+            };
+        }
+    }
+
+    /// <summary>
+    /// The view-model which represents a Channel entry without its Musics.
+    /// </summary>
+    public class ChannelListResultViewModel
     {
         /// <summary>
         /// The surrogate key that uniquely identifies a Channel in the database.
@@ -104,10 +141,6 @@ namespace Samesound.ViewModels
         /// </summary>
         public DateTime? CurrentStartTime { get; set; }
         /// <summary>
-        /// The collection of Musics that belong to this Channel.
-        /// </summary>
-        public ICollection<MusicResultViewModel> Musics { get; set; }
-        /// <summary>
         /// The moment when the Channel was created.
         /// </summary>
         public DateTime DateCreated { get; set; }
@@ -120,13 +153,13 @@ namespace Samesound.ViewModels
         /// </summary>
         public DateTime? DateDeactivated { get; set; }
         /// <summary>
-        /// Explicit conversion from Channel to ChannelResultViewModel.
+        /// Explicit conversion from Channel to ChannelListResultViewModel.
         /// </summary>
         /// <param name="c">The Channel that will be converted.</param>
-        /// <returns>The ChannelResultViewModel that represents the Channel c.</returns>
-        public static explicit operator ChannelResultViewModel(Channel c)
+        /// <returns>The ChannelListResultViewModel that represents the Channel c.</returns>
+        public static explicit operator ChannelListResultViewModel(Channel c)
         {
-            return c == null ? null : new ChannelResultViewModel
+            return c == null ? null : new ChannelListResultViewModel
             {
                 Id = c.Id,
                 Name = c.Name,
@@ -136,15 +169,12 @@ namespace Samesound.ViewModels
                 DateCreated = c.DateCreated,
                 DateUpdated = c.DateUpdated,
                 DateDeactivated = c.DateDeactivated,
-
-                Musics = c.Musics
-                    .Select(m => (MusicResultViewModel)m)
-                    .ToList(),
                 CurrentId = c.CurrentId,
                 CurrentStartTime = c.CurrentStartTime
             };
         }
     }
+
     /// <summary>
     /// The view model used to indicate which Music is currently being display in a Channel.
     /// </summary>

@@ -15,6 +15,13 @@ namespace Samesound.Services
     {
         public ChannelService(SamesoundContext db) : base(db) { }
 
+        public virtual async Task<Channel> FindWithMusics(int id)
+        {
+            return await Db.Channels
+                .Include(c => c.Musics)
+                .SingleOrDefaultAsync(c => c.Id == id);
+        }
+
         public virtual async Task<ICollection<Channel>> Paginate(int skip, int take)
         {
             return await Db.Channels
@@ -22,7 +29,6 @@ namespace Samesound.Services
                 .ThenByDescending(c => c.Id)
                 .Skip(skip)
                 .Take(take)
-                .Include(c => c.Musics)
                 .ToListAsync();
         }
 
@@ -33,7 +39,6 @@ namespace Samesound.Services
                 .OrderByDescending(c => c.Id)
                 .Skip(skip)
                 .Take(take)
-                .Include(c => c.Musics)
                 .ToListAsync();
         }
 

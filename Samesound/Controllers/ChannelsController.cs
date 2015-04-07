@@ -37,10 +37,10 @@ namespace Samesound.Controllers
         /// <param name="skip">The number of channels to ignore.</param>
         /// <param name="take">The maximum number of channels in the returned list.</param>
         /// <returns>The collection of channels.</returns>
-        public async Task<ICollection<ChannelResultViewModel>> GetChannels(int skip = 0, int take = 100)
+        public async Task<ICollection<ChannelListResultViewModel>> GetChannels(int skip = 0, int take = 100)
         {
             return (await _channels.Paginate(skip, take))
-                .Select(c => (ChannelResultViewModel)c)
+                .Select(c => (ChannelListResultViewModel)c)
                 .ToList();
         }
 
@@ -51,10 +51,10 @@ namespace Samesound.Controllers
         /// <param name="take">The maximum number of channels in the returned list.</param>
         /// <returns>The collection of active channels.</returns>
         [Route("Active")]
-        public async Task<ICollection<ChannelResultViewModel>> GetActiveChannels(int skip = 0, int take = 100)
+        public async Task<ICollection<ChannelListResultViewModel>> GetActiveChannels(int skip = 0, int take = 100)
         {
             return (await _channels.ActiveChannels(skip, take))
-                .Select(c => (ChannelResultViewModel)c)
+                .Select(c => (ChannelListResultViewModel)c)
                 .ToList();
         }
 
@@ -68,7 +68,7 @@ namespace Samesound.Controllers
         {
             try
             {
-                var channel = await _channels.Find(id);
+                var channel = await _channels.FindWithMusics(id);
                 if (channel == null)
                 {
                     throw new KeyNotFoundException();
