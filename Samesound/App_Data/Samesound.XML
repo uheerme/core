@@ -898,10 +898,22 @@
             The new name that the existing Channel should assume.
             </summary>
         </member>
+        <member name="P:Samesound.ViewModels.ChannelUpdateViewModel.Loops">
+            <summary>
+            A boolean that indicates if the Channel loops its musics or not.
+            </summary>
+        </member>
         <member name="T:Samesound.ViewModels.ChannelResultViewModel">
             <summary>
             The view model used to display Channel entries.
             </summary>
+        </member>
+        <member name="M:Samesound.ViewModels.ChannelResultViewModel.op_Explicit(Samesound.Core.Channel)~Samesound.ViewModels.ChannelResultViewModel">
+            <summary>
+            Explicit conversion from Channel to ChannelResultViewModel.
+            </summary>
+            <param name="c">The Channel that will be converted.</param>
+            <returns>The ChannelResultViewModel that represents the Channel c.</returns>
         </member>
         <member name="P:Samesound.ViewModels.ChannelResultViewModel.Id">
             <summary>
@@ -923,9 +935,9 @@
             A string that uniquely identifies the network used by the Owner. It can be the real IP address, the MAC address or a combination of both.
             </summary>
         </member>
-        <member name="P:Samesound.ViewModels.ChannelResultViewModel.Musics">
+        <member name="P:Samesound.ViewModels.ChannelResultViewModel.Loops">
             <summary>
-            The collection of Musics that belong to this Channel.
+            A boolean that indicates if the Channel loops its musics or not.
             </summary>
         </member>
         <member name="P:Samesound.ViewModels.ChannelResultViewModel.CurrentId">
@@ -936,6 +948,11 @@
         <member name="P:Samesound.ViewModels.ChannelResultViewModel.CurrentStartTime">
             <summary>
             The start timestamp of the current music.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.ChannelResultViewModel.Musics">
+            <summary>
+            The collection of Musics that belong to this Channel.
             </summary>
         </member>
         <member name="P:Samesound.ViewModels.ChannelResultViewModel.DateCreated">
@@ -957,6 +974,13 @@
             <summary>
             The view model used to indicate which Music is currently being display in a Channel.
             </summary>
+        </member>
+        <member name="M:Samesound.ViewModels.ChannelCurrentResultViewModel.op_Explicit(Samesound.Core.Channel)~Samesound.ViewModels.ChannelCurrentResultViewModel">
+            <summary>
+            Explicit conversion from Channel to ChannelCurrentResultViewModel.
+            </summary>
+            <param name="c">The Channel that will be converted.</param>
+            <returns>The ChannelCurrentResultViewModel that represents the current song being played at the Channel c.</returns>
         </member>
         <member name="P:Samesound.ViewModels.ChannelCurrentResultViewModel.Id">
             <summary>

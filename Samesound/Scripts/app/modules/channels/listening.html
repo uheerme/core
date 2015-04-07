@@ -16,7 +16,7 @@
                 <span ng-show="channel.CurrentId">currently playing 
                     <strong>#{{ channel.CurrentId }}</strong>.
                 </span>
-                <div class="progress">
+                <div class="progress" ng-show="channel.CurrentId">
                     <div id="player-progress-bar" class="progress-bar"></div>
                 </div>
             </div>
@@ -24,7 +24,7 @@
         <div class="col-md-3">
             <h2>Actions</h2>
             <div class="well">
-                <button ng-click="toogleMute()" class="btn btn-primary btn-lg">
+                <button ng-click="toogleMute()" class="btn btn-primary btn-lg" ng-class="{'disabled':!channel.CurrentId}">
                     <span ng-show="mute" class="glyphicon glyphicon-volume-off"></span>
                     <span ng-hide="mute" class="glyphicon glyphicon-music"></span>
                 </button>
@@ -39,24 +39,19 @@
 
                     {{ music.Name }}
                     <small>#{{ music.Id }}</small>
-
-                    <button ng-click="music.expanded = !music.expanded"
-                            ng-hide="music.expanded"
-                            class="btn btn-info pull-right">
-                        <span class="glyphicon glyphicon-option-horizontal"></span>
-                    </button>
                 </h5>
-                <p ng-show="music.expanded">
+                <div>
                     <span class="label label-info">
                         Added on {{ music.DateCreated }}.
                     </span>&nbsp;
-                    <span class="label label-info">
+                    <span ng-show="music.LengthInSeconds"
+                          class="label label-info">
                         {{ music.LengthInSeconds }} seconds.
                     </span>&nbsp;
                     <span class="label label-info">
-                        {{ music.SizeInBytes }} bytes.
+                        {{ (music.SizeInBytes / 1048576).toFixed(2) }} Mb.
                     </span>
-                </p>
+                </div>
             </div>
         </div>
     </div>
