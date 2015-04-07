@@ -9,22 +9,28 @@
 
     <div class="row">
         <div class="col-md-3">
-            <h2>Info</h2>
             <div class="well">
-                <strong>Playing status:</strong>
-                <span ng-show="!channel.CurrentId">this channel isn't playing anything.</span>
-                <span ng-show="channel.CurrentId">currently playing 
-                    <strong>#{{ channel.CurrentId }}</strong>.
-                </span>
-                <div class="progress" ng-show="channel.CurrentId">
-                    <div id="player-progress-bar" class="progress-bar"></div>
+                <div ng-show="!channel.CurrentId">This channel isn't playing anything.</div>
+                <div ng-show="channel.CurrentId">
+                    <h4>
+                        <span ng-show="channel.Current">{{ channel.Current.Name }}</span>
+                        <span ng-hide="channel.Current">#{{ channel.CurrentId }}</span>
+                        <small>
+                            {{ currentMusicCurrentTime }}s
+                        </small>
+                    </h4>
+                </div>
+                <div class="progress" ng-show="channel.Current">
+                    <div id="player-progress-bar" class="progress-bar"
+                         style="width:{{ 100 * currentMusicCurrentTime / channel.Current.LengthInSeconds }}%"></div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <h2>Actions</h2>
             <div class="well">
-                <button ng-click="toogleMute()" class="btn btn-primary btn-lg" ng-class="{'disabled':!channel.CurrentId}">
+                <button ng-click="toogleMute()"
+                        title="Mute or restore the volume of the player."
+                        class="btn btn-primary btn-lg" ng-class="{'disabled':!channel.CurrentId}">
                     <span ng-show="mute" class="glyphicon glyphicon-volume-off"></span>
                     <span ng-hide="mute" class="glyphicon glyphicon-music"></span>
                 </button>

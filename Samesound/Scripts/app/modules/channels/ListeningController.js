@@ -4,6 +4,7 @@ samesoundApp
     .controller('ListeningController',
         ['$scope', 'channel', 'MusicPlayer', 'config',
         function ($scope, channel, MusicPlayer, config) {
+            $scope.currentMusicCurrentTime = 0;
             $scope.channel = channel;
 
             $scope.toogleMute = function () {

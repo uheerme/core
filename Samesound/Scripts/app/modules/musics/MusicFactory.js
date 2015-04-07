@@ -11,12 +11,11 @@ samesoundApp
             ///     The client will re-sync with the server.
             take: function ($scope) {
                 this.$scope = $scope;
-                this.channel = $scope.channel;
                 
                 MusicStreamProvider.initialize();
 
                 var currentMusic = SynchronyProvider
-                    .take(this.channel)
+                    .take(this.$scope.channel)
                     .sync()
                     .currentMusicOrDefault();
 
@@ -31,7 +30,7 @@ samesoundApp
             
             /// Mutes the current music acording with the value of shouldBeMuted.
             mute: function (shouldBeMuted) {
-                var currentId = this.channel.CurrentId;
+                var currentId = this.$scope.channel.CurrentId;
 
                 if (currentId)
                     MusicStreamProvider.audioFromMusicId(currentId).muted = shouldBeMuted;
@@ -43,7 +42,7 @@ samesoundApp
             /// Considerations:
             ///     The music with Id=this.channel.CurrentId will be played.
             start: function (strategy) {
-                if (!this.channel.CurrentId) {
+                if (!this.$scope.channel.CurrentId) {
                     console.log('Channel is currently stalled.');
                     playing = false;
                     return this;
@@ -58,7 +57,7 @@ samesoundApp
             },
 
             playCurrent: function () {
-                return this.play(this.channel.CurrentId);
+                return this.play(this.$scope.channel.CurrentId);
             },
 
             /// Play a music with Id=musicId from the this.channel.Musics list.
@@ -66,7 +65,7 @@ samesoundApp
             ///     If musicId were not provided, it assumes this.channel.CurrentId as replacement.
             ///     Defines a callback to play the next music (constrained by some Channel definitions).
             play: function (musicId) {
-                var musicId = musicId || this.channel.CurrentId;
+                var musicId = musicId || this.$scope.channel.CurrentId;
 
                 // Two musics should never play at once.
                 this.stopAll();
@@ -76,16 +75,17 @@ samesoundApp
                     .load(musicId);
 
                 // Modifies progress-bar as music progresses.
+                var player = this;
                 audio.addEventListener('timeupdate', function () {
-                    var progress = Math.floor((audio.currentTime / audio.duration) * 100);
-                    $('#player-progress-bar').width(progress + '%');
+                    player.$scope.$apply(function () {
+                        player.$scope.currentMusicCurrentTime = Math.trunc(audio.currentTime);
+                    });
                 }, false);
 
-                var player = this;
                 audio.addEventListener('ended', function () {
                     // If the channels allows looping or the current music was not the last of the track.
-                    if (player.channel.Loops
-                        || SynchronyProvider.indexOfCurrentMusic() < player.channel.Musics.length - 1) {
+                    if (player.$scope.channel.Loops
+                        || SynchronyProvider.indexOfCurrentMusic() < player.$scope.channel.Musics.length - 1) {
 
                         player.next().play();
                     }
@@ -93,13 +93,14 @@ samesoundApp
 
                 audio.play();
                 playing = true;
+                this.$scope.channel.Current = SynchronyProvider.currentMusic();
                 return this;
             },
 
             /// Stop all playing audios.
             stopAll: function () {
-                for (var index in this.channel.Musics) {
-                    var music = this.channel.Musics[index];
+                for (var index in this.$scope.channel.Musics) {
+                    var music = this.$scope.channel.Musics[index];
                     this.stop(music.Id);
                 }
 
@@ -118,9 +119,9 @@ samesoundApp
 
             /// Update this.channel.CurrentId to match the next music in the order given by this.channel.Musics list.
             next: function () {
-                var channel = this.channel;
+                var channel = this.$scope.channel;
 
-                var nextIndex = (SynchronyProvider.indexOfCurrentMusic() + 1) % this.channel.Musics.length;
+                var nextIndex = (SynchronyProvider.indexOfCurrentMusic() + 1) % channel.Musics.length;
                 var nextMusic = channel.Musics[nextIndex];
 
                 // updates channel's current music propagating change.
@@ -148,13 +149,13 @@ samesoundApp
                         player.loadNextMusics(music);
                     }, false);
                 }
-                
 
                 return this;
             },
 
             /// Asks MusicStreamProvider for the stream of the following musics.
             loadNextMusics: function (music, count) {
+                var channel = this.$scope.channel;
                 var musicId = music.Id;
                 count = count || 2;
 
@@ -162,8 +163,8 @@ samesoundApp
 
                 // Load the next N musics.
                 for (var i = 1; i < count +1; i++) {
-                    var indexToLoad = (baseIndex + i) % this.channel.Musics.length;
-                    var musicToLoad = this.channel.Musics[indexToLoad];
+                    var indexToLoad = (baseIndex + i) % channel.Musics.length;
+                    var musicToLoad = channel.Musics[indexToLoad];
                     this.load(musicToLoad);
                 }
 
@@ -179,6 +180,7 @@ samesoundApp
                 this.channel = channel;
                 return this;
             },
+
             sync: function () {
                 var provider = this;
                 var timeframe = new Date();
@@ -195,9 +197,11 @@ samesoundApp
 
                 return this;
             },
+
             indexOfCurrentMusic: function () {
                 return this.indexOfMusic(this.channel.CurrentId);
             },
+
             indexOfMusic: function (musicId) {
                 var musics = this.channel.Musics;
 
@@ -206,9 +210,11 @@ samesoundApp
                         return i;
                 return -1;
             },
+
             currentMusicOrDefault: function () {
                 return this.currentMusic() || this.channel.Musics[0];
             },
+
             currentMusic: function () {
                 var index = this.indexOfCurrentMusic();
 
