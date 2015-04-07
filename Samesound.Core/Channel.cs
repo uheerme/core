@@ -1,6 +1,7 @@
 ﻿using Samesound.Core.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -29,10 +30,13 @@ namespace Samesound.Core
 
         public string NetworkIdentifier { get; set; }
 
-        public virtual ICollection<Music> Musics { get; set; }
+        [DefaultValue(true)]
+        public bool Loops { get; set; }
 
         public int? CurrentId { get; set; }
         public DateTime? CurrentStartTime { get; set; }
+
+        public virtual ICollection<Music> Musics { get; set; }
 
         public DateTime DateCreated { get; set; }
 

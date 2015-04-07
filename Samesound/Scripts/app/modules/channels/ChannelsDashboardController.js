@@ -11,6 +11,28 @@ samesoundApp.controller(
                 //
             }
 
+            $scope.toogleLoop = function () {
+                $scope.channel.Loops = !$scope.channel.Loops;
+                $scope.channel.$update(
+                    function (updatedChannel) {
+                        toastr.success(
+                            updatedChannel.Name + ' will now '
+                                + updatedChannel.Loops
+                                ? 'loop at the end of the track'
+                                : 'stop at the end of the track.',
+                            'Saved!'
+                        )
+                    },
+                    function (error) {
+                        console.log(error);
+                        Validator.
+                            take(error).
+                            toastErrors().
+                            otherwiseToastError();
+                    }
+                );
+            }
+
             $scope.play = function (musicId) {
                 if (!$scope.channel.Musics.length) {
                     toastr.warning('You can\'t start a empty playlist. Add some musics first.', 'Ops!');
