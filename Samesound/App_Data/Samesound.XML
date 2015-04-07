@@ -784,12 +784,6 @@
             The id of the Channel that contains this Music.
             </summary>
         </member>
-        <member name="P:Samesound.ViewModels.MusicCreateViewModel.LengthInSeconds">
-            <summary>
-            The length of the music in seconds.
-            This property is read-only and will be ignored when sent to the server.
-            </summary>
-        </member>
         <member name="P:Samesound.ViewModels.MusicCreateViewModel.SizeInBytes">
             <summary>
             The size of the file which represents the music.
@@ -829,11 +823,6 @@
         <member name="P:Samesound.ViewModels.MusicResultViewModel.SizeInBytes">
             <summary>
             The size (in bytes) that the music file occupies/occupied in the server's disks.
-            </summary>
-        </member>
-        <member name="P:Samesound.ViewModels.MusicResultViewModel.LengthInSeconds">
-            <summary>
-            The length (in seconds) of the Music.
             </summary>
         </member>
         <member name="P:Samesound.ViewModels.MusicResultViewModel.ChannelId">
@@ -905,7 +894,69 @@
         </member>
         <member name="T:Samesound.ViewModels.ChannelResultViewModel">
             <summary>
-            The view model used to display Channel entries.
+            The view-model which represents a Channel entry with its Musics.
+            </summary>
+        </member>
+        <member name="T:Samesound.ViewModels.ChannelListResultViewModel">
+            <summary>
+            The view-model which represents a Channel entry without its Musics.
+            </summary>
+        </member>
+        <member name="M:Samesound.ViewModels.ChannelListResultViewModel.op_Explicit(Samesound.Core.Channel)~Samesound.ViewModels.ChannelListResultViewModel">
+            <summary>
+            Explicit conversion from Channel to ChannelListResultViewModel.
+            </summary>
+            <param name="c">The Channel that will be converted.</param>
+            <returns>The ChannelListResultViewModel that represents the Channel c.</returns>
+        </member>
+        <member name="P:Samesound.ViewModels.ChannelListResultViewModel.Id">
+            <summary>
+            The surrogate key that uniquely identifies a Channel in the database.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.ChannelListResultViewModel.Name">
+            <summary>
+            The name of the Channel.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.ChannelListResultViewModel.Owner">
+            <summary>
+            The Owner of the Channel. It can be set to be the email address, the MAC address or a regular username.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.ChannelListResultViewModel.NetworkIdentifier">
+            <summary>
+            A string that uniquely identifies the network used by the Owner. It can be the real IP address, the MAC address or a combination of both.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.ChannelListResultViewModel.Loops">
+            <summary>
+            A boolean that indicates if the Channel loops its musics or not.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.ChannelListResultViewModel.CurrentId">
+            <summary>
+            The Id of the Music that is currently being played.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.ChannelListResultViewModel.CurrentStartTime">
+            <summary>
+            The start timestamp of the current music.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.ChannelListResultViewModel.DateCreated">
+            <summary>
+            The moment when the Channel was created.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.ChannelListResultViewModel.DateUpdated">
+            <summary>
+            The moment when the Channel was last updated. If it never were, this value will be null.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.ChannelListResultViewModel.DateDeactivated">
+            <summary>
+            The moment when the Channel was deactivated. If this Channel is still active, this value will be null.
             </summary>
         </member>
         <member name="M:Samesound.ViewModels.ChannelResultViewModel.op_Explicit(Samesound.Core.Channel)~Samesound.ViewModels.ChannelResultViewModel">
@@ -915,59 +966,9 @@
             <param name="c">The Channel that will be converted.</param>
             <returns>The ChannelResultViewModel that represents the Channel c.</returns>
         </member>
-        <member name="P:Samesound.ViewModels.ChannelResultViewModel.Id">
-            <summary>
-            The surrogate key that uniquely identifies a Channel in the database.
-            </summary>
-        </member>
-        <member name="P:Samesound.ViewModels.ChannelResultViewModel.Name">
-            <summary>
-            The name of the Channel.
-            </summary>
-        </member>
-        <member name="P:Samesound.ViewModels.ChannelResultViewModel.Owner">
-            <summary>
-            The Owner of the Channel. It can be set to be the email address, the MAC address or a regular username.
-            </summary>
-        </member>
-        <member name="P:Samesound.ViewModels.ChannelResultViewModel.NetworkIdentifier">
-            <summary>
-            A string that uniquely identifies the network used by the Owner. It can be the real IP address, the MAC address or a combination of both.
-            </summary>
-        </member>
-        <member name="P:Samesound.ViewModels.ChannelResultViewModel.Loops">
-            <summary>
-            A boolean that indicates if the Channel loops its musics or not.
-            </summary>
-        </member>
-        <member name="P:Samesound.ViewModels.ChannelResultViewModel.CurrentId">
-            <summary>
-            The Id of the Music that is currently being played.
-            </summary>
-        </member>
-        <member name="P:Samesound.ViewModels.ChannelResultViewModel.CurrentStartTime">
-            <summary>
-            The start timestamp of the current music.
-            </summary>
-        </member>
         <member name="P:Samesound.ViewModels.ChannelResultViewModel.Musics">
             <summary>
             The collection of Musics that belong to this Channel.
-            </summary>
-        </member>
-        <member name="P:Samesound.ViewModels.ChannelResultViewModel.DateCreated">
-            <summary>
-            The moment when the Channel was created.
-            </summary>
-        </member>
-        <member name="P:Samesound.ViewModels.ChannelResultViewModel.DateUpdated">
-            <summary>
-            The moment when the Channel was last updated. If it never were, this value will be null.
-            </summary>
-        </member>
-        <member name="P:Samesound.ViewModels.ChannelResultViewModel.DateDeactivated">
-            <summary>
-            The moment when the Channel was deactivated. If this Channel is still active, this value will be null.
             </summary>
         </member>
         <member name="T:Samesound.ViewModels.ChannelCurrentResultViewModel">

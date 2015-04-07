@@ -27,12 +27,6 @@ namespace Samesound.ViewModels
         public int ChannelId { get; set; }
 
         /// <summary>
-        /// The length of the music in seconds.
-        /// This property is read-only and will be ignored when sent to the server.
-        /// </summary>
-        public int LengthInSeconds { get; set; }
-
-        /// <summary>
         /// The size of the file which represents the music.
         /// This property is read-only and will be ignored when sent to the server.
         /// </summary>
@@ -43,7 +37,6 @@ namespace Samesound.ViewModels
             return new Music
             {
                 Name            = m.Name,
-                LengthInSeconds = m.LengthInSeconds,
                 SizeInBytes     = m.SizeInBytes,
                 ChannelId       = m.ChannelId
             };
@@ -97,10 +90,6 @@ namespace Samesound.ViewModels
         /// </summary>
         public int SizeInBytes     { get; set; }
         /// <summary>
-        /// The length (in seconds) of the Music.
-        /// </summary>
-        public int LengthInSeconds { get; set; }
-        /// <summary>
         /// The id of the Channel which contains the Music.
         /// </summary>
         public int ChannelId       { get; set; }
@@ -120,7 +109,6 @@ namespace Samesound.ViewModels
                 Id                = c.Id,
                 Name              = c.Name,
                 SizeInBytes       = c.SizeInBytes,
-                LengthInSeconds   = c.LengthInSeconds,
                 ChannelId         = c.ChannelId,
                 DateCreated       = c.DateCreated,
                 DateUpdated       = c.DateUpdated
