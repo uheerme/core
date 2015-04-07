@@ -118,12 +118,14 @@ samesoundApp
 
             /// Update this.channel.CurrentId to match the next music in the order given by this.channel.Musics list.
             next: function () {
+                var channel = this.channel;
+
                 var nextIndex = (SynchronyProvider.indexOfCurrentMusic() + 1) % this.channel.Musics.length;
-                var nextMusic = this.channel.Musics[nextIndex];
+                var nextMusic = channel.Musics[nextIndex];
 
                 // updates channel's current music propagating change.
                 this.$scope.$apply(function () {
-                    this.channel.CurrentId = nextMusic.Id;
+                    channel.CurrentId = nextMusic.Id;
                 });
 
                 return this;
@@ -131,13 +133,22 @@ samesoundApp
 
             load: function (music) {
                 var player = this;
+
+                var wasAlreadyLoaded = MusicStreamProvider.wasAlreadyLoaded(music.Id);
                 var audio = MusicStreamProvider.load(music.Id);
 
-                audio.addEventListener('loadedmetadata', function () {
-                    player.$scope.$apply(function () {
-                        music.LengthInSeconds = Math.trunc(audio.duration);
-                    }); 
-                }, false);
+                if (!wasAlreadyLoaded) {
+                    audio.addEventListener('loadedmetadata', function () {
+                        player.$scope.$apply(function () {
+                            music.LengthInSeconds = Math.trunc(audio.duration);
+                        });
+                    }, false);
+
+                    audio.addEventListener('onloadeddata', function () {
+                        player.loadNextMusics(music);
+                    }, false);
+                }
+                
 
                 return this;
             },
@@ -180,8 +191,6 @@ samesoundApp
 
                     provider.serverTime = new Date(response.Now)
                     provider.serverTime.setMilliseconds(provider.serverTime.getMilliseconds() + delay);
-
-                    return provider;
                 });
 
                 return this;
@@ -241,6 +250,10 @@ samesoundApp
 
                 audioFromMusicId: function (musicId) {
                     return audios[musicId.toString()];
+                },
+
+                wasAlreadyLoaded: function (musicId) {
+                    return ~~audios[musicId.toString()];
                 },
 
                 load: function (musicId) {
