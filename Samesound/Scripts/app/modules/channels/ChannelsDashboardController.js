@@ -67,15 +67,17 @@ samesoundApp.controller(
                 }
 
                 for (var i = 0; i < $scope.files.length; i++) {
-                    $scope.numberOfFilesBeingUploaded++;
                     var file = $scope.files[i];
+
+                    $scope.numberOfFilesBeingUploaded++;
 
                     $upload.upload({
                         url: config.apiUrl + 'Musics',
                         file: file,
                         fields: {
                             'Name': file.uploadName,
-                            'ChannelId': channel.Id
+                            'ChannelId': channel.Id,
+                            //'LengthInSeconds': file.LengthInSeconds,
                         }
 
                     }).progress(function (evt) {
