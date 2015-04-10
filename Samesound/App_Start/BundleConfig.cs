@@ -39,6 +39,7 @@ namespace Samesound
                 "~/Scripts/app/modules/home/*.js",
                 "~/Scripts/app/modules/channels/*.js",
                 "~/Scripts/app/modules/musics/*.js",
+                "~/Scripts/app/modules/listen/*.js",
                 "~/Scripts/app/modules/status/*.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(

@@ -5,29 +5,16 @@ samesoundApp
         var playing = false;
 
         return {
-            /// Take a channel and start streaming it.
+            /// Take a channel.
             /// Considerations:
             ///     The MusicStreamProvider will be initialized: previous instances will be disposed, removing existing streamings.
-            ///     The client will re-sync with the server.
             take: function ($scope) {
                 this.$scope = $scope;
-                
                 MusicStreamProvider.initialize();
-
-                var currentMusic = SynchronyProvider
-                    .take(this.$scope.channel)
-                    .sync()
-                    .currentMusicOrDefault();
-
-                // There is at least one music in the Channel.
-                if (currentMusic) {
-                    this.load(currentMusic);
-                    this.loadNextMusics(currentMusic, 2);
-                }
 
                 return this;
             },
-            
+
             /// Mutes the current music acording with the value of shouldBeMuted.
             mute: function (shouldBeMuted) {
                 var currentId = this.$scope.channel.CurrentId;
@@ -40,6 +27,7 @@ samesoundApp
 
             /// Start the player, in case it hasn't been started yet (or force start with startegy = 'force-start').
             /// Considerations:
+            ///     The client will re-sync with the server.
             ///     The music with Id=this.channel.CurrentId will be played.
             start: function (strategy) {
                 if (!this.$scope.channel.CurrentId) {
@@ -53,11 +41,12 @@ samesoundApp
                     return this;
                 }
 
-                return this.playCurrent();
-            },
+                var currentMusic = SynchronyProvider
+                    .take(this.$scope)
+                    .sync()
+                    .currentMusicOrDefault();
 
-            playCurrent: function () {
-                return this.play(this.$scope.channel.CurrentId);
+                return this.play(currentMusic);
             },
 
             /// Play a music with Id=musicId from the this.channel.Musics list.
@@ -70,6 +59,7 @@ samesoundApp
                 // Two musics should never play at once.
                 this.stopAll();
 
+                //TODO: use this.stream
                 // Start streaming it, if it hasn't been done yet.
                 var audio = MusicStreamProvider
                     .load(musicId);
@@ -117,93 +107,158 @@ samesoundApp
                 return this;
             },
 
-            /// Update this.channel.CurrentId to match the next music in the order given by this.channel.Musics list.
-            next: function () {
+            /// Asks MusicStreamProvider for the stream of all musics.
+            streamAll: function () {
                 var channel = this.$scope.channel;
 
-                var nextIndex = (SynchronyProvider.indexOfCurrentMusic() + 1) % channel.Musics.length;
-                var nextMusic = channel.Musics[nextIndex];
-
-                // updates channel's current music propagating change.
-                this.$scope.$apply(function () {
-                    channel.CurrentId = nextMusic.Id;
-                });
+                for (var i in channel.Musics) {
+                    var music = channel.Musics[i];
+                    this.stream(music);
+                }
 
                 return this;
             },
 
-            load: function (music) {
+            /// Asks MusicStreamProvider for the stream of the music.
+            stream: function (music) {
                 var player = this;
 
-                var wasAlreadyLoaded = MusicStreamProvider.wasAlreadyLoaded(music.Id);
-                var audio = MusicStreamProvider.load(music.Id);
+                return this;
+            },
 
-                if (!wasAlreadyLoaded) {
-                    audio.addEventListener('loadedmetadata', function () {
-                        player.$scope.$apply(function () {
-                            music.LengthInSeconds = Math.trunc(audio.duration);
-                        });
-                    }, false);
+            fetchAll: function (notify) {
+                var channel = this.$scope.channel;
 
-                    audio.addEventListener('onloadeddata', function () {
-                        player.loadNextMusics(music);
-                    }, false);
+                for (var i in channel.Musics) {
+                    var music = channel.Musics[i];
+                    this.fetch(music, notify);
                 }
 
                 return this;
             },
 
-            /// Asks MusicStreamProvider for the stream of the following musics.
-            loadNextMusics: function (music, count) {
-                var channel = this.$scope.channel;
-                var musicId = music.Id;
-                count = count || 2;
+            fetch: function (music, notify) {
+                var player = this;
 
-                var baseIndex = SynchronyProvider.indexOfMusic(musicId);
+                // If music was previously loaded, this already happened.
+                if (!MusicStreamProvider.wasAlreadyLoaded(music.Id)) {
+                    var audio = MusicStreamProvider.fetch(music.Id);
 
-                // Load the next N musics.
-                for (var i = 1; i < count +1; i++) {
-                    var indexToLoad = (baseIndex + i) % channel.Musics.length;
-                    var musicToLoad = channel.Musics[indexToLoad];
-                    this.load(musicToLoad);
+                    // Fetch music's length.
+                    audio.addEventListener('loadedmetadata', function () {
+                        var duration = audio.duration;
+                        player.$scope.$apply(function () {
+                            music.LengthInSeconds = duration;
+                            player.$scope.fetched++;
+                        });
+                        MusicStreamProvider.remove(music.Id);
+                        if (player.$scope.fetched == 23) MusicStreamProvider.dump();
+                        if (notify) notify();
+                    }, false);
                 }
-
-                return this;
             }
         };
     }])
 
 samesoundApp
-    .factory('SynchronyProvider', ['StatusResource', function (Status) {
+    .factory('SynchronyProvider', ['StatusResource', 'MusicStreamProvider', function (Status, MusicStreamProvider) {
         return {
-            take: function (channel) {
-                this.channel = channel;
+            take: function ($scope) {
+                this.$scope = $scope;
+                this._synchronized = false;
+
                 return this;
             },
 
-            sync: function () {
+            sync: function (async) {
+                var channel = this.$scope.channel;
+
                 var provider = this;
                 var timeframe = new Date();
 
                 Status.now().$promise.then(function (response) {
                     provider.localTime = new Date();
 
+                    // Cristian's algorithm.
                     timeframe = (provider.localTime - timeframe);
                     var delay = timeframe / 2;
 
-                    provider.serverTime = new Date(response.Now)
+                    provider.serverTime = new Date(Date.parse(response.Now));
                     provider.serverTime.setMilliseconds(provider.serverTime.getMilliseconds() + delay);
+
+                    // Define actual current music, given the time elapsed.
+                    var channel = provider.$scope.channel;
+
+                    channel.CurrentStartAt = channel.CurrentWait = undefined;
+
+                    var serverTime = provider.serverTime;
+                    var startTime = new Date(Date.parse(channel.CurrentStartTime));
+
+                    timeframe = serverTime - startTime;
+
+                    if (timeframe <= 0) {
+                        console.log('Music will begin in ' + Math.abs(timeframe) + ' milliseconds.');
+                        channel.CurrentWait = Math.abs(timeframe);
+                    }
+                    else {
+                        var spinlock = true;
+
+                        var audio = MusicStreamProvider.audioFromMusicId(channel.CurrentId);
+                        audio.addEventListener('loadedmetadata', function () {
+
+                            timeframe -= audio.duration;
+                            provider.next();
+                            spinlock = false;
+                        }, false);
+
+                        while (spinlock);
+
+                        while (timeframe >= channel.Current.LengthInSeconds) {
+                            var spinlock = true;
+
+
+
+
+                            while (spinlock);
+                        }
+
+                        channel.CurrentStartAt = timeframe;
+                    }
+
+                    provider._synchronized = true;
                 });
+
+                // If value 'non-blocking' wasn't passed, wait until synchronizing is complete.
+                //if (async !== 'non-blocking')
+                //    while (this._synchronized == false);
+
+                return this;
+            },
+
+            /// Update this.channel.CurrentId to match the next music in the order given by this.channel.Musics list.
+            next: function () {
+                var musics = this.$scope.channel.Musics;
+
+                var nextIndex = (this.indexOfCurrentMusic() + 1) % musics.length;
+                var nextMusic = musics[nextIndex];
+
+                // updates channel's current music propagating change.
+                this.channel.Current = nextMusic;
+                this.channel.CurrentId = nextMusic.Id;
 
                 return this;
             },
 
             indexOfCurrentMusic: function () {
-                return this.indexOfMusic(this.channel.CurrentId);
+                var channel = this.$scope.channel;
+
+                return channel.CurrentId
+                    ? this.indexOfMusic(channel.CurrentId)
+                    : -1;
             },
 
             indexOfMusic: function (musicId) {
-                var musics = this.channel.Musics;
+                var musics = this.$scope.channel.Musics;
 
                 for (var i = 0; i < musics.length; i++)
                     if (musics[i].Id == musicId)
@@ -212,14 +267,23 @@ samesoundApp
             },
 
             currentMusicOrDefault: function () {
-                return this.currentMusic() || this.channel.Musics[0];
+                var musics = this.$scope.channel.Musics;
+                var current = this.currentMusic();
+
+                if (current)
+                    return current;
+
+                if (musics.length)
+                    return musics[0];
+
+                return null;
             },
 
             currentMusic: function () {
                 var index = this.indexOfCurrentMusic();
 
                 return index > -1
-                    ? this.channel.Musics[index]
+                    ? this.$scope.channel.Musics[index]
                     : null;
             }
         };
@@ -229,17 +293,14 @@ samesoundApp
     .factory('MusicStreamProvider', [
         '$document', 'config',
         function ($document, config) {
-            var localTime,
-                serverTime,
-                maxMusicsLoadedAtOnce = 3,
-                audios = {};
+            var audios = {};
 
             return {
-                initialize: function (strategy) {
+                initialize: function () {
                     return this.dispose();
                 },
 
-                dispose: function (strategy) {
+                dispose: function () {
                     // Stop streaming and pause all audios.
                     for (var audioId in audios) {
                         var audio = audios[audioId];
@@ -259,12 +320,15 @@ samesoundApp
                 },
 
                 wasAlreadyLoaded: function (musicId) {
-                    return ~~audios[musicId.toString()];
+                    return !!audios[musicId.toString()];
                 },
 
                 load: function (musicId) {
                     var musicAlreadyStreaming = audios[musicId.toString()];
-                    if (musicAlreadyStreaming) return musicAlreadyStreaming;
+                    if (musicAlreadyStreaming) {
+                        musicAlreadyStreaming.preload = 'auto';
+                        return musicAlreadyStreaming;
+                    }
 
                     var audio = $document[0].createElement('audio');
 
@@ -272,6 +336,36 @@ samesoundApp
                     audio.preload = 'auto';
 
                     return audios[musicId.toString()] = audio;
+                },
+
+                fetch: function (musicId) {
+                    var musicAlreadyStreaming = audios[musicId.toString()];
+                    if (musicAlreadyStreaming) return musicAlreadyStreaming;
+
+                    var audio = $document[0].createElement('audio');
+
+                    audio.src = config.apiUrl + 'Musics/' + musicId + '/Stream';
+                    audio.preload = 'metadata';
+
+                    return audios[musicId.toString()] = audio;
+                },
+
+                remove: function (musicId) {
+                    var audio = audios[musicId.toString()];
+                    if (audio) {
+                        audio.preload = 'none';
+                        audio.url = '';
+                        audio.load();
+
+                        delete audios[musicId.toString()];
+                    }
+
+                    return true;
+                },
+
+                dump: function () {
+                    console.log(audios);
+                    return this;
                 }
             };
         }])

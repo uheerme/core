@@ -337,11 +337,12 @@
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\app\app.js" />
     <Content Include="Scripts\app\modules\channels\Channel.js" />
-    <Content Include="Scripts\app\modules\channels\ListeningController.js" />
     <Content Include="Scripts\app\modules\channels\ChannelsDashboardController.js" />
     <Content Include="Scripts\app\modules\channels\dashboard.html" />
-    <Content Include="Scripts\app\modules\channels\listening.html" />
-    <Content Include="Scripts\app\modules\musics\MusicFactory.js" />
+    <Content Include="Scripts\app\modules\listen\ListenRoutes.js" />
+    <Content Include="Scripts\app\modules\listen\listen.html" />
+    <Content Include="Scripts\app\modules\listen\ListenController.js" />
+    <Content Include="Scripts\app\modules\listen\MusicFactory.js" />
     <Content Include="Scripts\app\modules\musics\musics.html" />
     <Content Include="Scripts\app\modules\musics\MusicsRoutes.js" />
     <Content Include="Scripts\app\modules\musics\MusicsController.js" />

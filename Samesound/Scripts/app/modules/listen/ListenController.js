@@ -1,10 +1,11 @@
 ﻿'use strict';
 
 samesoundApp
-    .controller('ListeningController',
+    .controller('ListenController',
         ['$scope', 'channel', 'MusicPlayer', 'config',
         function ($scope, channel, MusicPlayer, config) {
             $scope.currentMusicCurrentTime = 0;
+            $scope.fetched = 0;
             $scope.channel = channel;
 
             $scope.toogleMute = function () {
@@ -18,5 +19,9 @@ samesoundApp
 
             $scope.player = MusicPlayer
                 .take($scope)
-                .start();
+                .fetchAll(function () {
+                    if ($scope.fetched >= $scope.channel.Musics.length) {
+                        $scope.player.start();
+                    }
+                });
         }]);
