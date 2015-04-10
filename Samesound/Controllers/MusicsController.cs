@@ -113,6 +113,10 @@ namespace Samesound.Controllers
         /// <summary>
         /// Create a new Music.
         /// </summary>
+        /// <param name="Name">The name that will be displayed to the listeners.</param>
+        /// <param name="ChannelId">The Id of the Channel that holds the music.</param>
+        /// <param name="LengthInSeconds">The length of the music that is being uploaded.</param>
+        /// <param name="File">The music's actual file.</param>
         /// <returns>A response with the created Music, if succeeded. A BadRequest response, otherwise.</returns>
         [ResponseType(typeof(MusicResultViewModel))]
         public async Task<IHttpActionResult> PostMusic()
@@ -143,13 +147,17 @@ namespace Samesound.Controllers
 
                 // Get the song's name and channel.
                 var model = new MusicCreateViewModel();
-                model.Name = provider.FormData.GetValues("Name").First();
-                model.ChannelId = int.Parse(provider.FormData.GetValues("ChannelId").First());
-
                 try
                 {
+                    model.Name = provider.FormData.GetValues("Name").First();
+                    model.ChannelId = int.Parse(provider.FormData.GetValues("ChannelId").First());
+                    
                     var extension = MusicProvider.Extensions[file.Headers.ContentType.MediaType];
                     model.Name = Path.ChangeExtension(model.Name, extension);
+                }
+                catch (ArgumentNullException)
+                {
+                    // One of the arguments wasn't passed. Do nothing, as this situation is handled by validation down bellow.
                 }
                 catch (KeyNotFoundException)
                 {

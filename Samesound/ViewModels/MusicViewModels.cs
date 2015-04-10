@@ -17,28 +17,28 @@ namespace Samesound.ViewModels
         /// The name that the new Music will assume. The music file will be renamed to match this name.
         /// </summary>
         [Required]
-        [StringLength(128, MinimumLength=4)]
-        public string Name     { get; set; }
-
+        [StringLength(128, MinimumLength = 4)]
+        public string Name { get; set; }
         /// <summary>
         /// The id of the Channel that contains this Music.
         /// </summary>
         [Required]
+        [Range(1, int.MaxValue)]
         public int ChannelId { get; set; }
-
         /// <summary>
-        /// The size of the file which represents the music.
-        /// This property is read-only and will be ignored when sent to the server.
+        /// The size (in bytes) that the music file occupies/occupied in the server's disks.
         /// </summary>
+        [Required]
+        [Range(1, int.MaxValue)]
         public int SizeInBytes { get; set; }
-        
+
         public static explicit operator Music(MusicCreateViewModel m)
         {
             return new Music
             {
-                Name            = m.Name,
-                SizeInBytes     = m.SizeInBytes,
-                ChannelId       = m.ChannelId
+                Name = m.Name,
+                ChannelId = m.ChannelId,
+                SizeInBytes = m.SizeInBytes
             };
         }
     }
@@ -53,7 +53,6 @@ namespace Samesound.ViewModels
         /// </summary>
         [Required]
         public int Id { get; set; }
-
         /// <summary>
         /// The name that the new Music will assume. The music file will be renamed to match this name.
         /// </summary>
@@ -80,7 +79,7 @@ namespace Samesound.ViewModels
         /// <summary>
         /// The surrogate key that uniquely identifies a Music in the database.
         /// </summary>
-        public int    Id   { get; set; }
+        public int Id { get; set; }
         /// <summary>
         /// The name of the Music.
         /// </summary>
@@ -88,15 +87,15 @@ namespace Samesound.ViewModels
         /// <summary>
         /// The size (in bytes) that the music file occupies/occupied in the server's disks.
         /// </summary>
-        public int SizeInBytes     { get; set; }
+        public int SizeInBytes { get; set; }
         /// <summary>
         /// The id of the Channel which contains the Music.
         /// </summary>
-        public int ChannelId       { get; set; }
+        public int ChannelId { get; set; }
         /// <summary>
         /// The moment when the Music was created.
         /// </summary>
-        public DateTime  DateCreated { get; set; }
+        public DateTime DateCreated { get; set; }
         /// <summary>
         /// The moment when the Music was last updated. If it never were, this value will be null.
         /// </summary>
@@ -106,12 +105,12 @@ namespace Samesound.ViewModels
         {
             return c == null ? null : new MusicResultViewModel
             {
-                Id                = c.Id,
-                Name              = c.Name,
-                SizeInBytes       = c.SizeInBytes,
-                ChannelId         = c.ChannelId,
-                DateCreated       = c.DateCreated,
-                DateUpdated       = c.DateUpdated
+                Id = c.Id,
+                Name = c.Name,
+                SizeInBytes = c.SizeInBytes,
+                ChannelId = c.ChannelId,
+                DateCreated = c.DateCreated,
+                DateUpdated = c.DateUpdated
             };
         }
     }

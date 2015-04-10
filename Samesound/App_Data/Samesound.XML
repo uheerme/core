@@ -591,6 +591,10 @@
             <summary>
             Create a new Music.
             </summary>
+            <param name="Name">The name that will be displayed to the listeners.</param>
+            <param name="ChannelId">The Id of the Channel that holds the music.</param>
+            <param name="LengthInSeconds">The length of the music that is being uploaded.</param>
+            <param name="File">The music's actual file.</param>
             <returns>A response with the created Music, if succeeded. A BadRequest response, otherwise.</returns>
         </member>
         <member name="M:Samesound.Controllers.MusicsController.GetMusicStream(Samesound.ViewModels.MusicDownloadViewModel)">
@@ -786,8 +790,7 @@
         </member>
         <member name="P:Samesound.ViewModels.MusicCreateViewModel.SizeInBytes">
             <summary>
-            The size of the file which represents the music.
-            This property is read-only and will be ignored when sent to the server.
+            The size (in bytes) that the music file occupies/occupied in the server's disks.
             </summary>
         </member>
         <member name="T:Samesound.ViewModels.MusicUpdateViewModel">
