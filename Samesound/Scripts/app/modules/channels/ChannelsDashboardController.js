@@ -63,14 +63,20 @@ samesoundApp.controller(
                     return false;
                 }
 
+                var file = $scope.files[0];
+                return $scope.upload(file);
+            }
+            $scope.upload = function (file) {
+                if (!file) {
+                    console.log('Cannot upload invalid file.');
+                    return false;
+                }
                 if ($scope.isUploading) {
-                    console.log('Can\'t upload two files at once!');
+                    console.log('Cannot upload two files at once!');
                     return false;
                 }
 
                 $scope.isUploading = true;
-                var file = $scope.files[0];
-
                 $scope.removeFromUploadQueue(file);
 
                 $scope.currentUpload = $upload.upload({
@@ -97,13 +103,9 @@ samesoundApp.controller(
                 }).finally(function () {
                     $scope.currentUpload = null;
                     $scope.isUploading = false;
-                    $scope.uploadNext();
                 });
 
                 return true;
-            }
-            $scope.uploadNext = function () {
-                $scope.uploadFirst();
             }
             $scope.cancel = function (file) {
                 if ($scope.currentUpload) {
