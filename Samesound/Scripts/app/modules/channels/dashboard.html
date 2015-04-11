@@ -6,7 +6,7 @@
         <small>#{{ channel.Id }}</small>
     </h1>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-8 col-sm-6">
             <div class="row">
                 <div class="col-sm-6">
                     <div class="well">
@@ -54,8 +54,6 @@
                                     </li>
                                 </ul>
                             </div>
-
-                            
                         </p>
                         <p>
                             <button ng-click="toogleLoop()"
@@ -92,40 +90,41 @@
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div ng-repeat="music in channel.Musics" class="animate-list well well-list-item">
-                <h5>
-                    {{ music.Name }}
-                    <small>#{{ music.Id }}</small>
-                </h5>
+        <div class="col-md-4 col-sm-6">
+            <div class="well well-list-item">
+                <form>
+                    <div class="form-group">
+                        <input type="text" ng-model="search"
+                               placeholder="Music's name, size > 10mb, length <= 50s" class="form-control" />
+                    </div>
+                </form>
+            </div>
+            <div id="uploadedFiles" ng-repeat="music in channel.Musics | filter:search" class="animate-list well well-list-item">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <h4>
+                            <small>
+                                #{{ music.Id }}
+                            </small>
+                        </h4>
+                    </div>
+                    <div class="col-sm-10">
+                        <form class="form">
+                            <div class="form-group">
+                                <input type="text" ng-model="music.Name" class="form-control" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
                 <div class="pull-right">
                     <label class="label label-default">Added on {{ music.DateCreated }}</label>
-                    <label class="label label-default">{{ music.LengthInSeconds }} seconds</label>
-                    <label class="label label-primary">{{ music.SizeInBytes }} bytes</label>
+                    <label class="label label-primary">{{ (music.SizeInBytes/1048576).toFixed(2) }} MB</label>
                 </div>
             </div>
 
             <!--Music upload section-->
             <div ng-hide="channel.DateDeactivated">
-                <div id="upload-section" ng-hide="numberOfFilesBeingUploaded || files.length">
-                    <div ng-file-drop ng-model="files" class="drop-box well text-center"
-                         drag-over-class="dragover" ng-multiple="true" allow-dir="true">
-                        <h2>
-                            <span class="glyphicon glyphicon-cloud-upload"></span>
-                            <small>Drop multiple files or folders here.</small>
-                        </h2>
-                    </div>
-
-                    <div class="text-right">
-                        <button class="btn btn-lg btn-default" ng-multiple="true" ng-file-select ng-model="files">
-                            <span class="glyphicon glyphicon-search"></span>
-                            Select files for upload
-                        </button>
-                    </div>
-                    <br /><br />
-                </div>
-
-                <div ng-repeat="file in files" class="animate-list">
+                <div id="filesToBeUploaded" ng-repeat="file in files" class="animate-list">
                     <div class="well well-list-item">
                         <div class="row">
                             <div class="col-sm-8">
@@ -135,19 +134,38 @@
                             </div>
                             <div class="col-sm-4 text-right">
                                 <button ng-click="removeFromUploadQueue(file)"
-                                        title="Remove {{ file.name }} from upload queue." class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+                                        title="Remove {{ file.name }} from upload queue." class="btn btn-sm btn-danger">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </button>
                             </div>
                         </div>
                         <div class="progress">
                             <div class="progress-bar progress-bar-default" style="width:{{ file.progressPercentage }}%"></div>
                         </div>
-                        <span class="label label-info">{{ (file.size/1048576).toFixed(2) }} MBs</span>
+                        <span class="label label-info">{{ (file.size/1048576).toFixed(2) }} MB</span>
                     </div>
                 </div>
-                <div ng-show="files.length" class="text-right">
-                    <button class="btn btn-lg btn-primary" ng-click="upload()" ng-class="{disabled: !files || !files.length}">
-                        <span class="glyphicon glyphicon-cloud-upload"></span> Upload files
-                    </button>
+
+                <div id="upload-section" ng-hide="isUploading">
+                    <div ng-file-drop ng-model="files" class="drop-box well text-center"
+                         drag-over-class="dragover" ng-multiple="true" allow-dir="true">
+                        <h2>
+                            <span class="glyphicon glyphicon-cloud-upload"></span>
+                            <small>Drop multiple files or folders here.</small>
+                        </h2>
+                    </div>
+
+                    <div class="text-right">
+                        <button class="btn btn-default" ng-multiple="true" ng-file-select ng-model="files">
+                            <span class="glyphicon glyphicon-search"></span>
+                            Select files for upload
+                        </button>
+                        <button ng-click="uploadFirst()"
+                                ng-show="files.length"
+                                class="btn btn-primary" ng-class="{disabled: !files || !files.length}">
+                            <span class="glyphicon glyphicon-cloud-upload"></span> Upload files
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

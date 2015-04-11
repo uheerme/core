@@ -2,14 +2,9 @@
 samesoundApp.controller(
     'ChannelDashboardController',
     ['$http', '$scope', '$upload', 'config', 'channel', 'Validator',
-        function ($http, $scope, $upload, config, channel, Validator) {         
+        function ($http, $scope, $upload, config, channel, Validator) {
 
             $scope.channel = channel;
-            $scope.numberOfFilesBeingUploaded = 0;
-
-            $scope.cancel = function (file) {
-                //
-            }
 
             $scope.toogleLoop = function () {
                 $scope.channel.Loops = !$scope.channel.Loops;
@@ -61,43 +56,60 @@ samesoundApp.controller(
                 $scope.files.splice(indexOf, 1);
             }
 
-            $scope.upload = function () {
+            $scope.isUploading = false;
+            $scope.uploadFirst = function () {
                 if (!$scope.files || !$scope.files.length) {
-                    return;
+                    $scope.isUploading = false;
+                    return false;
                 }
 
-                for (var i = 0; i < $scope.files.length; i++) {
-                    var file = $scope.files[i];
-
-                    $scope.numberOfFilesBeingUploaded++;
-
-                    $upload.upload({
-                        url: config.apiUrl + 'Musics',
-                        file: file,
-                        fields: {
-                            'Name': file.uploadName,
-                            'ChannelId': channel.Id,
-                            //'LengthInSeconds': file.LengthInSeconds,
-                        }
-
-                    }).progress(function (evt) {
-                        file.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-
-                    }).success(function (music, status) {
-                        toastr.success(music.Name + ' uploaded!');
-                        $scope.channel.Musics.push(music);
-
-                    }).error(function (data, status, headers, config) {
-                        console.log(data);
-                        Validator.
-                            take(data).
-                            toastErrors().
-                            otherwiseToastError();
-
-                    }).finally(function () {
-                        $scope.removeFromUploadQueue(file);
-                        $scope.numberOfFilesBeingUploaded--;
-                    });
+                if ($scope.isUploading) {
+                    console.log('Can\'t upload two files at once!');
+                    return false;
                 }
-            };
-        }])
+
+                $scope.isUploading = true;
+                var file = $scope.files[0];
+
+                $scope.removeFromUploadQueue(file);
+
+                $scope.currentUpload = $upload.upload({
+                    url: config.apiUrl + 'Musics',
+                    file: file,
+                    fields: {
+                        'Name': file.uploadName,
+                        'ChannelId': channel.Id,
+                    }
+                }).progress(function (evt) {
+                    file.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                    console.log(file.progressPercentage);
+                }).success(function (music, status) {
+                    toastr.success(music.Name + ' uploaded!');
+                    $scope.channel.Musics.push(music);
+
+                }).error(function (data, status, headers, config) {
+                    console.log(data);
+                    Validator.
+                        take(data).
+                        toastErrors().
+                        otherwiseToastError();
+
+                }).finally(function () {
+                    $scope.currentUpload = null;
+                    $scope.isUploading = false;
+                    $scope.uploadNext();
+                });
+
+                return true;
+            }
+            $scope.uploadNext = function () {
+                $scope.uploadFirst();
+            }
+            $scope.cancel = function (file) {
+                if ($scope.currentUpload) {
+                    $scope.currentUpload.abort();
+                    $scope.currentUpload = null;
+                    $scope.isUploading = false;
+                }
+            }
+        }]);
