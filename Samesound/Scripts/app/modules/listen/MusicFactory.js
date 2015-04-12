@@ -82,9 +82,10 @@ samesoundApp
 
                 audio.addEventListener('ended', function () {
                     // If the channels allows looping or the current music was not the last of the track.
-                    if (player.$scope.channel.Loops || !PlaysetIterator.isLastOnList(music.Id))
-                        player.next().play();
-
+                    if (player.$scope.channel.Loops || !PlaysetIterator.isLastOnList(music.Id)) {
+                        var next = PlaysetIterator.next()
+                        player.play(next);
+                    }
                 }, false);
 
                 audio.play();
@@ -233,8 +234,9 @@ samesoundApp
                 dispose: function () {
                     // Stop streaming and pause all audios. Finally, remove their references for good.
                     if (this._streams) {
-                        for (var audio in Object.keys(this._streams)) {
-                            this.remove(audio);
+                        var musicIds = Object.keys(this._streams);
+                        for (var i in musicIds) {
+                            this.remove(musicIds[i]);
                         }
                     }
 
@@ -277,14 +279,13 @@ samesoundApp
                 /// Remove a music from the streaming list.
                 remove: function (musicId) {
                     var audio = this._streams[musicId.toString()];
-                    if (audio) {
-                        audio.pause();
-                        audio.preload = 'none';
-                        audio.src = '';
+                    if (!audio) return false;
+                    
+                    audio.pause();
+                    audio.preload = 'none';
+                    audio.src = '';
 
-                        delete this._streams[musicId.toString()];
-                    }
-
+                    delete this._streams[musicId.toString()];
                     return true;
                 }
             };
