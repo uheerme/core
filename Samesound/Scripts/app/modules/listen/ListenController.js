@@ -19,9 +19,5 @@ samesoundApp
 
             $scope.player = MusicPlayer
                 .take($scope)
-                .fetchAll(function () {
-                    if ($scope.fetched >= $scope.channel.Musics.length) {
-                        $scope.player.start();
-                    }
-                });
+                .start();
         }]);

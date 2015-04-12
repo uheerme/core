@@ -1,15 +1,16 @@
 ﻿'use strict';
 
 samesoundApp
-    .factory('MusicPlayer', ['SynchronyProvider', 'MusicStreamProvider', function (SynchronyProvider, MusicStreamProvider) {
-        var playing = false;
-
+    .factory('MusicPlayer', ['Synchronizer', 'MusicStreamProvider', 'PlaysetIterator',
+    function (Synchronizer, MusicStreamProvider, PlaysetIterator) {
         return {
-            /// Take a channel.
+            /// Take a $scope.
             /// Considerations:
             ///     The MusicStreamProvider will be initialized: previous instances will be disposed, removing existing streamings.
             take: function ($scope) {
                 this.$scope = $scope;
+
+                PlaysetIterator.take($scope.channel);
                 MusicStreamProvider.initialize();
 
                 return this;
@@ -19,8 +20,10 @@ samesoundApp
             mute: function (shouldBeMuted) {
                 var currentId = this.$scope.channel.CurrentId;
 
-                if (currentId)
-                    MusicStreamProvider.audioFromMusicId(currentId).muted = shouldBeMuted;
+                if (currentId) {
+                    var audio = MusicStreamProvider.audioById(currentId);
+                    if (audio) audio.muted = shouldBeMuted;
+                }
 
                 return this;
             },
@@ -32,58 +35,63 @@ samesoundApp
             start: function (strategy) {
                 if (!this.$scope.channel.CurrentId) {
                     console.log('Channel is currently stalled.');
-                    playing = false;
                     return this;
                 }
 
-                if (playing && strategy !== 'force-start') {
-                    console.log('MusicPlayer is already playing.');
+                if (this.started && strategy !== 'force-start') {
+                    console.log('MusicPlayer has already started.');
                     return this;
                 }
 
-                var currentMusic = SynchronyProvider
-                    .take(this.$scope)
-                    .sync()
-                    .currentMusicOrDefault();
+                //Synchronizer
+                //    .take(this.$scope)
+                //    .sync();
 
-                return this.play(currentMusic);
+                var player = this;
+                this.fetchAll(function () {
+                    if (player.$scope.fetched == player.$scope.channel.Musics.length) {
+                        player.play();
+                    }
+                });
+
+                this.started = true;
+                return this;
             },
 
             /// Play a music with Id=musicId from the this.channel.Musics list.
             /// Considerations:
             ///     If musicId were not provided, it assumes this.channel.CurrentId as replacement.
             ///     Defines a callback to play the next music (constrained by some Channel definitions).
-            play: function (musicId) {
-                var musicId = musicId || this.$scope.channel.CurrentId;
+            play: function (music) {
+                var music = music || PlaysetIterator.currentOrDefault();
 
                 // Two musics should never play at once.
                 this.stopAll();
 
-                //TODO: use this.stream
                 // Start streaming it, if it hasn't been done yet.
                 var audio = MusicStreamProvider
-                    .load(musicId);
+                    .stream(music.Id);
 
                 // Modifies progress-bar as music progresses.
                 var player = this;
                 audio.addEventListener('timeupdate', function () {
                     player.$scope.$apply(function () {
-                        player.$scope.currentMusicCurrentTime = Math.trunc(audio.currentTime);
+                        player.$scope.currentCurrentTime = Math.trunc(audio.currentTime);
                     });
                 }, false);
 
                 audio.addEventListener('ended', function () {
                     // If the channels allows looping or the current music was not the last of the track.
-                    if (player.$scope.channel.Loops
-                        || SynchronyProvider.indexOfCurrentMusic() < player.$scope.channel.Musics.length - 1) {
-
+                    if (player.$scope.channel.Loops || !PlaysetIterator.isLastOnList(music.Id))
                         player.next().play();
-                    }
+
                 }, false);
 
                 audio.play();
-                playing = true;
-                this.$scope.channel.Current = SynchronyProvider.currentMusic();
+                this.playing = true;
+                this.$scope.channel.CurrentId = music.Id;
+                this.$scope.channel.Current = music;
+
                 return this;
             },
 
@@ -91,19 +99,24 @@ samesoundApp
             stopAll: function () {
                 for (var index in this.$scope.channel.Musics) {
                     var music = this.$scope.channel.Musics[index];
-                    this.stop(music.Id);
+                    this.stop(music);
                 }
 
-                playing = false;
+                this.playing = false;
                 return this;
             },
 
-            /// Stop the audio that makes reference to the music with Id=musicId.
-            stop: function (musicId) {
-                var audio = MusicStreamProvider.audioFromMusicId(musicId);
-                if (audio) audio.pause();
+            /// Stop the audio that makes reference to the music with Id=music.Id.
+            stop: function (music) {
+                music = music || PlaysetIterator.current();
+                if (music) {
+                    var audio = MusicStreamProvider.audioById(music.Id);
+                    if (audio) audio.pause();
 
-                playing = 'unknown';
+                    if (music.Id == this.$scope.channel.CurrentId)
+                        this.playing = false;
+                }
+
                 return this;
             },
 
@@ -123,6 +136,8 @@ samesoundApp
             stream: function (music) {
                 var player = this;
 
+                MusicStreamProvider.stream(music.Id);
+
                 return this;
             },
 
@@ -141,7 +156,7 @@ samesoundApp
                 var player = this;
 
                 // If music was previously loaded, this already happened.
-                if (!MusicStreamProvider.wasAlreadyLoaded(music.Id)) {
+                if (!MusicStreamProvider.exists(music.Id)) {
                     var audio = MusicStreamProvider.fetch(music.Id);
 
                     // Fetch music's length.
@@ -152,16 +167,15 @@ samesoundApp
                             player.$scope.fetched++;
                         });
                         MusicStreamProvider.remove(music.Id);
-                        if (player.$scope.fetched == 23) MusicStreamProvider.dump();
                         if (notify) notify();
                     }, false);
                 }
-            }
+            },
         };
     }])
 
 samesoundApp
-    .factory('SynchronyProvider', ['StatusResource', 'MusicStreamProvider', function (Status, MusicStreamProvider) {
+    .factory('Synchronizer', ['StatusResource', 'MusicStreamProvider', 'PlaysetIterator', function (Status, PlaysetIterator) {
         return {
             take: function ($scope) {
                 this.$scope = $scope;
@@ -173,118 +187,36 @@ samesoundApp
             sync: function (async) {
                 var channel = this.$scope.channel;
 
-                var provider = this;
+                var _this = this;
                 var timeframe = new Date();
 
                 Status.now().$promise.then(function (response) {
-                    provider.localTime = new Date();
+                    _this.localTime = new Date();
 
                     // Cristian's algorithm.
-                    timeframe = (provider.localTime - timeframe);
+                    timeframe = (_this.localTime - timeframe);
                     var delay = timeframe / 2;
 
-                    provider.serverTime = new Date(Date.parse(response.Now));
-                    provider.serverTime.setMilliseconds(provider.serverTime.getMilliseconds() + delay);
+                    _this.serverTime = new Date(Date.parse(response.Now));
+                    _this.serverTime.setMilliseconds(_this.serverTime.getMilliseconds() + delay);
 
-                    // Define actual current music, given the time elapsed.
-                    var channel = provider.$scope.channel;
-
-                    channel.CurrentStartAt = channel.CurrentWait = undefined;
-
-                    var serverTime = provider.serverTime;
-                    var startTime = new Date(Date.parse(channel.CurrentStartTime));
-
-                    timeframe = serverTime - startTime;
-
-                    if (timeframe <= 0) {
-                        console.log('Music will begin in ' + Math.abs(timeframe) + ' milliseconds.');
-                        channel.CurrentWait = Math.abs(timeframe);
-                    }
-                    else {
-                        var spinlock = true;
-
-                        var audio = MusicStreamProvider.audioFromMusicId(channel.CurrentId);
-                        audio.addEventListener('loadedmetadata', function () {
-
-                            timeframe -= audio.duration;
-                            provider.next();
-                            spinlock = false;
-                        }, false);
-
-                        while (spinlock);
-
-                        while (timeframe >= channel.Current.LengthInSeconds) {
-                            var spinlock = true;
-
-
-
-
-                            while (spinlock);
-                        }
-
-                        channel.CurrentStartAt = timeframe;
-                    }
-
-                    provider._synchronized = true;
+                    _this._translatePlayset();
                 });
 
-                // If value 'non-blocking' wasn't passed, wait until synchronizing is complete.
-                //if (async !== 'non-blocking')
-                //    while (this._synchronized == false);
-
                 return this;
             },
 
-            /// Update this.channel.CurrentId to match the next music in the order given by this.channel.Musics list.
-            next: function () {
-                var musics = this.$scope.channel.Musics;
-
-                var nextIndex = (this.indexOfCurrentMusic() + 1) % musics.length;
-                var nextMusic = musics[nextIndex];
-
-                // updates channel's current music propagating change.
-                this.channel.Current = nextMusic;
-                this.channel.CurrentId = nextMusic.Id;
-
-                return this;
+            /// Translates all the time-frame gotten from the server and moves 
+            /// the stack to the music that is currently being played.
+            /// Considerations:
+            ///     This is a super cereal method. Check out the underline on it: it IS a private method.
+            ///     Please, don't be an asshole and don't call it.
+            _translatePlayset: function () {
+                this.finishSync();
             },
 
-            indexOfCurrentMusic: function () {
-                var channel = this.$scope.channel;
-
-                return channel.CurrentId
-                    ? this.indexOfMusic(channel.CurrentId)
-                    : -1;
-            },
-
-            indexOfMusic: function (musicId) {
-                var musics = this.$scope.channel.Musics;
-
-                for (var i = 0; i < musics.length; i++)
-                    if (musics[i].Id == musicId)
-                        return i;
-                return -1;
-            },
-
-            currentMusicOrDefault: function () {
-                var musics = this.$scope.channel.Musics;
-                var current = this.currentMusic();
-
-                if (current)
-                    return current;
-
-                if (musics.length)
-                    return musics[0];
-
-                return null;
-            },
-
-            currentMusic: function () {
-                var index = this.indexOfCurrentMusic();
-
-                return index > -1
-                    ? this.$scope.channel.Musics[index]
-                    : null;
+            finishSync: function () {
+                this._synchronized = true;
             }
         };
     }]);
@@ -293,79 +225,67 @@ samesoundApp
     .factory('MusicStreamProvider', [
         '$document', 'config',
         function ($document, config) {
-            var audios = {};
-
             return {
                 initialize: function () {
                     return this.dispose();
                 },
 
                 dispose: function () {
-                    // Stop streaming and pause all audios.
-                    for (var audioId in audios) {
-                        var audio = audios[audioId];
-
-                        audio.preload = 'none';
-                        audio.pause();
+                    // Stop streaming and pause all audios. Finally, remove their references for good.
+                    if (this._streams) {
+                        for (var audio in Object.keys(this._streams)) {
+                            this.remove(audio);
+                        }
                     }
 
-                    // effectively remove all audios.
-                    audios = {};
-
+                    this._streams = {};
                     return this;
                 },
 
-                audioFromMusicId: function (musicId) {
-                    return audios[musicId.toString()];
+                audioById: function (musicId) {
+                    return this._streams[musicId.toString()];
                 },
 
-                wasAlreadyLoaded: function (musicId) {
-                    return !!audios[musicId.toString()];
+                exists: function (musicId) {
+                    return this.audioById(musicId) != null;
                 },
 
-                load: function (musicId) {
-                    var musicAlreadyStreaming = audios[musicId.toString()];
-                    if (musicAlreadyStreaming) {
-                        musicAlreadyStreaming.preload = 'auto';
-                        return musicAlreadyStreaming;
-                    }
-
-                    var audio = $document[0].createElement('audio');
-
-                    audio.src = config.apiUrl + 'Musics/' + musicId + '/Stream';
+                stream: function (musicId) {
+                    var audio = this._createOrRetrieve(musicId);
                     audio.preload = 'auto';
 
-                    return audios[musicId.toString()] = audio;
+                    return audio;
                 },
 
                 fetch: function (musicId) {
-                    var musicAlreadyStreaming = audios[musicId.toString()];
+                    var audio = this._createOrRetrieve(musicId);
+                    audio.preload = 'metadata';
+
+                    return audio;
+                },
+
+                _createOrRetrieve: function (musicId) {
+                    var musicAlreadyStreaming = this._streams[musicId.toString()];
                     if (musicAlreadyStreaming) return musicAlreadyStreaming;
 
                     var audio = $document[0].createElement('audio');
-
                     audio.src = config.apiUrl + 'Musics/' + musicId + '/Stream';
-                    audio.preload = 'metadata';
 
-                    return audios[musicId.toString()] = audio;
+                    return this._streams[musicId.toString()] = audio;
                 },
 
+                /// Remove a music from the streaming list.
                 remove: function (musicId) {
-                    var audio = audios[musicId.toString()];
+                    var audio = this._streams[musicId.toString()];
                     if (audio) {
+                        audio.pause();
                         audio.preload = 'none';
-                        audio.url = '';
-                        audio.load();
+                        audio.src = '';
 
-                        delete audios[musicId.toString()];
+                        delete this._streams[musicId.toString()];
                     }
 
                     return true;
-                },
-
-                dump: function () {
-                    console.log(audios);
-                    return this;
                 }
             };
         }])
@@ -377,3 +297,67 @@ samesoundApp
             }
         });
     }]);
+
+samesoundApp
+    .factory('PlaysetIterator', function () {
+        return {
+            take: function (channel) {
+                this.channel = channel;
+            },
+
+            /// Retrieves the index of the music that is currently being played. If none, returns -1.
+            indexOfCurrent: function () {
+                var channel = this.channel;
+
+                return channel.CurrentId
+                    ? this.indexOf(channel.CurrentId)
+                    : -1;
+            },
+
+            /// Retrieves the index of the music with Id=musicId. If none, returns -1.
+            indexOf: function (musicId) {
+                var musics = this.channel.Musics;
+
+                for (var i = 0; i < musics.length; i++)
+                    if (musics[i].Id == musicId)
+                        return i;
+                return -1;
+            },
+
+            /// Retrieves the current, if one was defined. Otherwise, returns the first music from channel.Musics playset.
+            /// If the playset is empty, returns null.
+            currentOrDefault: function () {
+                var musics = this.channel.Musics;
+                var music = this.current();
+
+                if (music) return music;
+                if (musics.length) return musics[0];
+
+                return null;
+            },
+
+            /// Retrieves the current music from channel.Musics playset. If none is being played, returns null.
+            current: function () {
+                var index = this.indexOfCurrent();
+
+                return index > -1
+                    ? this.channel.Musics[index]
+                    : null;
+            },
+
+            /// Checks if the music with Id=musicId is the last in the playset.
+            isLastOnList: function (musicId) {
+                return this.indexOf(musicId) == this.channel.Musics.length - 1;
+            },
+
+            /// Retrieves the next music in the playset.
+            /// Consider the next music as the one that follows the current in the channel.Musics list,
+            /// or the first one, case the current is also the last in the list.
+            next: function () {
+                var channel = this.channel;
+
+                var nextIndex = (this.indexOfCurrent() + 1) % channel.Musics.length;
+                return channel.Musics[nextIndex];
+            }
+        }
+    });
