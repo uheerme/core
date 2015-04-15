@@ -50,7 +50,7 @@ namespace Samesound.Services
             }
 
             channel.CurrentId = music.Id;
-            channel.CurrentStartTime = DateTime.Now;
+            channel.CurrentStartTime = DateTime.UtcNow;
 
             return await Update(channel);
         }
@@ -78,7 +78,7 @@ namespace Samesound.Services
 
             MusicUploadProvider.RemoveAll(channel.Id);
 
-            channel.DateDeactivated = DateTime.Now;
+            channel.DateDeactivated = DateTime.UtcNow;
             return await Update(channel);
         }
 

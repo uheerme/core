@@ -27,7 +27,7 @@ namespace Samesound.Controllers
         {
             return Ok(new CurrentServerTimeViewModel
             {
-                Now = DateTime.Now
+                Now = DateTime.UtcNow
             });
         }
     }
