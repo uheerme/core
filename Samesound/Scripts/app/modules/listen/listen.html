@@ -7,65 +7,76 @@
         {{ channel.Owner }}, at {{ channel.NetworkIdentifier }}
     </h2>
 
-    <div ng-show="fetched < channel.Musics.length" class="text-center">
-        <div class="void"></div>
+    <div ng-hide="channel.Musics.Length" class="well text-center">
         <h1>
-            <span class="glyphicon glyphicon-hourglass"></span>
-            Loading...
+            <span class="glyphicon glyphicon-ban-circle"></span>
+            <br />
+            <small>
+                Bad dj! there isn't any music to show.
+            </small>
         </h1>
-        <div class="void"></div>
     </div>
+    <div ng-show="channel.Musics.length">
+        <div ng-show="fetched < channel.Musics.length" class="text-center">
+            <div class="void"></div>
+            <h1>
+                <span class="glyphicon glyphicon-hourglass"></span>
+                Loading...
+            </h1>
+            <div class="void"></div>
+        </div>
 
-    <div ng-hide="fetched < channel.Musics.length" class="row disabled">
-        <div class="col-md-3">
-            <div class="well">
-                <div ng-show="!channel.CurrentId">This channel isn't playing anything.</div>
-                <div ng-show="channel.CurrentId">
-                    <h4>
-                        <span ng-show="channel.Current">{{ channel.Current.Name }}</span>
-                        <span ng-hide="channel.Current">#{{ channel.CurrentId }}</span>
-                        <small>
-                            {{ currentMusicCurrentTime }}s
-                        </small>
-                    </h4>
-                </div>
-                <div class="progress" ng-show="channel.Current">
-                    <div id="player-progress-bar" class="progress-bar"
-                         style="width:{{ 100 * currentMusicCurrentTime / channel.Current.LengthInSeconds }}%"></div>
+        <div ng-hide="fetched < channel.Musics.length" class="row disabled">
+            <div class="col-md-3">
+                <div class="well">
+                    <div ng-show="!channel.CurrentId">This channel isn't playing anything.</div>
+                    <div ng-show="channel.CurrentId">
+                        <h4>
+                            <span ng-show="channel.Current">{{ channel.Current.Name }}</span>
+                            <span ng-hide="channel.Current">#{{ channel.CurrentId }}</span>
+                            <small>
+                                {{ currentMusicCurrentTime }}s
+                            </small>
+                        </h4>
+                    </div>
+                    <div class="progress" ng-show="channel.Current">
+                        <div id="player-progress-bar" class="progress-bar"
+                             style="width:{{ 100 * currentMusicCurrentTime / channel.Current.LengthInSeconds }}%"></div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="well">
-                <button ng-click="toogleMute()"
-                        title="Mute or restore the volume of the player."
-                        class="btn btn-primary btn-lg" ng-class="{'disabled':!channel.CurrentId}">
-                    <span ng-show="mute" class="glyphicon glyphicon-volume-off"></span>
-                    <span ng-hide="mute" class="glyphicon glyphicon-music"></span>
-                </button>
+            <div class="col-md-3">
+                <div class="well">
+                    <button ng-click="toogleMute()"
+                            title="Mute or restore the volume of the player."
+                            class="btn btn-primary btn-lg" ng-class="{'disabled':!channel.CurrentId}">
+                        <span ng-show="mute" class="glyphicon glyphicon-volume-off"></span>
+                        <span ng-hide="mute" class="glyphicon glyphicon-music"></span>
+                    </button>
+                </div>
             </div>
-        </div>
-        <div class="col-md-6">
-            <div ng-repeat="music in channel.Musics" class="well well-list-item">
-                <h5>
-                    <span ng-show="channel.CurrentId === music.Id"
-                          title="This music is currently on play!"
-                          class="glyphicon glyphicon-equalizer"></span>
+            <div class="col-md-6">
+                <div ng-repeat="music in channel.Musics" class="well well-list-item">
+                    <h5>
+                        <span ng-show="channel.CurrentId === music.Id"
+                              title="This music is currently on play!"
+                              class="glyphicon glyphicon-equalizer"></span>
 
-                    {{ music.Name }}
-                    <small>#{{ music.Id }}</small>
-                </h5>
-                <div>
-                    <span class="label label-info">
-                        Added on {{ music.DateCreated }}
-                    </span>&nbsp;
-                    <span ng-show="music.LengthInSeconds"
-                          class="label label-info">
-                        {{ music.LengthInSeconds }} seconds
-                    </span>&nbsp;
-                    <span class="label label-info">
-                        {{ (music.SizeInBytes / 1048576).toFixed(2) }} MB
-                    </span>
+                        {{ music.Name }}
+                        <small>#{{ music.Id }}</small>
+                    </h5>
+                    <div>
+                        <span class="label label-info">
+                            Added on {{ music.DateCreated }}
+                        </span>&nbsp;
+                        <span ng-show="music.LengthInSeconds"
+                              class="label label-info">
+                            {{ music.LengthInSeconds }} seconds
+                        </span>&nbsp;
+                        <span class="label label-info">
+                            {{ (music.SizeInBytes / 1048576).toFixed(2) }} MB
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
