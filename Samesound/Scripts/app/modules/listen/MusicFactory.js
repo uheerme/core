@@ -63,7 +63,13 @@ samesoundApp
             ///     If musicId were not provided, it assumes this.channel.CurrentId as replacement.
             ///     Defines a callback to play the next music (constrained by some Channel definitions).
             play: function (music, startAt) {
-                var music = music || PlaysetIterator.currentOrDefault();
+                var music = music || PlaysetIterator.current();
+                if (!music) {
+                    console.log('Channel #' + this.$scope.channel.Id + ' doesn\'t have any music on play.');
+                    return;
+                }
+
+                console.log('Ok! We are about to play ' + music.Id + ': ' + music.Name);
 
                 // Two musics should never play at once.
                 this.stopAll();
@@ -81,11 +87,8 @@ samesoundApp
                 }, false);
 
                 audio.addEventListener('ended', function () {
-                    // If the channels allows looping or the current music was not the last of the track.
-                    if (_this.$scope.channel.Loops || !PlaysetIterator.isLastOnList(music.Id)) {
-                        var next = PlaysetIterator.next()
-                        _this.play(next, 0);
-                    }
+                    var next = PlaysetIterator.next()
+                    if (next) _this.play(next, 0);
                 }, false);
 
                 audio.currentTime = startAt.toFixed(4);
@@ -228,6 +231,11 @@ samesoundApp
                     this.timeFrame -= current.LengthInSeconds
 
                     var next = PlaysetIterator.next()
+                    if (!next) {
+                        channel.CurrentId = null;
+                        return this._callback(this.timeFrame);
+                    }
+
                     channel.CurrentId = next.Id
                     current = next
 
@@ -235,11 +243,11 @@ samesoundApp
                     var itTimeFrame = new Date() - this.localTime
                     this.localTime.setMilliseconds(this.localTime.getMilliseconds() + itTimeFrame);
                     this.serverTime.setMilliseconds(this.serverTime.getMilliseconds() + itTimeFrame);
-                    this.timeFrame -= itTimeFrame/1000
+                    this.timeFrame -= itTimeFrame / 1000
                 }
 
                 this._synchronized = true;
-                if (this._callback) this._callback(this.timeFrame);
+                if (this._callback) return this._callback(this.timeFrame);
             }
         };
     }]);
@@ -378,7 +386,12 @@ samesoundApp
             /// Consider the next music as the one that follows the current in the channel.Musics list,
             /// or the first one, case the current is also the last in the list.
             next: function () {
-                return this.channel.Musics[(this.indexOfCurrent() + 1) % this.channel.Musics.length];
+                var currentIndex = this.indexOfCurrent();
+                if (currentIndex == this.channel.Musics.length - 1 && !this.channel.Loops)
+                    return null;
+
+                var nextIndex = (currentIndex + 1) % this.channel.Musics.length;
+                return this.channel.Musics[nextIndex];
             }
         }
     });
