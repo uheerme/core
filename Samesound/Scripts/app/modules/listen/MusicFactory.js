@@ -71,9 +71,9 @@ samesoundApp
 
                 audio.currentTime = startAt.toFixed(4);
                 audio.play();
-                _this.playing = true;
-                _this.$scope.channel.CurrentId = music.Id;
-                _this.$scope.channel.Current = music;
+                this.playing = true;
+                this.$scope.channel.CurrentId = music.Id;
+                this.$scope.channel.Current = music;
 
                 // Modifies progress-bar as music progresses.
                 var _this = this;
