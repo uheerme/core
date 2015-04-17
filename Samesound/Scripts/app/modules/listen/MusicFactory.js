@@ -63,16 +63,17 @@ samesoundApp
                     return;
                 }
 
-                console.log('Ok! We are about to play ' + music.Id + ': ' + music.Name);
-
                 // Two musics should never play at once.
                 this.stopAll();
 
                 // Start streaming it, if it hasn't been done yet.
-                var audio = MusicStreamProvider
-                    .stream(music.Id);
+                var audio = MusicStreamProvider.stream(music.Id);
 
-                this.streamFollowingMusics(2);
+                audio.currentTime = startAt.toFixed(4);
+                audio.play();
+                _this.playing = true;
+                _this.$scope.channel.CurrentId = music.Id;
+                _this.$scope.channel.Current = music;
 
                 // Modifies progress-bar as music progresses.
                 var _this = this;
@@ -87,11 +88,7 @@ samesoundApp
                     if (next) _this.play(next, 0);
                 }, false);
 
-                audio.currentTime = startAt.toFixed(4);
-                audio.play();
-                _this.playing = true;
-                _this.$scope.channel.CurrentId = music.Id;
-                _this.$scope.channel.Current = music;
+                this.streamFollowingMusics(music, 2);
 
                 return this;
             },
@@ -228,7 +225,7 @@ samesoundApp
                     var itTimeFrame = new Date() - this.localTime
                     this.localTime.setMilliseconds(this.localTime.getMilliseconds() + itTimeFrame);
                     this.serverTime.setMilliseconds(this.serverTime.getMilliseconds() + itTimeFrame);
-                    this.timeFrame -= itTimeFrame / 1000
+                    this.timeFrame += itTimeFrame / 1000
                 }
 
                 this._synchronized = true;
