@@ -868,11 +868,15 @@
             The Owner of the new Channel. It can be their MAC address, email or regular username.
             </summary>
         </member>
-        <member name="P:Samesound.ViewModels.ChannelCreateViewModel.NetworkIdentifier">
+        <member name="P:Samesound.ViewModels.ChannelCreateViewModel.HostIpAddress">
             <summary>
-            A string that uniquely identifies the network used by the Owner.
-            It can be the real IP address, the MAC address or a combination of both.
-            This property is read-only and will be ignored when sent to the server.
+            The IP address that uniquely identifies the network used by the Owner of the channel.
+            This property is overridden by the server's storage procedure and will be ignored if sent to the server.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.ChannelCreateViewModel.HostMacAddress">
+            <summary>
+            The MAC address that uniquely identifies the network used by the Owner of the channel.
             </summary>
         </member>
         <member name="T:Samesound.ViewModels.ChannelUpdateViewModel">
@@ -927,9 +931,14 @@
             The Owner of the Channel. It can be set to be the email address, the MAC address or a regular username.
             </summary>
         </member>
-        <member name="P:Samesound.ViewModels.ChannelListResultViewModel.NetworkIdentifier">
+        <member name="P:Samesound.ViewModels.ChannelListResultViewModel.HostIpAddress">
             <summary>
-            A string that uniquely identifies the network used by the Owner. It can be the real IP address, the MAC address or a combination of both.
+            The IP address that uniquely identifies the network used by the Owner of the channel.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.ChannelListResultViewModel.HostMacAddress">
+            <summary>
+            The MAC address that uniquely identifies the network used by the Owner of the channel.
             </summary>
         </member>
         <member name="P:Samesound.ViewModels.ChannelListResultViewModel.Loops">

@@ -133,7 +133,7 @@ namespace Samesound.Controllers
         {
             try
             {
-                model.NetworkIdentifier = Request.GetClientIpAddress();
+                model.HostIpAddress = Request.GetClientIpAddress();
 
                 if (!ModelState.IsValid)
                 {

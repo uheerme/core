@@ -28,7 +28,8 @@ namespace Samesound.Core
         [Required]
         public string Owner { get; set; }
 
-        public string NetworkIdentifier { get; set; }
+        public string HostIpAddress { get; set; }
+        public string HostMacAddress { get; set; }
 
         [DefaultValue(true)]
         public bool Loops { get; set; }

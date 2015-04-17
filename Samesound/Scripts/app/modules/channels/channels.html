@@ -45,7 +45,7 @@
                 <h4>
                     <a href="#/channels/{{ channel.Id }}">{{ channel.Name }}</a>
                 </h4>
-                <strong>{{ channel.Owner }}</strong>, at {{ channel.NetworkIdentifier }}.
+                <strong>{{ channel.Owner }}</strong>, at {{ channel.HostMacAddress || channel.HostIpAddress }}.
                 <label class="label label-info">Created at {{ channel.DateCreated }}</label>
                 <label ng-show="channel.DateUpdated" class="label label-info">Updated at {{ channel.DateUpdated }}</label>
                 <label ng-show="channel.DateDeactivated" class="label label-info">Deactivated at {{ channel.DateDeactivated }}</label>

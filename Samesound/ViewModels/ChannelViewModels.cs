@@ -26,11 +26,14 @@ namespace Samesound.ViewModels
         [Required]
         public string Owner { get; set; }
         /// <summary>
-        /// A string that uniquely identifies the network used by the Owner.
-        /// It can be the real IP address, the MAC address or a combination of both.
-        /// This property is read-only and will be ignored when sent to the server.
+        /// The IP address that uniquely identifies the network used by the Owner of the channel.
+        /// This property is overridden by the server's storage procedure and will be ignored if sent to the server.
         /// </summary>
-        public string NetworkIdentifier { get; set; }
+        public string HostIpAddress { get; set; }
+        /// <summary>
+        /// The MAC address that uniquely identifies the network used by the Owner of the channel.
+        /// </summary>
+        public string HostMacAddress { get; set; }
 
         public static explicit operator Channel(ChannelCreateViewModel m)
         {
@@ -38,7 +41,8 @@ namespace Samesound.ViewModels
             {
                 Name = m.Name,
                 Owner = m.Owner,
-                NetworkIdentifier = m.NetworkIdentifier
+                HostIpAddress = m.HostIpAddress,
+                HostMacAddress = m.HostMacAddress
             };
         }
     }
@@ -91,7 +95,8 @@ namespace Samesound.ViewModels
                 Id = c.Id,
                 Name = c.Name,
                 Owner = c.Owner,
-                NetworkIdentifier = c.NetworkIdentifier,
+                HostIpAddress = c.HostIpAddress,
+                HostMacAddress = c.HostMacAddress,
                 Loops = c.Loops,
                 DateCreated = c.DateCreated,
                 DateUpdated = c.DateUpdated,
@@ -125,9 +130,13 @@ namespace Samesound.ViewModels
         /// </summary>
         public string Owner { get; set; }
         /// <summary>
-        /// A string that uniquely identifies the network used by the Owner. It can be the real IP address, the MAC address or a combination of both.
+        /// The IP address that uniquely identifies the network used by the Owner of the channel.
         /// </summary>
-        public string NetworkIdentifier { get; set; }
+        public string HostIpAddress { get; set; }
+        /// <summary>
+        /// The MAC address that uniquely identifies the network used by the Owner of the channel.
+        /// </summary>
+        public string HostMacAddress { get; set; }
         /// <summary>
         /// A boolean that indicates if the Channel loops its musics or not.
         /// </summary>
@@ -164,7 +173,8 @@ namespace Samesound.ViewModels
                 Id = c.Id,
                 Name = c.Name,
                 Owner = c.Owner,
-                NetworkIdentifier = c.NetworkIdentifier,
+                HostIpAddress = c.HostIpAddress,
+                HostMacAddress = c.HostMacAddress,
                 Loops = c.Loops,
                 DateCreated = c.DateCreated,
                 DateUpdated = c.DateUpdated,

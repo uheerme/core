@@ -4,7 +4,7 @@
         <small>#{{ channel.Id }}</small>
     </h1>
     <h2>
-        {{ channel.Owner }}, at {{ channel.NetworkIdentifier }}
+        {{ channel.Owner }}, at {{ channel.HostMacAddress || channel.HostIpAddress }}
     </h2>
 
     <div ng-hide="channel.Musics.length" class="well text-center">
