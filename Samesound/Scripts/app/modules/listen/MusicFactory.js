@@ -28,18 +28,13 @@ samesoundApp
                 return this;
             },
 
-            /// Start the player, in case it hasn't been started yet (or force start with startegy = 'force-start').
+            /// Start the player.
             /// Considerations:
             ///     The client will re-sync with the server.
             ///     The music with Id=this.channel.CurrentId will be played.
-            start: function (strategy) {
+            start: function () {
                 if (!this.$scope.channel.CurrentId) {
                     console.log('Channel is currently stalled.');
-                    return this;
-                }
-
-                if (this.started && strategy !== 'force-start') {
-                    console.log('MusicPlayer has already started.');
                     return this;
                 }
 
@@ -54,7 +49,6 @@ samesoundApp
                     }
                 });
 
-                this.started = true;
                 return this;
             },
 
@@ -77,6 +71,8 @@ samesoundApp
                 // Start streaming it, if it hasn't been done yet.
                 var audio = MusicStreamProvider
                     .stream(music.Id);
+
+                this.streamFollowingMusics(2);
 
                 // Modifies progress-bar as music progresses.
                 var _this = this;
@@ -125,27 +121,6 @@ samesoundApp
                 return this;
             },
 
-            /// Asks MusicStreamProvider for the stream of all musics.
-            streamAll: function () {
-                var channel = this.$scope.channel;
-
-                for (var i in channel.Musics) {
-                    var music = channel.Musics[i];
-                    this.stream(music);
-                }
-
-                return this;
-            },
-
-            /// Asks MusicStreamProvider for the stream of the music.
-            stream: function (music) {
-                var _this = this;
-
-                MusicStreamProvider.stream(music.Id);
-
-                return this;
-            },
-
             fetchAll: function (notify) {
                 var channel = this.$scope.channel;
 
@@ -176,8 +151,18 @@ samesoundApp
                     }, false);
                 }
             },
+
+            streamFollowingMusics: function (music, count) {
+                var next = music;
+                for (var i = 0; i < count && next; i++) {
+                    var next = PlaysetIterator.nextOf(next.Id);
+                    if (next) MusicStreamProvider.stream(next.Id);
+                }
+
+                return this;
+            }
         };
-    }])
+    }]);
 
 samesoundApp
     .factory('Synchronizer', ['StatusResource', 'PlaysetIterator',
@@ -301,6 +286,7 @@ samesoundApp
                     var musicAlreadyStreaming = this._streams[musicId.toString()];
                     if (musicAlreadyStreaming) return musicAlreadyStreaming;
 
+                    console.log('#' + musicId + ' stream is beginning.');
                     var audio = $document[0].createElement('audio');
                     audio.src = config.apiUrl + 'Musics/' + musicId + '/Stream';
 
@@ -386,12 +372,16 @@ samesoundApp
             /// Consider the next music as the one that follows the current in the channel.Musics list,
             /// or the first one, case the current is also the last in the list.
             next: function () {
-                var currentIndex = this.indexOfCurrent();
-                if (currentIndex == this.channel.Musics.length - 1 && !this.channel.Loops)
+                return this.nextOf(this.channel.CurrentId);
+            },
+
+            /// Retrieves the next music that follows the one with Id=musicId.
+            nextOf: function (musicId) {
+                var musicIndex = this.indexOf(musicId);
+                if (musicIndex == this.channel.Musics.length - 1 && !this.channel.Loops)
                     return null;
 
-                var nextIndex = (currentIndex + 1) % this.channel.Musics.length;
-                return this.channel.Musics[nextIndex];
+                return this.channel.Musics[(musicIndex + 1) % this.channel.Musics.length];
             }
         }
     });
