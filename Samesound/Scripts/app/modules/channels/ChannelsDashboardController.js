@@ -51,47 +51,56 @@ samesoundApp.controller(
                     })
             }
 
-            $scope.removeFromUploadQueue = function (file) {
+            $scope.removeFromUploadList = function (file) {
                 var indexOf = $scope.files.indexOf(file);
                 $scope.files.splice(indexOf, 1);
             }
 
-            $scope.isUploading = false;
-            $scope.uploadFirst = function () {
-                if (!$scope.files || !$scope.files.length) {
-                    $scope.isUploading = false;
+            $scope.cancel = function (file) {
+                if (file.uploading) {
+                    console.log('Cannot cancel a file that is not being uploaded.');
                     return false;
                 }
 
-                var file = $scope.files[0];
-                return $scope.upload(file);
+                file.uploadReference.abort();
+                file.upload = false;
+                return true;
             }
+
+            $scope.uploadAll = function () {
+                for (var index in $scope.files) {
+                    $scope.upload($scope.files[index]);
+                }
+            }
+
             $scope.upload = function (file) {
                 if (!file) {
                     console.log('Cannot upload invalid file.');
                     return false;
                 }
-                if ($scope.isUploading) {
-                    console.log('Cannot upload two files at once!');
+                if (file.uploading) {
+                    console.log('Cannot upload same file twice.');
                     return false;
                 }
 
-                $scope.isUploading = true;
-                $scope.removeFromUploadQueue(file);
+                file.uploading = true;
 
-                $scope.currentUpload = $upload.upload({
+                file.uploadReference = $upload.upload({
                     url: config.apiUrl + 'Musics',
                     file: file,
                     fields: {
                         'Name': file.uploadName,
                         'ChannelId': channel.Id,
                     }
+
                 }).progress(function (evt) {
-                    file.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                    console.log(file.progressPercentage);
+                    file.progress = parseInt(100.0 * evt.loaded / evt.total);
+                    console.log(file.name + ': ' + file.progress);
+
                 }).success(function (music, status) {
                     toastr.success(music.Name + ' uploaded!');
                     $scope.channel.Musics.push(music);
+                    $scope.removeFromUploadList(file);
 
                 }).error(function (data, status, headers, config) {
                     console.log(data);
@@ -101,17 +110,10 @@ samesoundApp.controller(
                         otherwiseToastError();
 
                 }).finally(function () {
-                    $scope.currentUpload = null;
-                    $scope.isUploading = false;
+                    file.uploading = false;
+                    file.progress = 0;
                 });
 
                 return true;
-            }
-            $scope.cancel = function (file) {
-                if ($scope.currentUpload) {
-                    $scope.currentUpload.abort();
-                    $scope.currentUpload = null;
-                    $scope.isUploading = false;
-                }
             }
         }]);
