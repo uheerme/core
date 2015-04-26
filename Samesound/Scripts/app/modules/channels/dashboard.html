@@ -19,7 +19,7 @@
                             Playset start: {{ channel.CurrentStartTime }}.
                         </small>
                     </h4>
-                    
+
                 </div>
             </div>
         </div>
@@ -94,6 +94,14 @@
         </div>
     </div>
     <div class="row">
+        <div class="col-md-12">
+            <div class="well text-center">
+                <h1>
+                    <span class="glyphicon glyphicon-ban-circle"></span><br />
+                    <small>Bad dj! there isn't any music to show.</small>
+                </h1>
+            </div>
+        </div>
         <div id="uploadedFiles" ng-repeat="music in channel.Musics | filter:search" class="col-sm-6 col-md-4 col-lg-3 animate-list">
             <div class="well well-list-item">
                 <div class="row">
@@ -119,30 +127,8 @@
                 <div class="clearfix"></div>
             </div>
         </div>
-        <div id="filesToBeUploaded" ng-repeat="file in files" class="col-sm-6 col-md-4 col-lg-3 animate-list">
-            <div class="well well-list-item">
-                <input ng-init="file.uploadName = file.name"
-                        ng-model="file.uploadName"
-                        type="text" class="form-control" placeholder="Name that will be displayed to your listeners" />
-                <div class="progress">
-                    <div class="progress-bar progress-bar-default" style="width:{{ file.progressPercentage }}%"></div>
-                </div>
-                
-                <div class="text-right">
-                    <span class="label label-info pull-left">{{ (file.size/1048576).toFixed(2) }} MB</span>
-                    <button ng-click="removeFromUploadQueue(file)"
-                            title="Remove {{ file.name }} from upload queue." class="btn btn-danger">
-                        <span class="glyphicon glyphicon-remove"></span>
-                    </button>
-                    <button ng-click="upload(file)"
-                            title="Confirm upload of file {{ file.name }}."
-                            class="btn btn-success">
-                        <span class="glyphicon glyphicon-ok"></span>
-                    </button>
-                </div>
-            </div>
-        </div>
     </div>
+
     <div class="row" ng-hide="channel.DateDeactivated">
         <br /><br />
         <div class="col-sm-12">
@@ -156,6 +142,36 @@
                     <button class="btn btn-default" ng-multiple="true" ng-file-select ng-model="files">
                         <span class="glyphicon glyphicon-search"></span>
                         Or select files for upload
+                    </button>
+                    <button ng-click="uploadAll()" ng-show="files.length"
+                            class="btn btn-primary">
+                        <span class="glyphicon glyphicon-ok"></span> Upload all
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div id="filesToBeUploaded" ng-repeat="file in files" class="col-sm-6 col-md-4 col-lg-3 animate-list">
+            <div class="well well-list-item">
+                <input ng-init="file.uploadName = file.name"
+                       ng-model="file.uploadName"
+                       type="text" class="form-control" placeholder="Name that will be displayed to your listeners" />
+                <div class="progress">
+                    <div class="progress-bar progress-bar-default" style="width:{{ file.progress }}%"></div>
+                </div>
+
+                <div class="text-right">
+                    <span class="label label-info pull-left">{{ (file.size/1048576).toFixed(2) }} MB</span>
+                    <button ng-click="removeFromUploadList(file)"
+                            title="Remove {{ file.name }} from upload queue." class="btn btn-danger">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+                    <button ng-click="upload(file)"
+                            ng-hide="file.uploading"
+                            title="Confirm upload of file {{ file.name }}."
+                            class="btn btn-success">
+                        <span class="glyphicon glyphicon-ok"></span>
                     </button>
                 </div>
             </div>
