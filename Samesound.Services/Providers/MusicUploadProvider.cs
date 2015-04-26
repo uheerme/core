@@ -91,7 +91,13 @@ namespace Samesound.Services.Providers
             // Finally, move file to correct destination.
             var fileRealName = Path.ChangeExtension(music.Id.ToString(), Path.GetExtension(music.Name));
             path = Path.Combine(path, fileRealName);
-            File.Move(temporaryFileName, path);
+            
+            try
+            {
+                File.Copy(temporaryFileName, path);
+                File.Delete(temporaryFileName);
+            }
+            catch (IOException) { }
         }
     }
 }
