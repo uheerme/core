@@ -2,12 +2,8 @@
 
 samesoundApp
     .controller('ListenController',
-        ['$scope', 'channel', 'MusicPlayer', 'config',
-        function ($scope, channel, MusicPlayer, config) {
-            $scope.currentMusicCurrentTime = 0;
-            $scope.fetched = 0;
-            $scope.channel = channel;
-
+        ['$scope', '$stateParams', 'ChannelResource', 'MusicPlayer', 'config',
+        function ($scope, $stateParams, channels, MusicPlayer, config) {
             $scope.toogleMute = function () {
                 if (!$scope.channel.CurrentId) {
                     toastr.warning('Cannot mute a channel which is not playing anything.', 'Ops!');
@@ -17,7 +13,19 @@ samesoundApp
                 MusicPlayer.mute($scope.mute = !$scope.mute);
             }
 
-            $scope.player = MusicPlayer
-                .take($scope)
-                .start();
+            $scope.resync = function () {
+                $scope.currentMusicCurrentTime = 0;
+                $scope.fetched = 0;
+
+                channels
+                    .get({ id: $stateParams.id })
+                    .$promise.then(function (channel) {
+                        $scope.channel = channel;
+                        MusicPlayer
+                                .take($scope)
+                                .start();
+                    });
+            }
+
+            $scope.resync();
         }]);

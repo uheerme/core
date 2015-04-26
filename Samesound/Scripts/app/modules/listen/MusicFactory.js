@@ -34,17 +34,20 @@ samesoundApp
             ///     The music with Id=this.channel.CurrentId will be played.
             start: function () {
                 if (!this.$scope.channel.CurrentId) {
-                    console.log('Channel is currently stalled.');
+                    console.log('Cannot play a channel that is currently stalled.');
                     return this;
                 }
 
                 var _this = this;
                 this.fetchAll(function () {
                     if (_this.$scope.fetched == _this.$scope.channel.Musics.length) {
+                        // Update playset with its default current.
+                        PlaysetIterator.updateCurrent();
+
                         Synchronizer
                             .take(_this.$scope)
                             .sync(function (timeFrame) {
-                                _this.play(null, timeFrame);
+                                _this.play(timeFrame);
                             });
                     }
                 });
@@ -56,11 +59,13 @@ samesoundApp
             /// Considerations:
             ///     If musicId were not provided, it assumes this.channel.CurrentId as replacement.
             ///     Defines a callback to play the next music (constrained by some Channel definitions).
-            play: function (music, startAt) {
-                var music = music || PlaysetIterator.current();
+            play: function (startAt) {
+                var music = this.$scope.channel.Current;
                 if (!music) {
                     console.log('Channel #' + this.$scope.channel.Id + ' doesn\'t have any music on play.');
                     return;
+                } else {
+                    console.log('Channel #' + this.$scope.channel.Id + ' is playing "' + music.Name + '".');
                 }
 
                 // Two musics should never play at once.
@@ -69,11 +74,10 @@ samesoundApp
                 // Start streaming it, if it hasn't been done yet.
                 var audio = MusicStreamProvider.stream(music.Id);
 
+                startAt = startAt || 0;
                 audio.currentTime = startAt.toFixed(4);
                 audio.play();
-                _this.playing = true;
-                _this.$scope.channel.CurrentId = music.Id;
-                _this.$scope.channel.Current = music;
+                this.playing = true;
 
                 // Modifies progress-bar as music progresses.
                 var _this = this;
@@ -84,8 +88,8 @@ samesoundApp
                 }, false);
 
                 audio.addEventListener('ended', function () {
-                    var next = PlaysetIterator.next()
-                    if (next) _this.play(next, 0);
+                    PlaysetIterator.next();
+                    _this.play();
                 }, false);
 
                 this.streamFollowingMusics(music, 2);
@@ -207,25 +211,13 @@ samesoundApp
                 var startTime = new Date(Date.parse(channel.CurrentStartTime));
                 this.timeFrame = (this.serverTime - startTime) / 1000;
 
-                var current = PlaysetIterator.current();
+                while (this.timeFrame > channel.Current.LengthInSeconds) {
+                    this.timeFrame -= channel.Current.LengthInSeconds
 
-                while (this.timeFrame > current.LengthInSeconds) {
-                    this.timeFrame -= current.LengthInSeconds
-
-                    var next = PlaysetIterator.next()
-                    if (!next) {
-                        channel.CurrentId = null;
+                    PlaysetIterator.next()
+                    if (!channel.Current) {
                         return this._callback(this.timeFrame);
                     }
-
-                    channel.CurrentId = next.Id
-                    current = next
-
-                    // Necessary, as PlaysetIterator.next calls indexOf() which is O(n).
-                    var itTimeFrame = new Date() - this.localTime
-                    this.localTime.setMilliseconds(this.localTime.getMilliseconds() + itTimeFrame);
-                    this.serverTime.setMilliseconds(this.serverTime.getMilliseconds() + itTimeFrame);
-                    this.timeFrame += itTimeFrame / 1000
                 }
 
                 this._synchronized = true;
@@ -283,7 +275,6 @@ samesoundApp
                     var musicAlreadyStreaming = this._streams[musicId.toString()];
                     if (musicAlreadyStreaming) return musicAlreadyStreaming;
 
-                    console.log('#' + musicId + ' stream is beginning.');
                     var audio = $document[0].createElement('audio');
                     audio.src = config.apiUrl + 'Musics/' + musicId + '/Stream';
 
@@ -318,15 +309,8 @@ samesoundApp
         return {
             take: function (channel) {
                 this.channel = channel;
-            },
 
-            /// Retrieves the index of the music that is currently being played. If none, returns -1.
-            indexOfCurrent: function () {
-                var channel = this.channel;
-
-                return channel.CurrentId
-                    ? this.indexOf(channel.CurrentId)
-                    : -1;
+                return this;
             },
 
             /// Retrieves the index of the music with Id=musicId. If none, returns -1.
@@ -336,40 +320,8 @@ samesoundApp
                 for (var i = 0; i < musics.length; i++)
                     if (musics[i].Id == musicId)
                         return i;
+
                 return -1;
-            },
-
-            /// Retrieves the current, if one was defined. Otherwise, returns the first music from channel.Musics playset.
-            /// If the playset is empty, returns null.
-            currentOrDefault: function () {
-                var musics = this.channel.Musics;
-                var music = this.current();
-
-                if (music) return music;
-                if (musics.length) return musics[0];
-
-                return null;
-            },
-
-            /// Retrieves the current music from channel.Musics playset. If none is being played, returns null.
-            current: function () {
-                var index = this.indexOfCurrent();
-
-                return index > -1
-                    ? this.channel.Musics[index]
-                    : null;
-            },
-
-            /// Checks if the music with Id=musicId is the last in the playset.
-            isLastOnList: function (musicId) {
-                return this.indexOf(musicId) == this.channel.Musics.length - 1;
-            },
-
-            /// Retrieves the next music in the playset.
-            /// Consider the next music as the one that follows the current in the channel.Musics list,
-            /// or the first one, case the current is also the last in the list.
-            next: function () {
-                return this.nextOf(this.channel.CurrentId);
             },
 
             /// Retrieves the next music that follows the one with Id=musicId.
@@ -379,6 +331,47 @@ samesoundApp
                     return null;
 
                 return this.channel.Musics[(musicIndex + 1) % this.channel.Musics.length];
+            },
+
+            // Forces the fillment of CurrentIndex and Current attributes in this.channel.
+            updateCurrent: function () {
+                if (this.channel.CurrentId) {
+                    var musicIndex = -1;
+                    var music = null;
+                    for (var i = 0; i < this.channel.Musics.length; i++) {
+                        if (this.channel.Musics[i].Id == this.channel.CurrentId) {
+                            musicIndex = i;
+                            music = this.channel.Musics[i];
+                        }
+                    }
+
+                    this.channel.CurrentIndex = musicIndex;
+                    this.channel.Current = music;
+                }
+
+                return this;
+            },
+
+            /// Set the next music as the current of the playset.
+            /// Consider the next music as the one that follows the current in the channel.Musics list,
+            /// or the first one, case the current is also the last in the list.
+            next: function () {
+                if (this.channel.CurrentIndex > -1) {
+                    if (this.channel.CurrentIndex == this.channel.Musics.length - 1 && !this.channel.Loops) {
+                        this.channel.CurrentId = null;
+                        this.channel.Current = null;
+                    } else {
+                        var nextMusicIndex = (this.channel.CurrentIndex + 1) % this.channel.Musics.length;
+
+                        var nextMusic = this.channel.Musics[nextMusicIndex];
+
+                        this.channel.CurrentIndex = nextMusicIndex;
+                        this.channel.CurrentId = nextMusic.Id;
+                        this.channel.Current = nextMusic;
+                    }
+                }
+
+                return this;
             }
         }
     });

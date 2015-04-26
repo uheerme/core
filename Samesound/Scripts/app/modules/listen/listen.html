@@ -4,7 +4,7 @@
         <small>#{{ channel.Id }}</small>
     </h1>
     <h2>
-        {{ channel.Owner }}, at {{ channel.HostMacAddress || channel.HostIpAddress }}
+        {{ channel.Owner }}, at {{ channel.HostMacAddress || channel.HostIpAddress }}.
     </h2>
 
     <div ng-hide="channel.Musics.length" class="well text-center">
@@ -13,8 +13,9 @@
             <small>Bad dj! there isn't any music to show.</small>
         </h1>
     </div>
+
     <div ng-show="channel.Musics.length">
-        <div ng-show="fetched < channel.Musics.length" class="text-center">
+        <div ng-show="channel.CurrentId && fetched < channel.Musics.length" class="text-center">
             <div class="void"></div>
             <h1>
                 <span class="glyphicon glyphicon-hourglass"></span>
@@ -23,10 +24,13 @@
             <div class="void"></div>
         </div>
 
-        <div ng-hide="fetched < channel.Musics.length" class="row disabled">
+        <div ng-hide="channel.CurrentId && fetched < channel.Musics.length" class="row disabled">
             <div class="col-md-3">
                 <div class="well">
-                    <div ng-show="!channel.CurrentId">This channel isn't playing anything.</div>
+                    <div ng-show="!channel.CurrentId">
+                        <span class="glyphicon glyphicon-pause"></span>
+                        This channel isn't playing anything.
+                    </div>
                     <div ng-show="channel.CurrentId">
                         <h4>
                             <span ng-show="channel.Current">{{ channel.Current.Name }}</span>
@@ -42,9 +46,13 @@
             </div>
             <div class="col-md-3">
                 <div class="well">
+                    <button ng-click="resync()"
+                            class="btn btn-primary btn-lg">
+                        <span class="glyphicon glyphicon-refresh"></span>
+                    </button>
                     <button ng-click="toogleMute()"
                             title="Mute or restore the volume of the player."
-                            class="btn btn-primary btn-lg" ng-class="{'disabled':!channel.CurrentId}">
+                            class="btn btn-default btn-lg" ng-class="{'disabled':!channel.CurrentId}">
                         <span ng-show="mute" class="glyphicon glyphicon-volume-off"></span>
                         <span ng-hide="mute" class="glyphicon glyphicon-music"></span>
                     </button>
