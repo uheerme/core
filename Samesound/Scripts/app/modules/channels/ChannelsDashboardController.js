@@ -95,8 +95,6 @@ samesoundApp.controller(
 
                 }).progress(function (evt) {
                     file.progress = parseInt(100.0 * evt.loaded / evt.total);
-                    console.log(file.name + ': ' + file.progress);
-
                 }).success(function (music, status) {
                     toastr.success(music.Name + ' uploaded!');
                     $scope.channel.Musics.push(music);
