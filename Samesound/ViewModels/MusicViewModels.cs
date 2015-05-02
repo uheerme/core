@@ -26,6 +26,12 @@ namespace Samesound.ViewModels
         [Range(1, int.MaxValue)]
         public int ChannelId { get; set; }
         /// <summary>
+        /// The duration of the music in milliseconds.
+        /// </summary>
+        [Required]
+        [Range(1, int.MaxValue)]
+        public int LengthInMilliseconds { get; set; }
+        /// <summary>
         /// The size (in bytes) that the music file occupies/occupied in the server's disks.
         /// </summary>
         [Required]
@@ -38,6 +44,7 @@ namespace Samesound.ViewModels
             {
                 Name = m.Name,
                 ChannelId = m.ChannelId,
+                LengthInMilliseconds = m.LengthInMilliseconds,
                 SizeInBytes = m.SizeInBytes
             };
         }
@@ -85,6 +92,10 @@ namespace Samesound.ViewModels
         /// </summary>
         public string Name { get; set; }
         /// <summary>
+        /// The duration of the music in milliseconds.
+        /// </summary>
+        public int LengthInMilliseconds { get; set; }
+        /// <summary>
         /// The size (in bytes) that the music file occupies/occupied in the server's disks.
         /// </summary>
         public int SizeInBytes { get; set; }
@@ -107,6 +118,7 @@ namespace Samesound.ViewModels
             {
                 Id = c.Id,
                 Name = c.Name,
+                LengthInMilliseconds = c.LengthInMilliseconds,
                 SizeInBytes = c.SizeInBytes,
                 ChannelId = c.ChannelId,
                 DateCreated = c.DateCreated,

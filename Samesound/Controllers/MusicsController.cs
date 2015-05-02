@@ -151,6 +151,7 @@ namespace Samesound.Controllers
                 {
                     model.Name = provider.FormData.GetValues("Name").First();
                     model.ChannelId = int.Parse(provider.FormData.GetValues("ChannelId").First());
+                    model.LengthInMilliseconds = int.Parse(provider.FormData.GetValues("LengthInMilliseconds").First());
                     
                     var extension = MusicProvider.Extensions[file.Headers.ContentType.MediaType];
                     model.Name = Path.ChangeExtension(model.Name, extension);
@@ -178,7 +179,8 @@ namespace Samesound.Controllers
 
                 var music = await _musics.Add((Music)model);
 
-                // No exceptions were thrown, the music is in the database! Let's make it official.
+                // No exceptions were thrown, the music is in the database!
+                // Let's make it official by coping the file to the right place.
                 MusicUploadProvider.FinishUpload(file.LocalFileName, music);
 
                 return Ok((MusicResultViewModel)music);

@@ -788,6 +788,11 @@
             The id of the Channel that contains this Music.
             </summary>
         </member>
+        <member name="P:Samesound.ViewModels.MusicCreateViewModel.LengthInMilliseconds">
+            <summary>
+            The duration of the music in milliseconds.
+            </summary>
+        </member>
         <member name="P:Samesound.ViewModels.MusicCreateViewModel.SizeInBytes">
             <summary>
             The size (in bytes) that the music file occupies/occupied in the server's disks.
@@ -821,6 +826,11 @@
         <member name="P:Samesound.ViewModels.MusicResultViewModel.Name">
             <summary>
             The name of the Music.
+            </summary>
+        </member>
+        <member name="P:Samesound.ViewModels.MusicResultViewModel.LengthInMilliseconds">
+            <summary>
+            The duration of the music in milliseconds.
             </summary>
         </member>
         <member name="P:Samesound.ViewModels.MusicResultViewModel.SizeInBytes">

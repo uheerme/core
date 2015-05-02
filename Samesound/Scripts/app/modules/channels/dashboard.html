@@ -19,12 +19,11 @@
                             Playset start: {{ channel.CurrentStartTime }}.
                         </small>
                     </h4>
-
                 </div>
             </div>
         </div>
         <div class="col-sm-6">
-            <div class="well">
+            <div ng-hide="channel.DateDeactivated" class="well">
                 <form class="form-inline">
                     <div class="form-group">
                         <div ng-show="channel.CurrentId" class="btn-group">
@@ -145,7 +144,7 @@
                     </button>
                     <button ng-click="uploadAll()" ng-show="files.length"
                             class="btn btn-primary">
-                        <span class="glyphicon glyphicon-ok"></span> Upload all
+                        <span class="glyphicon glyphicon-cloud-upload"></span> Upload all
                     </button>
                 </div>
             </div>
@@ -162,17 +161,27 @@
                 </div>
 
                 <div class="text-right">
-                    <span class="label label-info pull-left">{{ (file.size/1048576).toFixed(2) }} MB</span>
-                    <button ng-click="removeFromUploadList(file)"
-                            title="Remove {{ file.name }} from upload queue." class="btn btn-danger">
-                        <span class="glyphicon glyphicon-remove"></span>
-                    </button>
-                    <button ng-click="upload(file)"
-                            ng-hide="file.uploading"
-                            title="Confirm upload of file {{ file.name }}."
-                            class="btn btn-success">
-                        <span class="glyphicon glyphicon-ok"></span>
-                    </button>
+                    <span class="label label-default pull-left">{{ (file.size/1048576).toFixed(2) }} MB</span>
+                    
+                    <span ng-show="file.uploading">
+                        <button ng-click="cancel(file)"
+                                title="Cancel {{ file.name }}'s upload." class="btn btn-danger">
+                            <span class="glyphicon glyphicon-ban-circle"></span> cancel
+                        </button>
+                    </span>
+                    <span ng-hide="file.uploading">
+                        <button ng-click="removeFromUploadList(file)"
+                                title="Remove {{ file.name }} from upload list." class="btn btn-danger">
+                            <span class="glyphicon glyphicon-minus"></span>
+                        </button>
+                        <button ng-click="upload(file)"
+                                title="Confirm upload of file {{ file.name }}."
+                                class="btn btn-success">
+                            <span class="glyphicon glyphicon-cloud-upload"></span>
+                        </button>
+                    </span>
+                    
+                    
                 </div>
             </div>
         </div>
