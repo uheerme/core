@@ -229,8 +229,10 @@ samesoundApp
                     return this._callback(timeline);
                 }
 
-                // The channel may have looped already. We don't need to cycle it to check this.
-                timeline %= this._channelsLength;
+                // The channel may have looped already and the cycle would put us in the exact same spot.
+                // We don't need to iterate throughout the entire list to check this. Instead, let's just consider the last one.
+                if (this._channelsLength)
+                    timeline %= this._channelsLength;
 
                 var current = PlaysetIterator.current();
 
