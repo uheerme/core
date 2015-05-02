@@ -5,9 +5,10 @@ samesoundApp
     function (Synchronizer, MusicStreamProvider, PlaysetIterator) {
         return {
             /// Take a $scope.
-            /// Considerations:
-            ///     The MusicStreamProvider will be initialized: previous instances will be disposed, removing existing streamings.
+            /// Considerations: The MusicStreamProvider will be initialized and previous instances will be disposed, removing existing streamings.
             take: function ($scope) {
+                this._muted = false;
+
                 this.$scope = $scope;
 
                 PlaysetIterator.take($scope.channel);
@@ -18,9 +19,11 @@ samesoundApp
 
             /// Mutes the current music acording with the value of shouldBeMuted.
             mute: function (shouldBeMuted) {
+                this._muted = shouldBeMuted;
+
                 var current = PlaysetIterator.current();
                 if (current) {
-                    var audio = MusicStreamProvider.audioById(currentId);
+                    var audio = MusicStreamProvider.audioById(current.Id);
                     if (audio) audio.muted = shouldBeMuted;
                 }
 
@@ -69,7 +72,7 @@ samesoundApp
                     return;
                 }
 
-                console.log('Channel #' + this.$scope.channel.Id + ' is playing "' + music.Name + '".');
+                console.log('Channel #' + this.$scope.channel.Id + ' will play "' + music.Name + '", starting at ' + (startAt || 0) + '.');
                 this.$scope.isPlaying = true;
 
                 this.$scope.currentMusic = music;
@@ -82,6 +85,7 @@ samesoundApp
 
                 startAt = startAt || 0;
                 audio.currentTime = startAt.toFixed(4);
+                audio.muted = this._muted;
                 audio.play();
                 this.playing = true;
 
@@ -93,11 +97,16 @@ samesoundApp
                     });
                 }, false);
 
-                audio.addEventListener('ended', function () {
-                    this.$scope.isPlaying = false;
+                audio.addEventListener('loadedmetadata', function () {
+                    PlaysetIterator.searchCurrent();
+                    Synchronizer.translatePlayset();
+                }, false);
 
-                    PlaysetIterator.next();
-                    _this.play();
+                audio.addEventListener('ended', function () {
+                    _this.$scope.isPlaying = false;
+
+                    PlaysetIterator.searchCurrent();
+                    Synchronizer.translatePlayset();
                 }, false);
 
                 this.streamFollowingMusics(music, 2);
@@ -118,12 +127,15 @@ samesoundApp
 
             /// Stop the audio that makes reference to the music with Id=music.Id.
             stop: function (music) {
-                music = music || PlaysetIterator.current();
+                var current = PlaysetIterator.current();
+
+                music = music || current;
                 if (music) {
                     var audio = MusicStreamProvider.audioById(music.Id);
-                    if (audio) audio.pause();
+                    if (audio)
+                        audio.pause();
 
-                    if (music.Id == this.$scope.channel.CurrentId)
+                    if (music == current)
                         this.playing = false;
                 }
 
@@ -156,6 +168,16 @@ samesoundApp
                 return this;
             },
 
+            updateSynchronizedTime: function () {
+                var now = new Date();
+                var timeframe = now - this.localTime;
+
+                this.localTime = now;
+                this.serverTime.setMilliseconds(this.serverTime.getMilliseconds() + timeframe);
+
+                return this;
+            },
+
             sync: function (callback) {
                 console.log('Synchronization procedure method has started.');
                 this.$scope.synchronized = false;
@@ -184,7 +206,7 @@ samesoundApp
                     console.log('The synchronization time-frame was ' + timeframe + '.');
                     _this.timeframe = timeframe;
 
-                    _this._translatePlayset();
+                    _this.translatePlayset();
                 });
 
                 return this;
@@ -192,8 +214,12 @@ samesoundApp
 
             /// Translates all the time-frame gotten from the server and moves 
             /// the stack to the music that is currently being played.
-            _translatePlayset: function () {
+            translatePlayset: function () {
                 var channel = this.$scope.channel;
+
+                this.$scope.synchronized = false;
+
+                this.updateSynchronizedTime();
 
                 var startTime = new Date(Date.parse(channel.CurrentStartTime));
                 var timeline = (this.serverTime - startTime);
@@ -243,7 +269,8 @@ samesoundApp
                         }
                     }
 
-                    this._streams = {};
+                    this._streams = {
+                    };
                     return this;
                 },
 

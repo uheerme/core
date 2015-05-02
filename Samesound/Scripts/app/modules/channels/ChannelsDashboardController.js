@@ -11,10 +11,8 @@ samesoundApp.controller(
                 $scope.channel.$update(
                     function (updatedChannel) {
                         toastr.success(
-                            updatedChannel.Name + ' will now '
-                                + updatedChannel.Loops
-                                ? 'loop at the end of the track'
-                                : 'stop at the end of the track.',
+                            updatedChannel.Name + ' will now ' +
+                            (updatedChannel.Loops ? 'loop at the end of the track' : 'stop at the end of the track.'),
                             'Saved!'
                         )
                     },
