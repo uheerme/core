@@ -15,7 +15,7 @@
     </div>
 
     <div ng-show="channel.Musics.length">
-        <div ng-show="channel.CurrentId" class="text-center">
+        <div ng-show="loading || synchronizing" class="text-center">
             <div class="void"></div>
             <h1 ng-show="loading"><span class="glyphicon glyphicon-hourglass"></span> Loading...</h1>
             <h1 ng-show="synchronizing"><span class="glyphicon glyphicon-hourglass"></span> Synchronizing channel...</h1>
@@ -31,14 +31,13 @@
                     </div>
                     <div ng-show="isPlaying">
                         <h4>
-                            <span ng-show="channel.Current">{{ channel.Current.Name }}</span>
-                            <span ng-hide="channel.Current">#{{ channel.CurrentId }}</span>
+                            <span>{{ currentMusic.Name }}</span>
                             <small>{{ currentMusicCurrentTime }}s</small>
                         </h4>
                     </div>
                     <div class="progress" ng-show="isPlaying">
                         <div id="player-progress-bar" class="progress-bar"
-                             style="width:{{ 100 * currentMusicCurrentTime / channel.Current.LengthInSeconds }}%"></div>
+                             style="width:{{ 100000 * currentMusicCurrentTime / currentMusic.LengthInMilliseconds }}%"></></div>
                     </div>
                 </div>
             </div>

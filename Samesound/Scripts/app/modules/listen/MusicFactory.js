@@ -94,7 +94,7 @@ samesoundApp
                 }, false);
 
                 audio.addEventListener('ended', function () {
-                    this.$scope.isPlaying = false;
+                    _this.$scope.isPlaying = false;
 
                     PlaysetIterator.next();
                     _this.play();
