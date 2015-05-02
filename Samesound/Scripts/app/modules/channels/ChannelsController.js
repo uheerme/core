@@ -14,6 +14,7 @@ samesoundApp
                     function (createdChannel) {
                         $scope.channels.unshift(createdChannel)
                         toastr.success(createdChannel.Name + ' successfully created!')
+                        $scope.clear();
                     },
                     function (response) {
                         Validator.
@@ -21,7 +22,6 @@ samesoundApp
                             toastErrors().
                             otherwiseToastError();
                     })
-                $scope.clear();
             }
 
             $scope.deactivate = function (channel) {

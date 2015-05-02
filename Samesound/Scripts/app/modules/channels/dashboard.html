@@ -156,10 +156,11 @@
                 <input ng-init="file.uploadName = file.name"
                        ng-model="file.uploadName"
                        type="text" class="form-control" placeholder="Name that will be displayed to your listeners" />
+                
                 <div class="progress">
                     <div class="progress-bar progress-bar-default" style="width:{{ file.progress }}%"></div>
                 </div>
-
+                
                 <div class="text-right">
                     <span class="label label-default pull-left">{{ (file.size/1048576).toFixed(2) }} MB</span>
                     

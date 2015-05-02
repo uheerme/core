@@ -14,13 +14,14 @@ samesoundApp
             }
 
             $scope.resync = function () {
+                $scope.currentMusic = null;
                 $scope.currentMusicCurrentTime = 0;
-                $scope.fetched = 0;
 
                 channels
                     .get({ id: $stateParams.id })
                     .$promise.then(function (channel) {
                         $scope.channel = channel;
+
                         MusicPlayer
                                 .take($scope)
                                 .start();

@@ -1,8 +1,8 @@
 ﻿
 samesoundApp.controller(
     'ChannelDashboardController',
-    ['$http', '$scope', '$upload', 'config', 'channel', 'Validator',
-        function ($http, $scope, $upload, config, channel, Validator) {
+    ['$http', '$scope', '$upload', '$document', 'config', 'channel', 'Validator',
+        function ($http, $scope, $upload, $document, config, channel, Validator) {
 
             $scope.channel = channel;
 
@@ -83,34 +83,50 @@ samesoundApp.controller(
                     return false;
                 }
 
-                file.uploading = true;
+                console.log('Preparing to upload {' + file.uploadName + '}');
 
-                file.uploadReference = $upload.upload({
-                    url: config.apiUrl + 'Musics',
-                    file: file,
-                    fields: {
-                        'Name': file.uploadName,
-                        'ChannelId': channel.Id,
-                    }
+                var newMusic = {
+                    'Name': file.uploadName,
+                    'ChannelId': channel.Id,
+                    'LengthInMilliseconds': 0
+                }
 
-                }).progress(function (evt) {
-                    file.progress = parseInt(100.0 * evt.loaded / evt.total);
-                }).success(function (music, status) {
-                    toastr.success(music.Name + ' uploaded!');
-                    $scope.channel.Musics.push(music);
-                    $scope.removeFromUploadList(file);
+                // Load the file in order to retrieve its duration.
+                var audio = $document[0].createElement('audio');
+                audio.src = URL.createObjectURL(file);
 
-                }).error(function (data, status, headers, config) {
-                    console.log(data);
-                    Validator.
-                        take(data).
-                        toastErrors().
-                        otherwiseToastError();
+                // Wait for audio metadata to load.
+                audio.addEventListener('loadedmetadata', function () {
+                    console.log('Metadata loaded for {' + file.uploadName + '}');
 
-                }).finally(function () {
-                    file.uploading = false;
-                    file.progress = 0;
-                });
+                    newMusic.LengthInMilliseconds = (audio.duration * 1000).toFixed(0);
+
+                    file.uploading = true;
+
+                    file.uploadReference = $upload.upload({
+                        url: config.apiUrl + 'Musics',
+                        file: file,
+                        fields: newMusic
+
+                    }).progress(function (evt) {
+                        file.progress = parseInt(100.0 * evt.loaded / evt.total);
+                    }).success(function (music, status) {
+                        toastr.success(music.Name + ' uploaded!');
+                        $scope.channel.Musics.push(music);
+                        $scope.removeFromUploadList(file);
+
+                    }).error(function (data, status, headers, config) {
+                        console.log(data);
+                        Validator.
+                            take(data).
+                            toastErrors().
+                            otherwiseToastError();
+
+                    }).finally(function () {
+                        file.uploading = false;
+                        file.progress = 0;
+                    });
+                }, false);
 
                 return true;
             }
