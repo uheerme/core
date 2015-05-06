@@ -7,3 +7,4 @@ bin/
 *.ldf
 **.suo
 *.v12.suo
+release
