@@ -2,16 +2,23 @@
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security.OAuth;
 using Microsoft.Practices.Unity;
+using System.Data.Entity;
+using System.Web.Http;
 using Uheer.App_Start;
 using Uheer.Core.Models;
 using Uheer.Data;
-using System.Data.Entity;
-using System.Web.Http;
 
 namespace Uheer
 {
+    /// <summary>
+    /// The default WebAPI configuration class.
+    /// </summary>
     public static class WebApiConfig
     {
+        /// <summary>
+        /// initiates the UnityContainer and registers the services.
+        /// </summary>
+        /// <param name="config"></param>
         public static void Register(HttpConfiguration config)
         {
             var container = new UnityContainer();
@@ -36,8 +43,6 @@ namespace Uheer
 
             config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             config.Formatters.Remove(config.Formatters.XmlFormatter);
-
-            //config.Formatters.Add(new UploadMultipartMediaTypeFormatter());
         }
     }
 }

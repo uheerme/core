@@ -343,9 +343,6 @@
     <Content Include="Scripts\app\modules\listen\listen.html" />
     <Content Include="Scripts\app\modules\listen\ListenController.js" />
     <Content Include="Scripts\app\modules\listen\MusicFactory.js" />
-    <Content Include="Scripts\app\modules\musics\musics.html" />
-    <Content Include="Scripts\app\modules\musics\MusicsRoutes.js" />
-    <Content Include="Scripts\app\modules\musics\MusicsController.js" />
     <Content Include="Scripts\app\modules\channels\channels.html" />
     <Content Include="Scripts\app\modules\channels\ChannelsRoutes.js" />
     <Content Include="Scripts\app\modules\channels\ChannelsController.js" />

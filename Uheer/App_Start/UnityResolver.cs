@@ -1,16 +1,24 @@
 ﻿﻿using Microsoft.Practices.Unity;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Http.Dependencies;
 
 namespace Uheer.App_Start
 {
+    /// <summary>
+    /// The IoC resolver module.
+    /// </summary>
     public class UnityResolver : IDependencyResolver
     {
+        /// <summary>
+        /// The injected container.
+        /// </summary>
         protected IUnityContainer container;
 
+        /// <summary>
+        /// Default UnityResolver constructor.
+        /// </summary>
+        /// <param name="container">The container that will be resolved.</param>
         public UnityResolver(IUnityContainer container)
         {
             if (container == null)
