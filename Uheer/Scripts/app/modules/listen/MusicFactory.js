@@ -4,6 +4,9 @@ UheerApp
     .factory('MusicPlayer', ['Synchronizer', 'MusicStreamProvider', 'PlaysetIterator',
     function (Synchronizer, MusicStreamProvider, PlaysetIterator) {
         return {
+            _resyncClock: 1 * 10 * 1000,    //  1 minute.
+            _acceptableSyncDifference: 100, // 100 milliseconds.
+
             /// Take a $scope.
             /// Considerations: The MusicStreamProvider will be initialized and previous instances will be disposed, removing existing streamings.
             take: function ($scope) {
@@ -45,7 +48,7 @@ UheerApp
                 this.$scope.loading = true;
 
                 var _this = this;
-                var initialMusic = PlaysetIterator.searchCurrent().current();
+                var initialMusic = PlaysetIterator.restoreOriginalCurrent().current();
                 if (!initialMusic) {
                     console.log('The music {' + this.$scope.channel.currentId + '} could not be found. There is a issue with this channel.');
                 }
@@ -54,9 +57,8 @@ UheerApp
 
                 Synchronizer
                     .take(this.$scope)
-                    .sync(function (timeFrame) {
-                        _this.play(timeFrame);
-                    });
+                    .onSynced(function (timeFrame) { _this.play(timeFrame); })
+                    .sync();
 
                 return this;
             },
@@ -89,8 +91,29 @@ UheerApp
                 audio.play();
                 this.playing = true;
 
-                // Modifies progress-bar as music progresses.
+                /// Start continuous syncing.
                 var _this = this;
+                this._resync = setInterval(function () {
+                    console.log('Resyncing...');
+                    PlaysetIterator.restoreOriginalCurrent();
+                    Synchronizer
+                        .translatePlayset(function (timeframe) {
+                            var difference = 1000 * Math.abs(audio.currentTime - timeframe);
+
+                            console.log('Audio\'s current position differs from sync suggestion by '
+                                        + difference + 'ms. Acceptable range is '
+                                        + _this._acceptableSyncDifference + 'ms.');
+
+                            if (difference > _this._acceptableSyncDifference) {
+                                console.log('Hold on, re-synchronization is about to happen...');
+                                _this.play(timeframe);
+                            } else {
+                                console.log('Re-synchronization cancelled.');
+                            }
+                        });
+                }, this._resyncClock);
+
+                // Modifies progress-bar as music progresses.
                 audio.addEventListener('timeupdate', function () {
                     _this.$scope.$apply(function () {
                         _this.$scope.currentMusicCurrentTime = Math.trunc(audio.currentTime);
@@ -98,14 +121,18 @@ UheerApp
                 }, false);
 
                 audio.addEventListener('loadedmetadata', function () {
-                    PlaysetIterator.searchCurrent();
+                    /// Interrupts continuous syncing.
+                    clearInterval(_this._resync);
+                    _this._resync = null;
+
+                    PlaysetIterator.restoreOriginalCurrent();
                     Synchronizer.translatePlayset();
                 }, false);
 
                 audio.addEventListener('ended', function () {
                     _this.$scope.isPlaying = false;
 
-                    PlaysetIterator.searchCurrent();
+                    PlaysetIterator.restoreOriginalCurrent();
                     Synchronizer.translatePlayset();
                 }, false);
 
@@ -135,8 +162,12 @@ UheerApp
                     if (audio)
                         audio.pause();
 
-                    if (music == current)
+                    if (music == current) {
+                        clearInterval(this._resync);
+                        this._resync = null;
+
                         this.playing = false;
+                    }
                 }
 
                 return this;
@@ -178,11 +209,15 @@ UheerApp
                 return this;
             },
 
-            sync: function (callback) {
+            onSynced: function (callback) {
+                this._callback = callback;
+                return this;
+            },
+
+            sync: function () {
                 console.log('Synchronization procedure method has started.');
                 this.$scope.synchronized = false;
 
-                this._callback = callback
                 var channel = this.$scope.channel;
 
                 // Let's find the channel's length. This information will help us optimizing the
@@ -203,7 +238,7 @@ UheerApp
                     _this.serverTime = new Date(Date.parse(response.Now));
                     _this.serverTime.setMilliseconds(_this.serverTime.getMilliseconds() + delay);
 
-                    console.log('The synchronization time-frame was ' + timeframe + '.');
+                    console.log('The synchronization time-frame was ' + timeframe + 'ms.');
                     _this.timeframe = timeframe;
 
                     _this.translatePlayset();
@@ -214,7 +249,7 @@ UheerApp
 
             /// Translates all the time-frame gotten from the server and moves 
             /// the stack to the music that is currently being played.
-            translatePlayset: function () {
+            translatePlayset: function (callback) {
                 var channel = this.$scope.channel;
 
                 this.$scope.synchronized = false;
@@ -223,6 +258,7 @@ UheerApp
 
                 var startTime = new Date(Date.parse(channel.CurrentStartTime));
                 var timeline = (this.serverTime - startTime);
+                console.log('The timeline that will be translated is ' + timeline + 'ms.');
 
                 if (timeline > this._channelsLength && !channel.Loops) {
                     PlaysetIterator.kill();
@@ -248,7 +284,12 @@ UheerApp
                 this.$scope.synchronized = true;
 
                 // If there is a callback, invoke it passing the timeline in seconds, which represents the current position of the song's playment.
-                if (this._callback) return this._callback(timeline / 1000);
+                if (callback)
+                    callback(timeline / 1000);
+                else if (this._callback)
+                    this._callback(timeline / 1000);
+
+                return this;
             }
         };
     }]);
@@ -312,10 +353,11 @@ UheerApp
                 }
             };
         }])
-    .run(['$rootScope', 'MusicStreamProvider', function ($rootScope, MusicStreamProvider) {
+    .run(['$rootScope', 'MusicPlayer', 'MusicStreamProvider', function ($rootScope, MusicPlayer, MusicStreamProvider) {
         $rootScope.$on("$stateChangeStart", function (event, toState, toParams, fromState, fromParams) {
             // Asserts behavior: player will stop if user move to another page.
             if (fromState.name == 'listen/:id') {
+                MusicPlayer.stopAll();
                 MusicStreamProvider.dispose();
             }
         });
@@ -326,8 +368,18 @@ UheerApp
         return {
             take: function (channel) {
                 this._channel = channel;
+                this._originalCurrentIndex = -1;
 
-                return this;
+                if (this._channel.CurrentId) {
+                    for (var i in this._channel.Musics) {
+                        if (this._channel.Musics[i].Id == this._channel.CurrentId) {
+                            this._originalCurrentIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                return this.restoreOriginalCurrent();
             },
 
             /// Retrieves the index of the music with Id=musicId. If none, returns -1.
@@ -353,28 +405,18 @@ UheerApp
             },
 
             /// Define which music is the current based on Channel.CurrentId.
-            searchCurrent: function () {
-                if (this._channel.CurrentId) {
-                    var musicIndex = -1;
-                    var music = null;
-                    for (var i in this._channel.Musics) {
-                        if (this._channel.Musics[i].Id == this._channel.CurrentId) {
-                            musicIndex = i;
-                            music = this._channel.Musics[i];
-                            break;
-                        }
-                    }
-
-                    this._currentIndex = musicIndex;
-                    this._current = music;
-                }
+            restoreOriginalCurrent: function () {
+                this._currentIndex = this._originalCurrentIndex;
 
                 return this;
             },
 
             /// Retrieve current music.
             current: function () {
-                return this._current;
+                return this._currentIndex > -1
+                       ? this._channel.Musics[this._currentIndex]
+                       : null
+                ;
             },
 
             /// Set the next music as the current of the playset.
@@ -382,16 +424,13 @@ UheerApp
             /// or the first one, case the current is also the last in the list.
             next: function () {
                 if (this._currentIndex > -1) {
-                    if (this._currentIndex == this._channel.Musics.length - 1 && !this._channel.Loops) {
+                    if (this._currentIndex < this._channel.Musics.length - 1 || this._channel.Loops) {
+                        /// Go to next music.
+                        this._currentIndex = (this._currentIndex + 1) % this._channel.Musics.length;
+                    }
+                    else {
                         console.log('Iterator has reached end of list.');
-                        this._current = null;
-                    } else {
-                        var nextIndex = (this._currentIndex + 1) % this._channel.Musics.length;
-
-                        var nextMusic = this._channel.Musics[nextIndex];
-
-                        this._currentIndex = nextIndex;
-                        this._current = nextMusic;
+                        this._currentIndex = -1;
                     }
                 }
 
