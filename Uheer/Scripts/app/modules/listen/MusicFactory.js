@@ -17,6 +17,14 @@ UheerApp
                 return this;
             },
 
+            /// Stop all songs tags and unbind our re-sync service.
+            dispose: function () {
+                clearInterval(this._resyncTaskHandler);
+                this.stopAll();
+
+                return this;
+            },
+
             /// Mutes the current music acording with the value of shouldBeMuted.
             mute: function (shouldBeMuted) {
                 this._muted = shouldBeMuted;
@@ -51,12 +59,18 @@ UheerApp
 
                 this.$scope.loading = false;
 
+                // Synchronize with server and then play.
                 Synchronizer
                     .take(this.$scope)
                     .onSynchronized(function (timeFrame) {
                         _this.play(timeFrame);
                     })
                     .sync();
+
+                // Start synchronization service, if it hasn't yet.
+                this._resyncTaskHandler = setInterval(function () {
+                    _this.resyncTask();
+                }, 10 * 1000);
 
                 return this;
             },
@@ -111,12 +125,6 @@ UheerApp
 
                 var _this = this;
 
-                //if (this._continuousSyncHandler)
-                //    clearInterval(this._continuousSyncHandler);
-                //this._continuousSyncHandler = setInterval(function () {
-                //    _this.continuousSync();
-                //}, 5 * 1000);
-
                 // Modifies progress-bar as music progresses.
                 audio.ontimeupdate = null;
 
@@ -124,7 +132,9 @@ UheerApp
                 audio.addEventListener('timeupdate', update_handler = function () {
                     if (_this.audioOnPlay) {
                         _this.$scope.$apply(function () {
-                            _this.$scope.currentMusicCurrentTime = Math.trunc(_this.audioOnPlay.currentTime);
+                            _this.$scope.currentTime = ~~_this.audioOnPlay.currentTime;
+                            _this.$scope.progressPercentage
+                                = ~~(100000 * _this.audioOnPlay.currentTime / _this.$scope.channel.Current.LengthInMilliseconds) + '%';
                         });
                     }
                 }, false);
@@ -152,6 +162,9 @@ UheerApp
                 }
 
                 this.playing = false;
+
+                // Unbind continuous synchronization service.
+
                 return this;
             },
 
@@ -174,12 +187,22 @@ UheerApp
                 return this;
             },
 
-            continuousSync: function () {
-                console.log('Synchronization attempt...');
-                console.log(this.audioOnPlay);
+            resyncTask: function () {
+                console.log('Re-synchronization attempt...');
 
-                if (this.audioOnPlay) {
-                    //
+                var channel = this.$scope.channel;
+                var current = channel.Current;
+
+                try {
+                    if (!this.audioOnPlay || Synchronizer.isSynchronized(this.audioOnPlay.currentTime)) {
+                        console.log('Re-synchronization canceled.');
+                        return;
+                    }
+
+                    this.audioOnPlay.currentTime = Synchronizer.remoteTime() - channel.CurrentStartTime;
+                    console.log('Successfully re-synchronized to ' + this.audioOnPlay.currentTime);
+                } catch (e) {
+                    console.error(e)
                 }
             },
 
@@ -199,6 +222,8 @@ UheerApp
     .factory('Synchronizer', ['StatusResource', 'PlaysetIterator',
     function (Status, PlaysetIterator) {
         return {
+            tolerableUnsyncRange: 80,
+
             onSynchronized: function (callback) {
                 this._callback = callback;
                 return this;
@@ -233,12 +258,27 @@ UheerApp
                     var remoteTime = new Date(Date.parse(response.Now));
                     remoteTime.setMilliseconds(remoteTime.getMilliseconds() + delay);
 
-                    console.log('The synchronization time-frame was ' + timeframe + '.');
+                    console.log('The synchronization time-frame was ' + timeframe + 'ms');
                     _this.differenceBetweenRemoteAndLocal = remoteTime - localTime;
                     _this.translatePlayset();
                 });
 
                 return this;
+            },
+
+            remoteTime: function () {
+                var _remoteTime = new Date()
+                _remoteTime.setMilliseconds(_remoteTime.getMilliseconds() + this.differenceBetweenRemoteAndLocal);
+
+                return _remoteTime;
+            },
+
+            isSynchronized: function (realCurrentMusicPosition) {
+                var logicalCurrentMusicPosition = (this.remoteTime() - this.$scope.channel.CurrentStartTime);
+                var actualUnsyncRange = Math.abs(1000 * realCurrentMusicPosition - logicalCurrentMusicPosition);
+                console.log('Estimated sync offset is ' + actualUnsyncRange + 'ms')
+
+                return actualUnsyncRange < this.tolerableUnsyncRange;
             },
 
             /// Translates all the time-frame gotten from the server and moves 
@@ -248,7 +288,6 @@ UheerApp
 
                 var channel = this.$scope.channel;
 
-                var currentStartTime = channel.CurrentStartTime;
                 var remoteTime = new Date();
                 remoteTime.setMilliseconds(remoteTime.getMilliseconds() + this.differenceBetweenRemoteAndLocal);
 
@@ -261,7 +300,11 @@ UheerApp
 
                 // The channel may have looped already and the cycle would put us in the exact same spot.
                 // We don't need to iterate throughout the entire list to check this. Instead, let's just consider the last one.
-                if (this._channelsLength) timeline %= this._channelsLength;
+                if (this._channelsLength) {
+                    var loopsCount = ~~(timeline / this._channelsLength);
+                    channel.CurrentStartTime.setMilliseconds(channel.CurrentStartTime.getMilliseconds() + this._channelsLength * loopsCount);
+                    timeline %= this._channelsLength;
+                }
 
                 while (timeline > channel.Current.LengthInMilliseconds) {
                     timeline -= channel.Current.LengthInMilliseconds;
@@ -273,7 +316,7 @@ UheerApp
                     }
                 }
 
-                console.log('Translation procedure found ' + channel.Current.Name + '(' + channel.Current.Id + ') as current music.');
+                console.log(channel.Current.Name + ' is the current music');
 
                 this.$scope.synchronized = true;
 
@@ -428,7 +471,7 @@ UheerApp
         $rootScope.$on("$stateChangeStart", function (event, toState, toParams, fromState, fromParams) {
             // Asserts behavior: player will stop if user move to another page.
             if (fromState.name == 'listen/:id') {
-                MusicPlayer.stopAll();
+                MusicPlayer.dispose();
                 MusicStreamProvider.dispose();
             }
         });
