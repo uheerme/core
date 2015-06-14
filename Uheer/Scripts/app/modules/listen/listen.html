@@ -34,12 +34,11 @@
                     <div ng-show="isPlaying">
                         <h4>
                             <span>{{ currentMusic.Name }}</span>
-                            <small>{{ currentMusicCurrentTime }}s</small>
+                            <small>{{ currentTime }}s</small>
                         </h4>
                     </div>
                     <div class="progress" ng-show="isPlaying">
-                        <div id="player-progress-bar" class="progress-bar"
-                             style="width:{{ 100000 * currentMusicCurrentTime / currentMusic.LengthInMilliseconds }}%"></></div>
+                        <div id="player-progress-bar" class="progress-bar" ng-style="{'width': progressPercentage }"></div>
                     </div>
                 </div>
             </div>

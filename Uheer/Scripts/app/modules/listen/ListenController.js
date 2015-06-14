@@ -22,6 +22,8 @@ UheerApp
                     .$promise.then(function (channel) {
                         $scope.channel = channel;
 
+                        $scope.channel.CurrentStartTime = new Date(Date.parse($scope.channel.CurrentStartTime + 'Z'));
+
                         MusicPlayer
                                 .take($scope)
                                 .start();
