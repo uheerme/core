@@ -42,19 +42,23 @@ UheerApp
             ///     The client will re-sync with the server.
             ///     The music with Id=this.channel.CurrentId will be played.
             start: function () {
+                this.dispose();
+
                 if (!this.$scope.channel.CurrentId) {
-                    console.log('Cannot play a channel that is currently stalled.');
+                    console.log('MusicPlayer: cannot play a channel that is currently stalled.');
                     return this;
                 }
 
-                console.log('Let\'s hear the playset in channel ' + this.$scope.channel.Name + '!');
+                console.log('MusicPlayer: Let\'s hear the playset in channel ' + this.$scope.channel.Name + '!');
 
                 this.$scope.loading = true;
 
                 var _this = this;
                 var initialMusic = this.$scope.channel.Current;
                 if (!initialMusic) {
-                    console.log('The music {' + this.$scope.channel.currentId + '} could not be found. There is a issue with this channel.');
+                    console.log('MusicPlayer: the music {' + this.$scope.channel.currentId + '} could not be found.'
+                                + ' There is a issue with this channel.');
+                    return this;
                 }
 
                 this.$scope.loading = false;
@@ -80,15 +84,18 @@ UheerApp
             ///     If musicId were not provided, it assumes this.channel.CurrentId as replacement.
             ///     Defines a callback to play the next music (constrained by some Channel definitions).
             play: function (startAt) {
+                var _this = this;
                 var music = this.$scope.channel.Current;
                 if (!music) {
-                    console.log('Channel #' + this.$scope.channel.Id + ' doesn\'t have any music on play.');
+                    console.log('MusicPlayer: channel #' + this.$scope.channel.Id + ' doesn\'t have any music on play.');
                     return;
                 }
 
-                console.log('Channel #' + this.$scope.channel.Id + ' will play "' + music.Name + '", starting at ' + (startAt || 0) + '.');
-                this.$scope.isPlaying = true;
+                console.log('MusicPlayer: channel #' + this.$scope.channel.Id
+                           + ' will play "' + music.Name
+                           + '", starting at ' + (startAt || 0) + '.');
 
+                this.$scope.isPlaying = true;
                 this.$scope.currentMusic = music;
 
                 // Two musics should never play at once.
@@ -98,22 +105,19 @@ UheerApp
                 var audio = this.audioOnPlay = MusicStreamProvider.stream(music.Id);
 
                 try {
-                    console.log('Trying to start music synchronously...');
                     audio.currentTime = (startAt).toFixed(4);
                     audio.muted = this._muted;
                     audio.play();
                     this.playing = true;
-                    console.log('Done!');
+                    console.log('MusicPlayer: the music has started synchronously!');
                 } catch (e) {
-                    console.log('Failed. Buffer is required. Waiting...');
-
                     var play_handler;
                     var preparationFrame = new Date();
                     audio.addEventListener('canplay', play_handler = function () {
-                        console.log('Done!');
                         preparationFrame = (new Date() - preparationFrame) / 1000;
 
-                        console.log(music.Name + ' can play!');
+                        console.log('MusicPlayer: the music has started asynchronously! The preparation frame was ' + preparationFrame + 's');
+
                         audio.currentTime = (startAt + preparationFrame).toFixed(4);
                         audio.muted = this._muted;
                         audio.play();
@@ -123,7 +127,6 @@ UheerApp
                     });
                 }
 
-                var _this = this;
 
                 // Modifies progress-bar as music progresses.
                 audio.ontimeupdate = null;
@@ -141,7 +144,7 @@ UheerApp
 
                 var remove_handler;
                 audio.addEventListener('ended', remove_handler = function () {
-                    console.log(music.Name + ' has ended.');
+                    console.log('MusicPlayer: ' + music.Name + ' ended.');
                     _this.$scope.isPlaying = false;
                     _this.audioOnPlay = null;
 
@@ -188,19 +191,20 @@ UheerApp
             },
 
             resyncTask: function () {
-                console.log('Re-synchronization attempt...');
+                var log = 'MusicPlayer: re-synchronization ';
 
                 var channel = this.$scope.channel;
                 var current = channel.Current;
 
                 try {
                     if (!this.audioOnPlay || Synchronizer.isSynchronized(this.audioOnPlay.currentTime)) {
-                        console.log('Re-synchronization canceled.');
+                        console.log(log + 'canceled.');
                         return;
                     }
 
-                    this.audioOnPlay.currentTime = Synchronizer.remoteTime() - channel.CurrentStartTime;
-                    console.log('Successfully re-synchronized to ' + this.audioOnPlay.currentTime);
+                    this.audioOnPlay.currentTime = (Synchronizer.remoteTime() - channel.CurrentStartTime) / 1000;
+
+                    console.log(log + 'finished. Position time set to ' + this.audioOnPlay.currentTime + 's');
                 } catch (e) {
                     console.error(e)
                 }
@@ -224,18 +228,19 @@ UheerApp
         return {
             tolerableUnsyncRange: 80,
 
-            onSynchronized: function (callback) {
-                this._callback = callback;
-                return this;
-            },
-
             take: function ($scope) {
                 this.$scope = $scope;
                 return this;
             },
 
+            /// Define a function to be called when 
+            /// the synchronization procedure has finished.
+            onSynchronized: function (callback) {
+                this._callback = callback;
+                return this;
+            },
+
             sync: function () {
-                console.log('Synchronization procedure method has started.');
                 this.$scope.synchronized = false;
 
                 var channel = this.$scope.channel;
@@ -257,8 +262,7 @@ UheerApp
 
                     var remoteTime = new Date(Date.parse(response.Now));
                     remoteTime.setMilliseconds(remoteTime.getMilliseconds() + delay);
-
-                    console.log('The synchronization time-frame was ' + timeframe + 'ms');
+                    console.log('Synchronizer: Cristian\'s time-frame was ' + timeframe + 'ms');
                     _this.differenceBetweenRemoteAndLocal = remoteTime - localTime;
                     _this.translatePlayset();
                 });
@@ -276,7 +280,7 @@ UheerApp
             isSynchronized: function (realCurrentMusicPosition) {
                 var logicalCurrentMusicPosition = (this.remoteTime() - this.$scope.channel.CurrentStartTime);
                 var actualUnsyncRange = Math.abs(1000 * realCurrentMusicPosition - logicalCurrentMusicPosition);
-                console.log('Estimated sync offset is ' + actualUnsyncRange + 'ms')
+                console.log('Synchronizer: estimated sync offset is ' + actualUnsyncRange + 'ms')
 
                 return actualUnsyncRange < this.tolerableUnsyncRange;
             },
@@ -284,7 +288,7 @@ UheerApp
             /// Translates all the time-frame gotten from the server and moves 
             /// the stack to the music that is currently being played.
             translatePlayset: function () {
-                console.log('Playset translation procedure has started.');
+                console.log('Synchronizer: playset translation procedure has started');
 
                 var channel = this.$scope.channel;
 
@@ -316,7 +320,7 @@ UheerApp
                     }
                 }
 
-                console.log(channel.Current.Name + ' is the current music');
+                console.log('Synchronizer: ' + channel.Current.Name + ' is the current music');
 
                 this.$scope.synchronized = true;
 
@@ -344,8 +348,7 @@ UheerApp
                         }
                     }
 
-                    this._streams = {
-                    };
+                    this._streams = {};
                     return this;
                 },
 
@@ -362,7 +365,7 @@ UheerApp
                     var musicAlreadyStreaming = this._streams[musicId.toString()];
                     if (musicAlreadyStreaming) return musicAlreadyStreaming;
 
-                    console.log('Starting to stream music #' + musicId + '.');
+                    console.log('MusicStreamProvider: streaming music #' + musicId);
 
                     var audio = $document[0].createElement('audio');
                     audio.src = config.apiUrl + 'Musics/' + musicId + '/Stream';
@@ -428,7 +431,7 @@ UheerApp
                 }
 
                 if (this._channel.CurrentIndex == this._channel.Musics.length - 1 && !this._channel.Loops) {
-                    console.log('Iterator has reached end of ' + this._channel.Name + ' \'s playlist.');
+                    console.log('PlaysetIterator: end of ' + this._channel.Name + ' \'s playlist reached.');
                     this._channel.Current = null;
                     return this;
                 }
