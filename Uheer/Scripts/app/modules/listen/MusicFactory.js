@@ -83,15 +83,31 @@ UheerApp
                 // Start streaming it, if it hasn't been done yet.
                 var audio = this.audioOnPlay = MusicStreamProvider.stream(music.Id);
 
-                var play_handler;
-                audio.addEventListener('canplay', play_handler = function () {
-                    audio.currentTime = startAt.toFixed(4);
+                try {
+                    console.log('Trying to start music synchronously...');
+                    audio.currentTime = (startAt).toFixed(4);
                     audio.muted = this._muted;
                     audio.play();
                     this.playing = true;
+                    console.log('Done!');
+                } catch (e) {
+                    console.log('Failed. Buffer is required. Waiting...');
 
-                    audio.removeEventListener('canplay', play_handler)
-                });
+                    var play_handler;
+                    var preparationFrame = new Date();
+                    audio.addEventListener('canplay', play_handler = function () {
+                        console.log('Done!');
+                        preparationFrame = (new Date() - preparationFrame) / 1000;
+
+                        console.log(music.Name + ' can play!');
+                        audio.currentTime = (startAt + preparationFrame).toFixed(4);
+                        audio.muted = this._muted;
+                        audio.play();
+                        this.playing = true;
+
+                        audio.removeEventListener('canplay', play_handler)
+                    });
+                }
 
                 var _this = this;
 
@@ -115,6 +131,7 @@ UheerApp
 
                 var remove_handler;
                 audio.addEventListener('ended', remove_handler = function () {
+                    console.log(music.Name + ' has ended.');
                     _this.$scope.isPlaying = false;
                     _this.audioOnPlay = null;
 
