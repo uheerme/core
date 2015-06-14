@@ -21,9 +21,8 @@ UheerApp
             mute: function (shouldBeMuted) {
                 this._muted = shouldBeMuted;
 
-                var current = PlaysetIterator.current();
-                if (current) {
-                    var audio = MusicStreamProvider.audioById(current.Id);
+                if (this.$scope.channel.Current) {
+                    var audio = MusicStreamProvider.audioById(this.$scope.channel.Current.Id);
                     if (audio) audio.muted = shouldBeMuted;
                 }
 
