@@ -342,7 +342,7 @@
     <Content Include="Scripts\app\modules\listen\ListenRoutes.js" />
     <Content Include="Scripts\app\modules\listen\listen.html" />
     <Content Include="Scripts\app\modules\listen\ListenController.js" />
-    <Content Include="Scripts\app\modules\listen\MusicFactory.js" />
+    <Content Include="Scripts\app\services\MusicFactory.js" />
     <Content Include="Scripts\app\modules\channels\channels.html" />
     <Content Include="Scripts\app\modules\channels\ChannelsRoutes.js" />
     <Content Include="Scripts\app\modules\channels\ChannelsController.js" />
@@ -350,11 +350,11 @@
     <Content Include="Scripts\app\modules\home\home.html" />
     <Content Include="Scripts\app\modules\home\HomeRoutes.js" />
     <Content Include="Scripts\app\modules\status\Status.js" />
-    <Content Include="Scripts\app\shared\footer.html" />
-    <Content Include="Scripts\app\shared\navbar.html" />
+    <Content Include="Scripts\app\modules\shared\footer.html" />
+    <Content Include="Scripts\app\modules\shared\navbar.html" />
     <Content Include="Content\toastr.scss" />
     <Content Include="Content\toastr.less" />
-    <Content Include="Scripts\app\utils\validator.js" />
+    <Content Include="Scripts\app\services\validator.js" />
     <Content Include="Scripts\audiojs\audio-initialize.js" />
     <Content Include="Scripts\audiojs\audio.min.js" />
     <Content Include="Scripts\audiojs\audiojs.swf" />

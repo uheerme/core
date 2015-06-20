@@ -39,7 +39,7 @@ namespace Uheer
                 "~/Scripts/angular-animate.min.js",
                 "~/Scripts/angular-file-upload-all.min.js",
                 "~/Scripts/app/app.js",
-                "~/Scripts/app/utils/*.js",
+                "~/Scripts/app/services/*.js",
                 "~/Scripts/app/modules/home/*.js",
                 "~/Scripts/app/modules/channels/*.js",
                 "~/Scripts/app/modules/listen/*.js",
