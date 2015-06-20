@@ -206,7 +206,7 @@ UheerApp
 
                     console.log(log + 'finished. Position time set to ' + this.audioOnPlay.currentTime + 's');
                 } catch (e) {
-                    console.error(e)
+                    console.error(e);
                 }
             },
 
@@ -468,6 +468,143 @@ UheerApp
             }
         }
     });
+
+UheerApp
+    .factory('MusicUploader',
+        ['$upload', '$document', 'config', 'Validator',
+        function ($upload, $document, config, Validator) {
+            return {
+                _uploads: [],
+                _waiting: [],
+
+                maxConcomitantUploads: 3,
+
+                isUploadingQueueFull: function () {
+                    return this._uploads.length >= this.maxConcomitantUploads;
+                },
+
+                take: function ($scope) {
+                    this.$scope = $scope;
+                },
+
+                cancel: function (file) {
+                    if (file.status != 'uploading') {
+                        toastr.warning('Cannot cancel a file that is not being uploaded.');
+                        return false;
+                    }
+
+                    file.uploadReference.abort();
+                    file.status = 'canceled';
+            
+                    var indexOf = this._uploads.indexOf(file);
+                    if (indexOf > -1) this._uploads.splice(indexOf, 1);
+
+                    return true;
+                },
+                remove: function (file) {
+                    if (file.status == 'preparing' || file.status == 'uploading') {
+                        toastr.warning('Cancel this upload before removing it from the list.');
+                        return false;
+                    }
+
+                    var removed = false;
+                    var indexOf = this._waiting.indexOf(file);
+                    if (indexOf > -1) {
+                        this._waiting.splice(indexOf, 1);
+                        removed = true;
+                    }
+
+                    indexOf = this.$scope.filesToBeUploaded.indexOf(file);
+                    if (indexOf > -1) {
+                        this.$scope.filesToBeUploaded.splice(indexOf, 1);
+                        removed = true;
+                    }
+
+                    return removed;
+                },
+                uploadMany: function (files) {
+                    for (var index in files) {
+                        this.upload(files[index]);
+                    }
+                },
+                upload: function (file) {
+                    if (!file || file.status == 'uploading' || file.status == 'uploaded' || file.status == 'preparing') {
+                        console.log('MusicUploader: invalid attempt to upload file.');
+                        return false;
+                    }
+
+                    if (this.isUploadingQueueFull()) {
+                        file.status = 'waiting';
+                        var indexOf = this._waiting.indexOf(file);
+                        if (indexOf == -1) this._waiting.push(file);
+                        return false;
+                    }
+
+                    console.log('MusicUploader: preparing to upload ' + file.uploadName);
+
+                    file.status = 'preparing';
+
+                    var newMusic = {
+                        'Name': file.uploadName,
+                        'ChannelId': this.$scope.channel.Id,
+                        'LengthInMilliseconds': 0
+                    }
+
+                    // Load the file in order to retrieve its duration.
+                    var audio = $document[0].createElement('audio');
+                    audio.src = URL.createObjectURL(file);
+
+                    this._uploads.push(file);
+
+                    // Wait for audio metadata to load.
+                    var _this = this;
+                    audio.addEventListener('loadedmetadata', function () {
+                        console.log('MusicUploader: ' + file.uploadName + ' metadata loaded');
+
+                        file.status = 'uploading';
+                        newMusic.LengthInMilliseconds = (audio.duration * 1000).toFixed(0);
+
+                        file.uploadReference = $upload.upload({
+                            url: config.apiUrl + 'Musics',
+                            file: file,
+                            fields: newMusic
+
+                        }).progress(function (evt) {
+                            file.progress = parseInt(100.0 * evt.loaded / evt.total);
+
+                        }).success(function (music, status) {
+                            file.status = 'uploaded';
+
+                            _this.remove(file);
+
+                            _this.$scope.channel.Musics.push(music);
+                            toastr.success(music.Name + ' uploaded!');
+
+                        }).error(function (data, status, headers, config) {
+                            file.status = 'failed';
+
+                            console.log(data);
+                            Validator.
+                                take(data).
+                                toastErrors().
+                                otherwiseToastError();
+
+                        }).finally(function () {
+                            var indexOf = _this._uploads.indexOf(file);
+                            if (indexOf > -1) _this._uploads.splice(file, 1);
+
+
+                            if (_this._waiting.length > 0) {
+                                file = _this._waiting.shift();
+                                _this.upload(file);
+                            }
+                        });
+                    }, false);
+
+                    return true;
+                }
+            };
+        }]);
 
 UheerApp
     .run(['$rootScope', 'MusicStreamProvider', 'MusicPlayer', function ($rootScope, MusicStreamProvider, MusicPlayer) {
