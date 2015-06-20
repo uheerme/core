@@ -1,12 +1,19 @@
 ﻿
 UheerApp.controller(
-    'ChannelDashboardController',
+    'DashboardController',
     ['$http', '$scope', 'config', 'channel', 'Validator', 'MusicUploader',
         function ($http, $scope, config, channel, Validator, MusicUploader) {
 
             MusicUploader.take($scope);
 
             $scope.channel = channel;
+
+            // Parsing dates.
+            channel.CurrentStartTime = new Date(channel.CurrentStartTime);
+            for (var i in channel.Musics) {
+                var music = channel.Musics[i];
+                music.DateCreated = new Date(music.DateCreated);
+            }
 
             $scope.toogleLoop = function () {
                 $scope.channel.Loops = !$scope.channel.Loops;
@@ -40,7 +47,7 @@ UheerApp.controller(
                     .post(config.apiUrl + 'Channels/' + $scope.channel.Id + '/Play/' + musicId)
                     .success(function (data) {
                         $scope.channel.CurrentId = data.CurrentId;
-                        $scope.channel.CurrentStartTime = data.CurrentStartTime;
+                        $scope.channel.CurrentStartTime = new Date(data.CurrentStartTime);
                     })
                     .error(function (error) {
                         console.log(error);

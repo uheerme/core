@@ -12,7 +12,7 @@ angular.module('UheerApp')
                 .state('channels/:id', {
                     url: '/channels/:id',
                     templateUrl: 'Scripts/app/modules/channels/dashboard.html',
-                    controller: 'ChannelDashboardController',
+                    controller: 'DashboardController',
                     resolve: {
                         channel: function ($stateParams, ChannelResource, config) {
                             return ChannelResource

@@ -1,4 +1,4 @@
-﻿<div class="container-fluid">
+﻿<div class="container">
     <h1>
         <a href="#/channels" title="Go back to all channels."><span class="glyphicon glyphicon-menu-left"></span></a>
 
@@ -8,22 +8,13 @@
 
     <div class="row">
         <div class="col-sm-6">
-            <div class="well">
-                <div ng-show="!channel.CurrentId">This channel isn't playing anything.</div>
-                <div ng-show="channel.CurrentId">
-                    <h4>
-                        <span ng-show="channel.Current">{{ channel.Current.Name }}</span>
-                        <span ng-hide="channel.Current">#{{ channel.CurrentId }}</span>
-                        <br />
-                        <small ng-show="channel.CurrentStartTime">
-                            Playset start: {{ channel.CurrentStartTime }}.
-                        </small>
-                    </h4>
-                </div>
+            <div ng-hide="channel.CurrentId">This channel isn't playing anything.</div>
+            <div ng-show="channel.CurrentId">
+                Set to play from <strong>#{{ channel.CurrentId }}</strong>, at {{ channel.CurrentStartTime.toLocaleString() }}.
             </div>
         </div>
         <div class="col-sm-6">
-            <div ng-hide="channel.DateDeactivated" class="well">
+            <div ng-hide="channel.DateDeactivated">
                 <form class="form-inline">
                     <div class="form-group">
                         <div ng-show="channel.CurrentId" class="btn-group">
@@ -32,10 +23,23 @@
                                 <span class="glyphicon glyphicon-pause"></span>
                             </button>
                             <button title="Stop music #{{ channel.CurrentId }}."
-                                    class="btn btn-danger">
+                                    class="btn btn-default">
                                 <span class="glyphicon glyphicon-stop"></span>
                             </button>
                         </div>
+                        <button ng-click="toogleLoop()"
+                                class="btn btn-default"
+                                title="Check if the channel should repeat. If false, the music will stop at the end of the playlist.">
+                            <span ng-show="channel.Loops">
+                                <span class="glyphicon glyphicon-repeat"></span>
+                                Loops
+                            </span>
+                            <span ng-hide="channel.Loops">
+                                <span class="glyphicon glyphicon-send"></span>
+                                Doesn't loop
+                            </span>
+                        </button>
+
                         <div class="btn-group">
                             <button ng-click="play()"
                                     class="btn btn-primary"
@@ -56,18 +60,6 @@
                                 </li>
                             </ul>
                         </div>
-                        <button ng-click="toogleLoop()"
-                                class="btn btn-danger"
-                                title="Check if the channel should repeat. If false, the music will stop at the end of the playlist.">
-                            <span ng-show="channel.Loops">
-                                <span class="glyphicon glyphicon-repeat"></span>
-                                Loops
-                            </span>
-                            <span ng-hide="channel.Loops">
-                                <span class="glyphicon glyphicon-send"></span>
-                                Doesn't loop
-                            </span>
-                        </button>
 
                         <a href="#/listen/{{ channel.Id }}" target="_blank"
                            title="Listen to {{ channel.Name }} channel (a new tab will be open)." class="btn btn-primary">
@@ -80,91 +72,83 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="well well-list-item">
-                <form>
-                    <div class="form-group">
-                        <input type="text" ng-model="search"
-                               placeholder="Music's name, size, date added" class="form-control" />
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12" ng-hide="channel.Musics.length">
-            <div class="well text-center">
-                <h1>
-                    <span class="glyphicon glyphicon-ban-circle"></span><br />
-                    <small>Bad dj! there isn't any music to show.</small>
-                </h1>
-            </div>
-        </div>
-        <div id="uploadedFiles" ng-repeat="music in channel.Musics | filter:search" class="col-sm-6 col-md-4 col-lg-3 animate-list">
-            <div class="well well-list-item">
-                <div class="row">
-                    <div class="col-sm-2">
-                        <h4 class="pull-left">
-                            <small>
-                                #{{ music.Id }}
-                            </small>
-                        </h4>
-                    </div>
-                    <div class="col-sm-10">
-                        <form class="form">
-                            <div class="form-group">
-                                <input type="text" ng-model="music.Name" class="form-control" />
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <label class="label label-default">Added on {{ music.DateCreated }}</label>
-                    <label class="label label-primary">{{ (music.SizeInBytes/1048576).toFixed(2) }} MB</label>
-                </div>
-                <div class="clearfix"></div>
-            </div>
-        </div>
+    <div ng-hide="channel.Musics.length" class="well text-center">
+        <h1>
+            <span class="glyphicon glyphicon-ban-circle"></span><br />
+            <small>Bad dj! there isn't any music to show.</small>
+        </h1>
     </div>
 
-    <div class="row" ng-hide="channel.DateDeactivated">
-        <br /><br />
-        <div class="col-sm-12">
-            <div id="upload-section" ng-hide="isUploading">
-                <div ng-file-drop ng-model="filesToBeUploaded" class="drop-box well text-center"
-                     drag-over-class="dragover" ng-multiple="true" allow-dir="true">
-                    <h2>
-                        <span class="glyphicon glyphicon-cloud-upload"></span> <br />
-                        <small>Drop multiple files or folders here.</small>
-                    </h2>
-                    <button class="btn btn-default" ng-multiple="true" ng-file-select ng-model="filesToBeUploaded">
-                        <span class="glyphicon glyphicon-search"></span>
-                        Or select files for upload
-                    </button>
-                    <button ng-click="uploadMany(filesToBeUploaded)" ng-show="filesToBeUploaded.length"
-                            class="btn btn-primary">
-                        <span class="glyphicon glyphicon-cloud-upload"></span> Upload all
-                    </button>
-                </div>
+    <div ng-show="channel.Musics.length">
+        <br />
+        <form>
+            <div class="form-group">
+                <input type="text" ng-model="search"
+                       placeholder="Search by music's name, size, date added..." class="form-control" />
             </div>
-        </div>
+        </form>
+        <table class="table table-hover table-condensed table-responsive">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Length</th>
+                    <th>Size</th>
+                    <th>Added at</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="music in channel.Musics | filter:search">
+                    <td>
+                        <strong>
+                            #{{ music.Id }}
+                        </strong>
+                    </td>
+                    <td>{{ music.Name }}</td>
+                    <td>{{ (music.LengthInMilliseconds/1000).toFixed(0) }}s</td>
+                    <td>{{ (music.SizeInBytes/1048576).toFixed(2) }} MB</td>
+                    <td>{{ music.DateCreated.toLocaleString() }}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
+</div>
+
+<div id="upload-section" ng-hide="channel.DateDeactivated || isUploading" class="well text-center">
+    <br /><br />
+    <div ng-file-drop ng-model="filesToBeUploaded" class="drop-box"
+         drag-over-class="dragover" ng-multiple="true" allow-dir="true">
+        <h2>
+            <span class="glyphicon glyphicon-cloud-upload"></span> <br />
+            <small>Drop multiple files or folders here.</small>
+        </h2>
+        <button class="btn btn-default" ng-multiple="true" ng-file-select ng-model="filesToBeUploaded">
+            <span class="glyphicon glyphicon-search"></span>
+            Or select files for upload
+        </button>
+        <button ng-click="uploadMany(filesToBeUploaded)" ng-show="filesToBeUploaded.length"
+                class="btn btn-primary">
+            <span class="glyphicon glyphicon-cloud-upload"></span> Upload all
+        </button>
+    </div>
+</div>
+
+<div class="container">
     <div class="row">
         <div id="filesToBeUploaded" ng-repeat="file in filesToBeUploaded" class="col-sm-6 col-md-4 col-lg-3 animate-list">
-            <div class="well well-list-item">
+            <div class="well">
                 <button ng-hide="file.status == 'uploading'" type="button" aria-label="Remove {{ file.name }} from upload list."
                         ng-click="remove(file)" title="Remove {{ file.name }} from upload list." class="close">
                     <span aria-hidden="true">&times;</span>
                 </button>
 
                 <input ng-init="file.uploadName = file.name"
-                        ng-model="file.uploadName" type="text" class="form-control" placeholder="Name that will be displayed to your listeners" />
+                       ng-model="file.uploadName" type="text" class="form-control" placeholder="Name that will be displayed to your listeners" />
 
                 <div class="progress">
                     <div class="progress-bar progress-bar-default" style="width:{{ file.progress }}%"></div>
                 </div>
-                
+
                 <div class="text-right">
                     <span ng-hide="file.status == 'uploading'">
                         <button ng-click="upload(file)" title="Confirm upload of file {{ file.name }}." class="btn btn-primary">
@@ -179,19 +163,6 @@
                     <span class="label label-default pull-left">{{ (file.size/1048576).toFixed(2) }} MB</span>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-sm-12">
-            <h2>
-                Connected users
-            </h2>
-            <p>
-                <button class="btn btn-primary">
-                    <span class="glyphicon glyphicon-option-horizontal"></span>
-                </button>
-            </p>
         </div>
     </div>
 </div>
