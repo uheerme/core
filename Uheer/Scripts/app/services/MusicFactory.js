@@ -478,9 +478,19 @@ UheerApp
                 _waiting: [],
 
                 maxConcomitantUploads: 3,
+                formatsAllowed: ['mp3', 'wav', 'ogg', 'oga'],
 
                 isUploadingQueueFull: function () {
                     return this._uploads.length >= this.maxConcomitantUploads;
+                },
+                isFileFormatAllowed: function(format) {
+                    return this.formatsAllowed.indexOf(format) > -1;
+                },
+                canFileBeUploaded: function (file) {
+                    var format = file.type.split('/')[1];
+                    
+                    return file && file.status != 'preparing' && file.status != 'uploading' && file.status != 'uploaded'
+                        && this.isFileFormatAllowed(format);
                 },
 
                 take: function ($scope) {
@@ -528,7 +538,7 @@ UheerApp
                     }
                 },
                 upload: function (file) {
-                    if (!file || file.status == 'uploading' || file.status == 'uploaded' || file.status == 'preparing') {
+                    if (!this.canFileBeUploaded(file)) {
                         console.log('MusicUploader: invalid attempt to upload file.');
                         return false;
                     }
@@ -575,8 +585,6 @@ UheerApp
                         }).success(function (music, status) {
                             file.status = 'uploaded';
 
-                            _this.remove(file);
-
                             _this.$scope.channel.Musics.push(music);
                             toastr.success(music.Name + ' uploaded!');
 
@@ -590,6 +598,8 @@ UheerApp
                                 otherwiseToastError();
 
                         }).finally(function () {
+                            _this.remove(file);
+
                             var indexOf = _this._uploads.indexOf(file);
                             if (indexOf > -1) _this._uploads.splice(file, 1);
 
