@@ -189,6 +189,7 @@ UheerApp
                 return this;
             },
 
+            maxTolerableDelayInMilliseconds: 80,
             resyncPeriodInSeconds: 10,
             startResyncTask: function () {
                 // Start synchronization service, if it hasn't yet.
@@ -205,20 +206,24 @@ UheerApp
                 }
             },
             resyncTask: function () {
-                var log = 'MusicPlayer: re-synchronization ';
-
                 var channel = this.$scope.channel;
                 var current = channel.Current;
 
                 try {
-                    if (!this.audioOnPlay || Synchronizer.isSynchronized(this.audioOnPlay.currentTime)) {
-                        console.log(log + 'canceled.');
+                    var expectedPosition = Synchronizer.remoteTime() - channel.CurrentStartTime;
+                    var actualPosition = this.audioOnPlay.currentTime * 1000;
+                    var delay = ~~(expectedPosition - actualPosition);
+
+                    console.log('MusicPlayer: estimated sync offset is ' + delay + 'ms')
+
+                    if (Math.abs(delay) < this.maxTolerableDelayInMilliseconds) {
+                        console.log('MusicPlayer: re-synchronization canceled.');
                         return;
                     }
 
-                    this.audioOnPlay.currentTime = (Synchronizer.remoteTime() - channel.CurrentStartTime) / 1000;
+                    this.audioOnPlay.currentTime = expectedPosition / 1000;
 
-                    console.log(log + 'finished. Position time set to ' + this.audioOnPlay.currentTime + 's');
+                    console.log('MusicPlayer: re-synchronization finished. Position time set to ' + ~~this.audioOnPlay.currentTime + 's');
                 } catch (e) {
                     console.error(e);
                 }
@@ -240,8 +245,6 @@ UheerApp
     .factory('Synchronizer', ['StatusResource', 'PlaysetIterator',
     function (Status, PlaysetIterator) {
         return {
-            tolerableUnsyncRange: 80,
-
             take: function ($scope) {
                 this.$scope = $scope;
                 return this;
@@ -289,14 +292,6 @@ UheerApp
                 _remoteTime.setMilliseconds(_remoteTime.getMilliseconds() + this.differenceBetweenRemoteAndLocal);
 
                 return _remoteTime;
-            },
-
-            isSynchronized: function (realCurrentMusicPosition) {
-                var logicalCurrentMusicPosition = (this.remoteTime() - this.$scope.channel.CurrentStartTime);
-                var actualUnsyncRange = Math.abs(1000 * realCurrentMusicPosition - logicalCurrentMusicPosition);
-                console.log('Synchronizer: estimated sync offset is ' + ~~actualUnsyncRange + 'ms')
-
-                return actualUnsyncRange < this.tolerableUnsyncRange;
             },
 
             /// Translates all the time-frame gotten from the server and moves 
@@ -497,12 +492,12 @@ UheerApp
                 isUploadingQueueFull: function () {
                     return this._uploads.length >= this.maxConcomitantUploads;
                 },
-                isFileFormatAllowed: function(format) {
+                isFileFormatAllowed: function (format) {
                     return this.formatsAllowed.indexOf(format) > -1;
                 },
                 canFileBeUploaded: function (file) {
                     var format = file.type.split('/')[1];
-                    
+
                     return file && file.status != 'preparing' && file.status != 'uploading' && file.status != 'uploaded'
                         && this.isFileFormatAllowed(format);
                 },
@@ -519,7 +514,7 @@ UheerApp
 
                     file.uploadReference.abort();
                     file.status = 'canceled';
-            
+
                     var indexOf = this._uploads.indexOf(file);
                     if (indexOf > -1) this._uploads.splice(indexOf, 1);
 
