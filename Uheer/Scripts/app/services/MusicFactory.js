@@ -19,7 +19,7 @@ UheerApp
 
             /// Stop all songs tags and unbind our re-sync service.
             dispose: function () {
-                clearInterval(this._resyncTaskHandler);
+                this.stopResyncTask();
                 this.stopAll();
 
                 return this;
@@ -70,11 +70,6 @@ UheerApp
                         _this.play(timeFrame);
                     })
                     .sync();
-
-                // Start synchronization service, if it hasn't yet.
-                this._resyncTaskHandler = setInterval(function () {
-                    _this.resyncTask();
-                }, 10 * 1000);
 
                 return this;
             },
@@ -145,6 +140,8 @@ UheerApp
                 var remove_handler;
                 audio.addEventListener('ended', remove_handler = function () {
                     console.log('MusicPlayer: ' + music.Name + ' ended.');
+                    _this.stopResyncTask();
+
                     _this.$scope.isPlaying = false;
                     _this.audioOnPlay = null;
 
@@ -153,6 +150,8 @@ UheerApp
 
                     Synchronizer.translatePlayset();
                 }, false);
+
+                this.startResyncTask();
 
                 return this.streamFollowingMusics(music, 2);
             },
@@ -190,6 +189,21 @@ UheerApp
                 return this;
             },
 
+            resyncPeriodInSeconds: 10,
+            startResyncTask: function () {
+                // Start synchronization service, if it hasn't yet.
+                var _this = this;
+                if (!this._resyncTaskHandler)
+                    this._resyncTaskHandler = setInterval(
+                        function () { _this.resyncTask(); },
+                        _this.resyncPeriodInSeconds * 1000);
+            },
+            stopResyncTask: function () {
+                if (this._resyncTaskHandler) {
+                    clearInterval(this._resyncTaskHandler);
+                    this._resyncTaskHandler = null;
+                }
+            },
             resyncTask: function () {
                 var log = 'MusicPlayer: re-synchronization ';
 
@@ -280,7 +294,7 @@ UheerApp
             isSynchronized: function (realCurrentMusicPosition) {
                 var logicalCurrentMusicPosition = (this.remoteTime() - this.$scope.channel.CurrentStartTime);
                 var actualUnsyncRange = Math.abs(1000 * realCurrentMusicPosition - logicalCurrentMusicPosition);
-                console.log('Synchronizer: estimated sync offset is ' + actualUnsyncRange + 'ms')
+                console.log('Synchronizer: estimated sync offset is ' + ~~actualUnsyncRange + 'ms')
 
                 return actualUnsyncRange < this.tolerableUnsyncRange;
             },
