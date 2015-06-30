@@ -221,7 +221,7 @@ UheerApp
                         return;
                     }
 
-                    this.audioOnPlay.currentTime = expectedPosition / 1000;
+                    this.audioOnPlay.currentTime = (expectedPosition + (.2 ? delay > 0 : 0) * delay) / 1000;
 
                     console.log('MusicPlayer: re-synchronization finished. Position time set to ' + ~~this.audioOnPlay.currentTime + 's');
                 } catch (e) {
