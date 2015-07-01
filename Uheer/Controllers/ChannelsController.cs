@@ -1,14 +1,18 @@
-﻿using Uheer.Core;
-using Uheer.Services;
-using Uheer.ViewModels;
+﻿using Microsoft.IdentityModel.Claims;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Permissions;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Thinktecture.IdentityModel.Authorization.WebApi;
+using Uheer.Core;
 using Uheer.Extensions;
+using Uheer.Services;
+using Uheer.ViewModels;
+
 namespace Uheer.Controllers
 {
     /// <summary>
@@ -37,6 +41,7 @@ namespace Uheer.Controllers
         /// <param name="skip">The number of channels to ignore.</param>
         /// <param name="take">The maximum number of channels in the returned list.</param>
         /// <returns>The collection of channels.</returns>
+        [ClaimsAuthorize(action: "get", resources: "channels")]
         public async Task<ICollection<ChannelListResultViewModel>> GetChannels(int skip = 0, int take = 100)
         {
             return (await _channels.Paginate(skip, take))
@@ -51,6 +56,7 @@ namespace Uheer.Controllers
         /// <param name="take">The maximum number of channels in the returned list.</param>
         /// <returns>The collection of active channels.</returns>
         [Route("Active")]
+        [ClaimsAuthorize(action: "get", resources: "channels")]
         public async Task<ICollection<ChannelListResultViewModel>> GetActiveChannels(int skip = 0, int take = 100)
         {
             return (await _channels.ActiveChannels(skip, take))
@@ -64,6 +70,7 @@ namespace Uheer.Controllers
         /// <param name="id">The id of the Channel that will be retrieved.</param>
         /// <returns>ChannelResultViewModel</returns>
         [ResponseType(typeof(ChannelResultViewModel))]
+        [ClaimsAuthorize(action:"get", resources:"channel")]
         public async Task<IHttpActionResult> GetChannel(int id)
         {
             try
@@ -88,6 +95,7 @@ namespace Uheer.Controllers
         /// <param name="model">The view model for the Channel to be updated.</param>
         /// <returns>A response with a status code equals to 200.</returns>
         [ResponseType(typeof(void))]
+        [ClaimsAuthorize("put", "channel")]
         public async Task<IHttpActionResult> PutChannel(ChannelUpdateViewModel model)
         {
             try
@@ -129,6 +137,7 @@ namespace Uheer.Controllers
         /// <param name="model">The view model for the Channel to be created.</param>
         /// <returns>A response with the created Channel, if succeeded. A BadRequest response, otherwise.</returns>
         [ResponseType(typeof(ChannelResultViewModel))]
+        [ClaimsAuthorize("post", "channel")]
         public async Task<IHttpActionResult> PostChannel(ChannelCreateViewModel model)
         {
             try
@@ -163,6 +172,7 @@ namespace Uheer.Controllers
         /// <returns>The Channel with the reference of the playing music.</returns>
         [Route("{channelId}/Play/{musicId}")]
         [ResponseType(typeof(ChannelCurrentResultViewModel))]
+        [ClaimsAuthorize("post", "channel/play")]
         public async Task<IHttpActionResult> PostPlay([FromUri]int channelId, [FromUri]int musicId)
         {
             try
@@ -197,6 +207,7 @@ namespace Uheer.Controllers
         /// <param name="id">The Id of the channel to be deactivated.</param>
         /// <returns>The deactivated channel.</returns>
         [Route("{id}/deactivate")]
+        [ClaimsAuthorize("post", "channel")]
         [ResponseType(typeof(ChannelResultViewModel))]
         public async Task<IHttpActionResult> PostDeactivateChannel(int id)
         {
@@ -225,6 +236,7 @@ namespace Uheer.Controllers
         /// <param name="id">The id of the Channel to be deleted.</param>
         /// <returns>The Channel deleted.</returns>
         [ResponseType(typeof(ChannelResultViewModel))]
+        [ClaimsAuthorize("delete", "channel")]
         public async Task<IHttpActionResult> DeleteChannel(int id)
         {
             try
@@ -258,6 +270,7 @@ namespace Uheer.Controllers
         /// <param name="take">The maximum length of the collection retrieved.</param>
         /// <returns></returns>
         [Route("{id}/Musics")]
+        [ClaimsAuthorize("get", "channel/musics")]
         public async Task<ICollection<MusicResultViewModel>> GetMusicOfChannel(int id, int skip = 0, int take = 100)
         {
             return (await _musics.OfChannel(id, skip, take))

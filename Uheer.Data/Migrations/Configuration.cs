@@ -1,9 +1,13 @@
 namespace Uheer.Data.Migrations
 {
+    using Microsoft.AspNet.Identity;
+    using Microsoft.AspNet.Identity.EntityFramework;
     using System;
+    using System.Collections.Generic;
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
+    using Uheer.Core.Models;
 
     public sealed class Configuration : DbMigrationsConfiguration<Uheer.Data.UheerContext>
     {
@@ -16,18 +20,71 @@ namespace Uheer.Data.Migrations
 
         protected override void Seed(Uheer.Data.UheerContext context)
         {
-            //  This method will be called after migrating to the latest version.
+            var u = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new UheerContext()));
+            var r = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new UheerContext()));
 
-            //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
-            //  to avoid creating duplicate seed data. E.g.
-            //
-            //    context.People.AddOrUpdate(
-            //      p => p.FullName,
-            //      new Person { FullName = "Andrew Peters" },
-            //      new Person { FullName = "Brice Lambson" },
-            //      new Person { FullName = "Rowan Miller" }
-            //    );
-            //
+            var users = new List<ApplicationUser>
+            {
+                new ApplicationUser
+                {
+                    UserName = "lucasolivdavid@gmail.com",
+                    Email = "lucasolivdavid@gmail.com",
+                    DisplayName = "Lucas David",
+                    EmailConfirmed = true,
+                },
+
+                new ApplicationUser
+                {
+                    UserName = "smokeonline@gmail.com",
+                    Email = "smokeonline@gmail.com",
+                    DisplayName = "João Paulo",
+                    EmailConfirmed = true,
+                },
+
+                new ApplicationUser
+                {
+                    UserName = "camilomoreira91@gmail.com",
+                    Email = "camilomoreira91@gmail.com",
+                    DisplayName = "Camilo Moreira",
+                    EmailConfirmed = true,
+                    
+                },
+            };
+
+            var roles = new List<IdentityRole>
+            {
+                new IdentityRole { Name = "admin"},
+                new IdentityRole { Name = "listener"},
+                new IdentityRole { Name = "dj"},
+            };
+
+            foreach (var role in roles)
+            {
+                try
+                {
+                    r.Create(role);
+                }
+                catch (Exception)
+                {
+                    //
+                }
+            }
+
+            foreach (var user in users)
+            {
+                try
+                {
+                    if (u.Create(user, "root1234!").Succeeded)
+                    {
+                        var foundUser = u.FindByName(user.UserName);
+                        u.AddToRoles(foundUser.Id, new string[] { "admin", });
+                    }
+                }
+                catch (Exception)
+                {
+                    //
+                }
+            }
         }
     }
 }

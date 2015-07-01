@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
+using System.Collections.Generic;
 
 namespace Uheer.Core.Models
 {
@@ -14,8 +15,17 @@ namespace Uheer.Core.Models
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
             var userIdentity = await manager.CreateIdentityAsync(this, authenticationType);
             // Add custom user claims here
+
+            userIdentity.AddClaims(new List<Claim>()
+            {
+                new Claim(ClaimTypes.Role, "listener"),
+                new Claim(ClaimTypes.Role, "dj")
+            });
+
             return userIdentity;
         }
+
+        public string DisplayName { get; set; }
     }
 
     
