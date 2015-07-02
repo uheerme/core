@@ -46,6 +46,9 @@
     <Reference Include="EntityFramework.Testing.Moq">
       <HintPath>..\packages\EntityFrameworkTesting.Moq.1.1.4\lib\net45\EntityFramework.Testing.Moq.dll</HintPath>
     </Reference>
+    <Reference Include="FizzWare.NBuilder">
+      <HintPath>..\packages\NBuilder.3.0.1.1\lib\FizzWare.NBuilder.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Moq">
@@ -122,6 +125,18 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Uheer.Core\Uheer.Core.csproj">
+      <Project>{1f63fc21-366d-467d-9968-bb3a1e288ba9}</Project>
+      <Name>Uheer.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Uheer.Data\Uheer.Data.csproj">
+      <Project>{ec89b4d3-27a6-47d5-ab5d-2e7d20f9bf40}</Project>
+      <Name>Uheer.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Uheer.Services\Uheer.Services.csproj">
+      <Project>{bf9847d0-2f13-4278-a776-de8f3bc58412}</Project>
+      <Name>Uheer.Services</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Uheer\Uheer.csproj">
       <Project>{A750AF30-584D-41BA-ACDE-C1DB5E235988}</Project>
       <Name>Uheer</Name>
