@@ -41,7 +41,8 @@ namespace Uheer.Controllers
         /// <param name="skip">The number of channels to ignore.</param>
         /// <param name="take">The maximum number of channels in the returned list.</param>
         /// <returns>The collection of channels.</returns>
-        [ClaimsAuthorize(action: "get", resources: "channels")]
+        // [ClaimsAuthorize(action: "get", resources: "channels")]
+        [ClaimsPrincipalPermission(SecurityAction.Demand, Operation="get", Resource="channels")]
         public async Task<ICollection<ChannelListResultViewModel>> GetChannels(int skip = 0, int take = 100)
         {
             return (await _channels.Paginate(skip, take))
@@ -263,12 +264,12 @@ namespace Uheer.Controllers
         }
 
         /// <summary>
-        /// Retrieve a music collection associated with a Channel.
+        /// Retrieve a Music collection associated with a Channel.
         /// </summary>
         /// <param name="id">The Id of the channel that contains the music collection.</param>
         /// <param name="skip">The number of musics to ignore.</param>
         /// <param name="take">The maximum length of the collection retrieved.</param>
-        /// <returns></returns>
+        /// <returns>A list of Musics associated with a Channel.</returns>
         [Route("{id}/Musics")]
         [ClaimsAuthorize("get", "channel/musics")]
         public async Task<ICollection<MusicResultViewModel>> GetMusicOfChannel(int id, int skip = 0, int take = 100)
