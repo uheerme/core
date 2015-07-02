@@ -6,9 +6,10 @@
     <link rel="icon" type="image/jpg" href="@Url.Content("~/Content/favicon.jpg")" />
 
     <title>@(ViewBag.Title ?? "Uheer")</title>
-
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+    
+    @Styles.Render("~/Design/theme")
+    @Styles.Render("~/Design/override")
+    @Scripts.Render("~/code/modernizr")
 </head>
 <body ng-app="UheerApp">
     <div ui-view="navbar"></div>
@@ -17,9 +18,9 @@
     </div>
     <div ui-view="footer"></div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @Scripts.Render("~/bundles/angular")
+    @Scripts.Render("~/code/jquery")
+    @Scripts.Render("~/code/bootstrap")
+    @Scripts.Render("~/code/uheerapp")
     @RenderSection("scripts", required: false)
 </body>
 </html>
