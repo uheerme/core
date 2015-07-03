@@ -271,7 +271,7 @@ namespace Uheer.Controllers
         /// <returns>A list of Musics associated with a Channel.</returns>
         [Route("{id}/Musics")]
         [ClaimsAuthorize("get", "channel/musics")]
-        public async Task<ICollection<MusicResultViewModel>> GetMusicOfChannel(int id, int skip = 0, int take = 100)
+        public async Task<ICollection<MusicResultViewModel>> GetMusicsOfChannel(int id, int skip = 0, int take = 100)
         {
             return (await _musics.OfChannel(id, skip, take))
                 .Select(m => (MusicResultViewModel)m)
