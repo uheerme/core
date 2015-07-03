@@ -41,8 +41,7 @@ namespace Uheer.Controllers
         /// <param name="skip">The number of channels to ignore.</param>
         /// <param name="take">The maximum number of channels in the returned list.</param>
         /// <returns>The collection of channels.</returns>
-        // [ClaimsAuthorize(action: "get", resources: "channels")]
-        [ClaimsPrincipalPermission(SecurityAction.Demand, Operation="get", Resource="channels")]
+        [ClaimsAuthorize(action: "get", resources: "channels")]
         public async Task<ICollection<ChannelListResultViewModel>> GetChannels(int skip = 0, int take = 100)
         {
             return (await _channels.Paginate(skip, take))

@@ -8,6 +8,8 @@ using FizzWare.NBuilder;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Uheer.ViewModels;
+using System.Collections;
 
 namespace Uheer.Tests.Controllers
 {
@@ -27,7 +29,7 @@ namespace Uheer.Tests.Controllers
             var gen = new RandomGenerator();
 
             data_channels = Builder<Channel>
-                .CreateListOfSize(100)
+                .CreateListOfSize(20)
                 .All()
                     .With(m => m.Id = seq.Generate())
                     .And(x => x.Name = gen.Phrase(15))
@@ -35,12 +37,12 @@ namespace Uheer.Tests.Controllers
                     .And(x => x.Loops = gen.Boolean())
                     .And(x => x.DateCreated = gen.DateTime())
                     .And(x => x.DateUpdated = x.DateCreated + new TimeSpan(3, 0, 0))
-                .Random(30)
+                .Random(10)
                     .With(x => x.DateDeactivated = x.DateUpdated + new TimeSpan(3, 0, 0))
                 .Build();
 
             data_musics = Builder<Music>
-                .CreateListOfSize(200)
+                .CreateListOfSize(50)
                 .All()
                     .With(m => m.Id = seq.Generate())
                     .And(m => m.LengthInMilliseconds = gen.Int())
@@ -51,18 +53,18 @@ namespace Uheer.Tests.Controllers
 
             channels = new Mock<ChannelService>(null);
             musics = new Mock<MusicService>(null);
-        }
 
-        [TestInitialize]
-        public void SetUp()
-        {
             channels
                 .Setup(x => x.All())
                 .ReturnsAsync(data_channels);
 
             channels
-                .Setup(x => x.Paginate(40, 40))
-                .ReturnsAsync(data_channels.Skip(40).Take(40).ToList());
+                .Setup(x => x.Paginate(0, 10))
+                .ReturnsAsync(data_channels.Take(10).ToList());
+
+            channels
+                .Setup(x => x.ActiveChannels(0, 4))
+                .ReturnsAsync(data_channels.Take(4).ToList());
 
             channels
                 .Setup(c => c.Deactivate(It.IsAny<Channel>()))
@@ -74,9 +76,29 @@ namespace Uheer.Tests.Controllers
         {
             var controller = new ChannelsController(channels.Object, musics.Object);
 
-            var result = await controller.GetChannels(40, 40);
+            var result = await controller.GetChannels(0, 10);
 
-            Assert.IsTrue(result.Count == 40);
+            Assert.AreEqual(10, result.Count);
+        }
+
+        [TestMethod]
+        public async Task TestGetActiveChannels()
+        {
+            var controller = new ChannelsController(channels.Object, musics.Object);
+
+            var result = await controller.GetActiveChannels(0, 4);
+
+            Assert.AreEqual(4, result.Count);
+        }
+
+        [TestMethod]
+        public async Task TestGetChannel()
+        {
+            var controller = new ChannelsController(channels.Object, musics.Object);
+
+            var result = await controller.GetChannel(10);
+
+            Assert.IsNotNull(result);
         }
     }
 }
