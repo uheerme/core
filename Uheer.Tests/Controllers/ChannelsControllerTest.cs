@@ -100,5 +100,41 @@ namespace Uheer.Tests.Controllers
 
             Assert.IsNotNull(result);
         }
+
+        [TestMethod]
+        public void TestPostChannel()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void TestPutChannel()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void TestPostPlay()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void TestDeactivateChannel()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void TestGetMusicsOfChannel()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void TestDeleteChannel()
+        {
+            Assert.Fail();
+        }
     }
 }
