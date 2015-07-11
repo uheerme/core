@@ -14,11 +14,7 @@ UheerApp.factory('Authority',
         var _saveRegistration = function (registration) {
             _logOut();
 
-            return $http.
-                post(config.apiUrl + 'Account/Register', registration).
-                then(function (response) {
-                    return response;
-                });
+            return $http.post(config.apiUrl + 'Account/Register', registration);
         };
 
         var _login = function (loginData) {

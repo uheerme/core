@@ -19,7 +19,8 @@ namespace Uheer.Core.Models
             userIdentity.AddClaims(new List<Claim>()
             {
                 new Claim(ClaimTypes.Role, "listener"),
-                new Claim(ClaimTypes.Role, "dj")
+                new Claim(ClaimTypes.Role, "dj"),
+                new Claim("http://application/claims/authorization/resource", "channels")
             });
 
             return userIdentity;

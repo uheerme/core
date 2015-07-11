@@ -1,7 +1,7 @@
-﻿<div class="void"></div>
-<div id="" class="container">
+﻿<div id="" class="container">
     <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
+            <h3>Sign in</h3>
             <form ng-submit="login()">
                 <fieldset>
                     <div class="form-group">
@@ -17,6 +17,37 @@
                         <button type="submit" class="btn btn-primary">
                             <span class="glyphicon glyphicon-log-in"></span>
                             Log in
+                        </button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="" class="container">
+    <hr />
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+            <h3>Register</h3>
+            <form ng-submit="register()">
+                <fieldset>
+                    <div class="form-group">
+                        <input type="email" ng-model="registerData.Email" required autofocus
+                               placeholder="Email" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <input type="password" ng-model="registerData.Password" required
+                               placeholder="Password" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <input type="password" ng-model="registerData.ConfirmPassword" required
+                               placeholder="Confirm password" class="form-control" />
+                    </div>
+
+                    <div class="form-group text-right">
+                        <button type="submit" class="btn btn-success">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                            Continue
                         </button>
                     </div>
                 </fieldset>
