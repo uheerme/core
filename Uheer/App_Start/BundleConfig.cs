@@ -37,6 +37,7 @@ namespace Uheer
                 "~/Scripts/angular-ui-router.min.js",
                 "~/Scripts/angular-resource.min.js",
                 "~/Scripts/angular-animate.min.js",
+                "~/Scripts/angular-local-storage.min.js",
                 "~/Scripts/ng-file-upload-all.min.js",
                 "~/Scripts/app/app.js",
                 "~/Scripts/app/services/*.js",

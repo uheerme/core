@@ -4,7 +4,7 @@
 'use strict';
 
 var UheerApp = angular
-    .module('UheerApp', ['ngResource', 'ngRoute', 'ui.router', 'ngAnimate', 'ngFileUpload', 'UheerApp.services'])
+    .module('UheerApp', ['ngResource', 'ngRoute', 'ui.router', 'ngAnimate', 'ngFileUpload', 'LocalStorageModule'])
     .config(['$locationProvider', function ($locationProvider) {
         // $locationProvider.html5Mode(true);
         // $locationProvider.hashPrefix('#');

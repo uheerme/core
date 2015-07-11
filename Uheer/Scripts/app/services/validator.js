@@ -1,7 +1,7 @@
 ﻿// Validator
 // Takes <param>data<param>, a object that represents the outcome of a HTTP requisition an tries to interpret its ModelState property.
 angular
-    .module('UheerApp.services', [])
+    .module('UheerApp')
     .factory('Validator', function () {
         return {
             _data: null,
