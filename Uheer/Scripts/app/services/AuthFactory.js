@@ -27,12 +27,10 @@ UheerApp.factory('Authority',
             var deferred = $q.defer();
 
             $http.
-                post(config.apiUrl + 'Token', data, {
+                post(config.baseUrl + 'Token', data, {
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
                 }).
                 success(function (response) {
-                    console.log(response);
-
                     localStorageService.set('authorizationData', { token: response.access_token, UserName: loginData.UserName });
 
                     _authentication.isAuth = true;
@@ -40,9 +38,11 @@ UheerApp.factory('Authority',
 
                     deferred.resolve(response);
                 }).
-                error(function (err, status) {
+                error(function (error, status) {
+                    console.log(error);
+
                     _logOut();
-                    deferred.reject(err);
+                    deferred.reject(error);
                 });
 
             return deferred.promise;

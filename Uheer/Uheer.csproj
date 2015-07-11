@@ -341,6 +341,9 @@
     <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\app\app.js" />
+    <Content Include="Scripts\app\modules\account\AccountRoutes.js" />
+    <Content Include="Scripts\app\modules\account\sign.html" />
+    <Content Include="Scripts\app\modules\account\SignController.js" />
     <Content Include="Scripts\app\modules\channels\Channel.js" />
     <Content Include="Scripts\app\modules\channels\DashboardController.js" />
     <Content Include="Scripts\app\modules\channels\dashboard.html" />

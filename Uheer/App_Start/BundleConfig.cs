@@ -42,6 +42,7 @@ namespace Uheer
                 "~/Scripts/app/app.js",
                 "~/Scripts/app/services/*.js",
                 "~/Scripts/app/modules/home/*.js",
+                "~/Scripts/app/modules/account/*.js",
                 "~/Scripts/app/modules/channels/*.js",
                 "~/Scripts/app/modules/listen/*.js",
                 "~/Scripts/app/modules/status/*.js"));

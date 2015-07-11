@@ -10,6 +10,7 @@ var UheerApp = angular
         // $locationProvider.hashPrefix('#');
     }])
     .constant('config', {
+        baseUrl: '/',
         apiUrl: '/api/'
     })
     .run(function () {

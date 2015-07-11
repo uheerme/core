@@ -20,8 +20,13 @@ namespace Uheer.Managers
         /// <returns>True, if the user is authorized to access the resource. False, otherwise.</returns>
         public override bool CheckAccess(AuthorizationContext context)
         {
-            return context.Principal.Identity.IsAuthenticated
-                && context.Resource.All(r => context.Principal.HasClaim(r.Type, r.Value));
+            return 
+                // Deny access to anyone who isn't authenticated.
+                context.Principal.Identity.IsAuthenticated && (
+                // Admins can do whatever the shit they want.
+                context.Principal.HasClaim(ClaimTypes.Role, "admin") ||
+                // Or allows the user, if they have all necessary claims.
+                context.Resource.All(c => context.Principal.HasClaim(c.Type, c.Value)));
         }
     }
 }
