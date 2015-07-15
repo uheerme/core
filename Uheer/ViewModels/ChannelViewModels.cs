@@ -21,10 +21,9 @@ namespace Uheer.ViewModels
         [StringLength(128, MinimumLength = 4)]
         public string Name { get; set; }
         /// <summary>
-        /// The Owner of the new Channel. It can be their MAC address, email or regular username.
+        /// The author of the new Channel. It can be their MAC address, email or regular username.
         /// </summary>
-        [Required]
-        public string Owner { get; set; }
+        public string AuthorId { get; set; }
         /// <summary>
         /// The IP address that uniquely identifies the network used by the Owner of the channel.
         /// This property is overridden by the server's storage procedure and will be ignored if sent to the server.
@@ -40,7 +39,7 @@ namespace Uheer.ViewModels
             return m == null ? null : new Channel
             {
                 Name = m.Name,
-                Owner = m.Owner,
+                AuthorId = m.AuthorId,
                 HostIpAddress = m.HostIpAddress,
                 HostMacAddress = m.HostMacAddress
             };
@@ -94,7 +93,7 @@ namespace Uheer.ViewModels
             {
                 Id = c.Id,
                 Name = c.Name,
-                Owner = c.Owner,
+                AuthorId = c.AuthorId,
                 HostIpAddress = c.HostIpAddress,
                 HostMacAddress = c.HostMacAddress,
                 Loops = c.Loops,
@@ -128,7 +127,7 @@ namespace Uheer.ViewModels
         /// <summary>
         /// The Owner of the Channel. It can be set to be the email address, the MAC address or a regular username.
         /// </summary>
-        public string Owner { get; set; }
+        public string AuthorId { get; set; }
         /// <summary>
         /// The IP address that uniquely identifies the network used by the Owner of the channel.
         /// </summary>
@@ -172,7 +171,7 @@ namespace Uheer.ViewModels
             {
                 Id = c.Id,
                 Name = c.Name,
-                Owner = c.Owner,
+                AuthorId = c.AuthorId,
                 HostIpAddress = c.HostIpAddress,
                 HostMacAddress = c.HostMacAddress,
                 Loops = c.Loops,

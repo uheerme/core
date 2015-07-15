@@ -26,7 +26,9 @@ namespace Uheer.Core
         public string Name { get; set; }
 
         [Required]
-        public string Owner { get; set; }
+        [ForeignKey("Author")]
+        public string AuthorId { get; set; }
+        public virtual User Author { get; set; }
 
         public string HostIpAddress { get; set; }
         public string HostMacAddress { get; set; }

@@ -7,7 +7,7 @@ namespace Uheer.Data.Migrations
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
-    using Uheer.Core.Models;
+    using Uheer.Core;
 
     public sealed class Configuration : DbMigrationsConfiguration<Uheer.Data.UheerContext>
     {
@@ -20,12 +20,12 @@ namespace Uheer.Data.Migrations
 
         protected override void Seed(Uheer.Data.UheerContext context)
         {
-            var u = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new UheerContext()));
+            var u = new UserManager<User>(new UserStore<User>(new UheerContext()));
             var r = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new UheerContext()));
 
-            var users = new List<ApplicationUser>
+            var users = new List<User>
             {
-                new ApplicationUser
+                new User
                 {
                     UserName = "lucasolivdavid@gmail.com",
                     Email = "lucasolivdavid@gmail.com",
@@ -33,7 +33,7 @@ namespace Uheer.Data.Migrations
                     EmailConfirmed = true,
                 },
 
-                new ApplicationUser
+                new User
                 {
                     UserName = "smokeonline@gmail.com",
                     Email = "smokeonline@gmail.com",
@@ -41,7 +41,7 @@ namespace Uheer.Data.Migrations
                     EmailConfirmed = true,
                 },
 
-                new ApplicationUser
+                new User
                 {
                     UserName = "camilomoreira91@gmail.com",
                     Email = "camilomoreira91@gmail.com",

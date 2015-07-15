@@ -5,7 +5,7 @@ using Microsoft.Practices.Unity;
 using System.Data.Entity;
 using System.Web.Http;
 using Uheer.App_Start;
-using Uheer.Core.Models;
+using Uheer.Core;
 using Uheer.Data;
 
 namespace Uheer
@@ -23,7 +23,7 @@ namespace Uheer
         {
             var container = new UnityContainer();
             container.RegisterType<DbContext, UheerContext>(new HierarchicalLifetimeManager());
-            container.RegisterType<IUserStore<ApplicationUser>, UserStore<ApplicationUser>>(new HierarchicalLifetimeManager());
+            container.RegisterType<IUserStore<User>, UserStore<User>>(new HierarchicalLifetimeManager());
 
             config.DependencyResolver = new UnityResolver(container);
 

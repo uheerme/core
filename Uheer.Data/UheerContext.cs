@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
-using Uheer.Core.Models;
 using Uheer.Core.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -12,7 +11,7 @@ using Uheer.Core;
 
 namespace Uheer.Data
 {
-    public class UheerContext : IdentityDbContext<ApplicationUser>
+    public class UheerContext : IdentityDbContext<User>
     {
         public UheerContext()
             : base("DefaultConnection", throwIfV1Schema: false)

@@ -913,9 +913,9 @@
             The name that the new Channel should assume.
             </summary>
         </member>
-        <member name="P:Uheer.ViewModels.ChannelCreateViewModel.Owner">
+        <member name="P:Uheer.ViewModels.ChannelCreateViewModel.AuthorId">
             <summary>
-            The Owner of the new Channel. It can be their MAC address, email or regular username.
+            The author of the new Channel. It can be their MAC address, email or regular username.
             </summary>
         </member>
         <member name="P:Uheer.ViewModels.ChannelCreateViewModel.HostIpAddress">
@@ -976,7 +976,7 @@
             The name of the Channel.
             </summary>
         </member>
-        <member name="P:Uheer.ViewModels.ChannelListResultViewModel.Owner">
+        <member name="P:Uheer.ViewModels.ChannelListResultViewModel.AuthorId">
             <summary>
             The Owner of the Channel. It can be set to be the email address, the MAC address or a regular username.
             </summary>

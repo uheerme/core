@@ -55,20 +55,6 @@ namespace Uheer.Services
             return await Update(channel);
         }
 
-        public override async Task<Channel> Add(Channel channel)
-        {
-            if (Db.Channels.Any(c =>
-                c.Owner == channel.Owner
-                && c.DateDeactivated == null))
-            {
-                throw new OwnerAlreadyHasAnActiveChannelException(
-                    "Owner already has an active channel (" + channel.Name + "). To create a new channel, close this one first."
-                );
-            }
-
-            return await base.Add(channel);
-        }
-
         public virtual async Task<int> Deactivate(Channel channel)
         {
             if (!channel.IsActive())

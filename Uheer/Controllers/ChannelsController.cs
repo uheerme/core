@@ -7,6 +7,7 @@ using System.Security.Permissions;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Microsoft.AspNet.Identity;
 using Thinktecture.IdentityModel.Authorization.WebApi;
 using Uheer.Core;
 using Uheer.Extensions;
@@ -158,11 +159,13 @@ namespace Uheer.Controllers
             try
             {
                 model.HostIpAddress = Request.GetClientIpAddress();
+                model.AuthorId = User.Identity.GetUserId();
 
                 if (!ModelState.IsValid)
                 {
                     throw new ValidationException();
                 }
+
 
                 var channel = await _channels.Add((Channel)model);
                 return CreatedAtRoute("DefaultApi", new { id = channel.Id }, (ChannelResultViewModel)channel);

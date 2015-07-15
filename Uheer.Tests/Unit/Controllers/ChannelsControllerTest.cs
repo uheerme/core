@@ -21,6 +21,7 @@ namespace Uheer.Tests.Controllers
 
         private static ICollection<Channel> data_channels;
         private static ICollection<Music> data_musics;
+        private static ICollection<User> data_users;
 
         [ClassInitialize]
         public static void SetUpClass(TestContext context)
@@ -28,12 +29,19 @@ namespace Uheer.Tests.Controllers
             var seq = new SequentialGenerator<int> { Direction = GeneratorDirection.Ascending };
             var gen = new RandomGenerator();
 
+            data_users = Builder<User>
+                .CreateListOfSize(10)
+                .All()
+                    .With(u => u.DisplayName = gen.Phrase(15))
+                    .Build();
+
             data_channels = Builder<Channel>
                 .CreateListOfSize(20)
                 .All()
                     .With(m => m.Id = seq.Generate())
                     .And(x => x.Name = gen.Phrase(15))
-                    .And(x => x.Owner = gen.Phrase(10))
+                    .And(x => x.AuthorId = gen.Phrase(10))
+                    .And(x => x.Author = data_users.First())
                     .And(x => x.Loops = gen.Boolean())
                     .And(x => x.DateCreated = gen.DateTime())
                     .And(x => x.DateUpdated = x.DateCreated + new TimeSpan(3, 0, 0))
