@@ -581,6 +581,23 @@
             <param name="model">Holds basic information about the new account.</param>
             <returns>A Response with status code equals to 200, if succeeded. A BadRequest with the errors, otherwise.</returns>
         </member>
+        <member name="T:Uheer.Controllers.EventsController">
+            <summary>
+            The controller responsible for managing play, pause and update events for 
+            a channel.
+            </summary>
+        </member>
+        <member name="M:Uheer.Controllers.EventsController.GetEventsStream(System.Int32)">
+            <summary>
+            Get stream of events.
+            </summary>
+            <returns>A Stream of events that clients can listen.</returns>
+        </member>
+        <member name="M:Uheer.Controllers.EventsController.onMessageAvailable(System.IO.Stream,System.Net.Http.HttpContent,System.Net.TransportContext)">
+            <summary>
+            Register the client stream in a queue.
+            </summary>
+        </member>
         <member name="T:Uheer.Controllers.MusicsController">
             <summary>
             The Music resource's controller.
