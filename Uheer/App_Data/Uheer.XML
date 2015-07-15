@@ -665,6 +665,15 @@
             <param name="take">The maximum number of channels in the returned list.</param>
             <returns>The collection of active channels.</returns>
         </member>
+        <member name="M:Uheer.Controllers.ChannelsController.GetMusicsOfChannel(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Retrieve a Music collection associated with a Channel.
+            </summary>
+            <param name="id">The Id of the channel that contains the music collection.</param>
+            <param name="skip">The number of musics to ignore.</param>
+            <param name="take">The maximum length of the collection retrieved.</param>
+            <returns>A list of Musics associated with a Channel.</returns>
+        </member>
         <member name="M:Uheer.Controllers.ChannelsController.GetChannel(System.Int32)">
             <summary>
             Retrieve a channel with a given Id.
@@ -707,15 +716,6 @@
             </summary>
             <param name="id">The id of the Channel to be deleted.</param>
             <returns>The Channel deleted.</returns>
-        </member>
-        <member name="M:Uheer.Controllers.ChannelsController.GetMusicsOfChannel(System.Int32,System.Int32,System.Int32)">
-            <summary>
-            Retrieve a Music collection associated with a Channel.
-            </summary>
-            <param name="id">The Id of the channel that contains the music collection.</param>
-            <param name="skip">The number of musics to ignore.</param>
-            <param name="take">The maximum length of the collection retrieved.</param>
-            <returns>A list of Musics associated with a Channel.</returns>
         </member>
         <member name="T:Uheer.Controllers.HomeController">
             <summary>

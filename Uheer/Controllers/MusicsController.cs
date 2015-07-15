@@ -39,6 +39,7 @@ namespace Uheer.Controllers
         /// <param name="skip">The number of musics to ignore.</param>
         /// <param name="take">The maximum length of the collection retrieved.</param>
         /// <returns>A collection of MusicResultViewModel.</returns>
+        [AllowAnonymous]
         public async Task<ICollection<MusicResultViewModel>> GetMusics(int skip = 0, int take = 100)
         {
             return (await _musics.Paginate(skip, take))
@@ -51,6 +52,7 @@ namespace Uheer.Controllers
         /// </summary>
         /// <param name="id">The id of the Music that will be retrieved.</param>
         /// <returns>MusicResultViewModel</returns>
+        [AllowAnonymous]
         [ResponseType(typeof(MusicResultViewModel))]
         public async Task<IHttpActionResult> GetMusic(int id)
         {
@@ -203,6 +205,7 @@ namespace Uheer.Controllers
         /// Request for the stream of a specific Music's file.
         /// </summary>
         /// <returns></returns>
+        [AllowAnonymous]
         [Route("api/Musics/{Id}/Stream")]
         public async Task<HttpResponseMessage> GetMusicStream([FromUri] MusicDownloadViewModel model)
         {
