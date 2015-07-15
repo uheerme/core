@@ -9,6 +9,8 @@ UheerApp
             $scope.channels = Channel.query();
 
             $scope.create = function () {
+                if (!$scope.channel.Name) return;
+
                 Channel
                     .save($scope.channel,
                     function (createdChannel) {
@@ -41,7 +43,7 @@ UheerApp
             }
 
             $scope.clear = function () {
-                $scope.channel = { Name: '', Owner: '' }
+                $scope.channel = { Name: '' }
             }
 
             $scope.clear()

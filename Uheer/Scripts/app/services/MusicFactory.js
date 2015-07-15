@@ -480,8 +480,8 @@ UheerApp
 
 UheerApp
     .factory('MusicUploader',
-        ['$upload', '$document', 'config', 'Validator',
-        function ($upload, $document, config, Validator) {
+        ['Upload', '$document', 'config', 'Validator',
+        function (Upload, $document, config, Validator) {
             return {
                 _uploads: [],
                 _waiting: [],
@@ -583,7 +583,7 @@ UheerApp
                         file.status = 'uploading';
                         newMusic.LengthInMilliseconds = (audio.duration * 1000).toFixed(0);
 
-                        file.uploadReference = $upload.upload({
+                        file.uploadReference = Upload.upload({
                             url: config.apiUrl + 'Musics',
                             file: file,
                             fields: newMusic

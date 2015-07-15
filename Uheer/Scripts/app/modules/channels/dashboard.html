@@ -112,21 +112,23 @@
 
 <div id="upload-section" ng-hide="channel.DateDeactivated || isUploading" class="well text-center">
     <br /><br />
-    <div ng-file-drop ng-model="filesToBeUploaded" class="drop-box"
-         drag-over-class="dragover" ng-multiple="true" allow-dir="true">
+    <div ngf-drop ng-model="filesToBeUploaded" class="drop-box"
+         ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true">
         <h2>
             <span class="glyphicon glyphicon-cloud-upload"></span> <br />
             <small>Drop multiple files or folders here.</small>
         </h2>
-        <button class="btn btn-default" ng-multiple="true" ng-file-select ng-model="filesToBeUploaded">
-            <span class="glyphicon glyphicon-search"></span>
-            Or select files for upload
-        </button>
-        <button ng-click="uploadMany(filesToBeUploaded)" ng-show="filesToBeUploaded.length"
-                class="btn btn-primary">
-            <span class="glyphicon glyphicon-cloud-upload"></span> Upload all
-        </button>
     </div>
+
+    <button class="btn btn-default" ngf-multiple="true" ngf-select="true" ng-model="filesToBeUploaded">
+        <span class="glyphicon glyphicon-search"></span>
+        Or select files for upload
+    </button>
+    
+    <button ng-click="uploadMany(filesToBeUploaded)" ng-show="filesToBeUploaded.length"
+            class="btn btn-primary">
+        <span class="glyphicon glyphicon-cloud-upload"></span> Upload all
+    </button>
     <br /><br />
 </div>
 
@@ -165,7 +167,7 @@
                             <span class="glyphicon glyphicon-ban-circle"></span>
                         </button>
                     </span>
-                    
+
                 </td>
             </tr>
         </tbody>
