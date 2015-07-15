@@ -19,6 +19,7 @@ namespace Uheer.Controllers
     /// <summary>
     /// The Music resource's controller.
     /// </summary>
+    [Authorize]
     public class MusicsController : ApiController
     {
         private MusicService _musics;
