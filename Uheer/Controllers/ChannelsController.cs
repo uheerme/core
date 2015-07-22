@@ -2,20 +2,13 @@
 using Uheer.Services;
 using Uheer.ViewModels;
 using System;
-using System.Net.Http;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web;
 using System.Web.Http.Description;
 using Uheer.Extensions;
-using System.IO;
-using System.Net.Http.Headers;
-using System.Net;
-using System.Collections.Concurrent;
-using System.Threading;
 namespace Uheer.Controllers
 {
     /// <summary>
@@ -34,7 +27,6 @@ namespace Uheer.Controllers
         /// <param name="musics">The MusicService automaticly injected.</param>
         public ChannelsController(ChannelService channels, MusicService musics)
         {   
-            _timer = _timer ?? new Timer(OnTimerEvent, null, 0, 1000);
             _channels = channels;
             _musics   = musics;
         }
@@ -50,72 +42,6 @@ namespace Uheer.Controllers
             return (await _channels.Paginate(skip, take))
                 .Select(c => (ChannelListResultViewModel)c)
                 .ToList();
-        }
-
-        static int messageCounter = 0;
-        static Timer _timer = default(Timer);
-        private static readonly ConcurrentQueue<StreamWriter> connectedClients = new ConcurrentQueue<StreamWriter>();
-
-        public static void onMessageAvailable(Stream stream, HttpContent content, TransportContext context)
-        {
-            StreamWriter streamWriter = new StreamWriter(stream);
-            connectedClients.Enqueue(streamWriter);
-        }
-        public void messageCallback(string s)
-        {
-            try
-            {
-                foreach (var clientStream in connectedClients)
-                {
-                    try
-                    {
-                        clientStream.WriteLine("id:" + messageCounter);
-                        clientStream.WriteLine("data:" + s + "\n");
-                        clientStream.Flush();
-                    }
-                    catch (Exception ex)
-                    {
-                        throw ex;
-                    }
-                    messageCounter++;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
-            finally
-            {
-                _timer.Change(1000, 1000);
-            }
-        }
-
-        public void OnTimerEvent(object state)
-        {
-            
-            _timer.Change(Timeout.Infinite, Timeout.Infinite);
-            messageCallback("mensagem numero " + messageCounter);
-        }
-
-        [Route("sseSend")]
-        [HttpGet]
-        public void sendEvent()
-        {
-            messageCallback("sent by link");
-        }
-
-        [Route("ServerSentEvent")]
-        [HttpGet]
-        public HttpResponseMessage connectClients(int skip = 0, int take = 100)
-        {
-            
-            var response = Request.CreateResponse();
-            response.Content = new PushStreamContent((Action<Stream , HttpContent , TransportContext>)onMessageAvailable, "text/event-stream");
-            //response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/event-stream");
-            //response.Content.Headers.Add("Connection", "keep-alive");
-
-            return response;
         }
 
         /// <summary>

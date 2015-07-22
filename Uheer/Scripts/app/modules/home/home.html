@@ -9,13 +9,6 @@
         Welcome!
         <small>Check it out: these are all the channels close to you.</small>
     </h1>
-    <button title="Fire Server Sent Event."
-            class="btn btn-default btn-lg">
-        <a href="api/Channels/sseSend" class="btn btn-lg btn-primary">
-            <span ng-show="mute" class="glyphicon glyphicon-signal"></span>
-            <span ng-hide="mute" class="glyphicon glyphicon-alert"></span>
-        </a>
-    </button>
     <div class="row">
         <div ng-repeat="channel in channels" class="col-md-12 animate-list">
             <div class="well">
@@ -36,5 +29,4 @@
             <span class="glyphicon glyphicon-list"></span>
             All channels</a>
     </p>
- 
 </div>
