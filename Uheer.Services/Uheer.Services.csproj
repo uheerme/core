@@ -70,6 +70,7 @@
     <Compile Include="Providers\MusicProvider.cs" />
     <Compile Include="Providers\MusicStreamProvider.cs" />
     <Compile Include="Providers\MusicUploadProvider.cs" />
+    <Compile Include="UheerPushStreamService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Uheer.Core\Uheer.Core.csproj">

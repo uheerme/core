@@ -20,8 +20,7 @@ namespace Uheer.Controllers
     public class EventsController : ApiController
     {
 
-        private static readonly ConcurrentDictionary<StreamWriter, StreamWriter> connectedClients = new ConcurrentDictionary<StreamWriter, StreamWriter>();
-        private static int messageCounter = 0;
+        private static readonly ConcurrentDictionary<int, UheerPushStreamService> channelsStreams = new ConcurrentDictionary<int, UheerPushStreamService>();
 
         /// <summary>
         /// Get stream of events.
@@ -31,62 +30,28 @@ namespace Uheer.Controllers
         public HttpResponseMessage GetEventsStream([FromUri]int channelId)
         {
             var response = Request.CreateResponse();
-            response.Content = new PushStreamContent((Action<Stream, HttpContent, TransportContext>)onMessageAvailable, "text/event-stream");
+            UheerPushStreamService uheerPushStream = channelsStreams.GetOrAdd(channelId, (key) => 
+             new UheerPushStreamService());
+            response.Content = uheerPushStream.getResponseContext();
             return response;
         }
 
         /// <summary>
-        /// Register the client stream in a queue.
+        /// Send a message to all peers connected to the specified channel
         /// </summary>
-        private static void onMessageAvailable(Stream stream, HttpContent content, TransportContext context)
+        /// <param name="channelId">Channel which the message is referencing</param>
+        /// <param name="message">Message that is intended to send</param>
+        [Route("api/Channels/{channelId}/Events/{message}")]
+        [HttpGet]
+        public void sendMessage(int channelId, string message)
         {
-            StreamWriter streamWriter = new StreamWriter(stream);
-            connectedClients.TryAdd(streamWriter, streamWriter);
-        }
-
-        public void messageCallback(string s)
-        {
-            foreach (var clientStream in connectedClients)
+            UheerPushStreamService channelStream;
+            if (channelsStreams.TryGetValue(channelId, out channelStream) && !channelStream.sendMessage(message))
             {
-                try
-                {
-                    clientStream.Value.WriteLine("id:" + messageCounter);
-                    clientStream.Value.WriteLine("data:" + s + "\n");
-                    clientStream.Value.Flush();
-                }                    
-                catch (Exception ex)
-                {
-                    if (ex.HResult == -2147023667) // Client disconnected.
-                    {
-                        StreamWriter ignored;
-                        connectedClients.TryRemove(clientStream.Key, out ignored);
-                        messageCallback("haha");
-                    }
-                    else
-                    {
-                        throw ex;
-                    }
-                }
+                channelsStreams.TryRemove(channelId, out channelStream);
+                // Is necessary a message to be sent to a channel that nobody is receiving events 
+                //to clean the channelStream from memory.
             }
-            messageCounter++;
-        }
-
-        static Timer _timer = default(Timer);
-        public void OnTimerEvent(object state)
-        {
-            try
-            {
-                _timer.Change(Timeout.Infinite, Timeout.Infinite);
-                messageCallback("mensagem numero " + messageCounter);
-            }
-            finally
-            {
-                _timer.Change(1000, 1000);
-            }
-        }
-        public EventsController()
-        {   
-            _timer = _timer ?? new Timer(OnTimerEvent, null, 0, 1000);
         }
     }
 }

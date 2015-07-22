@@ -593,10 +593,12 @@
             </summary>
             <returns>A Stream of events that clients can listen.</returns>
         </member>
-        <member name="M:Uheer.Controllers.EventsController.onMessageAvailable(System.IO.Stream,System.Net.Http.HttpContent,System.Net.TransportContext)">
+        <member name="M:Uheer.Controllers.EventsController.sendMessage(System.Int32,System.String)">
             <summary>
-            Register the client stream in a queue.
+            Send a message to all peers connected to the specified channel
             </summary>
+            <param name="channelId">Channel which the message is referencing</param>
+            <param name="message">Message that is intended to send</param>
         </member>
         <member name="T:Uheer.Controllers.MusicsController">
             <summary>
