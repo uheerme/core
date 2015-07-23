@@ -6,17 +6,49 @@
     <link rel="icon" type="image/jpg" href="@Url.Content("~/Content/favicon.png")" />
 
     <title>@(ViewBag.Title ?? "Uheer")</title>
-    
+
     @Styles.Render("~/Design/theme")
     @Styles.Render("~/Design/override")
     @Scripts.Render("~/code/modernizr")
 </head>
 <body ng-app="UheerApp">
-    <div ui-view="navbar"></div>
+    <div class="navbar navbar-inverse navbar-fixed-top" ng-controller="NavbarController">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="/#/" class="navbar-brand">
+                    <img src="~/Content/uheer-logo.png" class="pull-left" style="width:50px; margin-right:.5em" />
+                    <span class="pull-right">Uheer</span>
+                </a>
+            </div>
+            <div class="navbar-collapse collapse pull-right">
+                <ul class="nav navbar-nav">
+                    <li ng-show="a.isAuth"><a href="#account">{{a.UserName}}</a></li>
+                    <li ng-hide="a.isAuth"><a href="#sign">Sign in</a></li>
+                    <li><a href="/Help" target="_blank">API</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <br />
+
     <div class="view-container">
         @RenderBody()
     </div>
-    <div ui-view="footer"></div>
+
+    <br />
+    <footer>
+        <div class="container">
+            <p>
+                <span class="glyphicon glyphicon-copyright-mark"></span>
+                @DateTime.Now.Year - Uheer
+            </p>
+        </div>
+    </footer>
 
     @Scripts.Render("~/code/jquery")
     @Scripts.Render("~/code/bootstrap")

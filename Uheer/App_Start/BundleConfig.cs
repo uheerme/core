@@ -18,8 +18,6 @@ namespace Uheer
                 "~/Scripts/jquery-{version}.js",
                 "~/Scripts/toastr.js"));
 
-            // Use the development version of Modernizr to develop with and learn from. Then, when you're
-            // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
             bundles.Add(new ScriptBundle("~/code/modernizr").Include(
                 "~/Scripts/modernizr-*"));
 
@@ -41,6 +39,7 @@ namespace Uheer
                 "~/Scripts/ng-file-upload-all.min.js",
                 "~/Scripts/app/app.js",
                 "~/Scripts/app/services/*.js",
+                "~/Scripts/app/modules/shared/*.js",
                 "~/Scripts/app/modules/home/*.js",
                 "~/Scripts/app/modules/account/*.js",
                 "~/Scripts/app/modules/channels/*.js",
