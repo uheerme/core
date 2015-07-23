@@ -93,7 +93,7 @@ namespace Uheer.ViewModels
             {
                 Id = c.Id,
                 Name = c.Name,
-                AuthorId = c.AuthorId,
+                Author = (UserResultViewModel)c.Author,
                 HostIpAddress = c.HostIpAddress,
                 HostMacAddress = c.HostMacAddress,
                 Loops = c.Loops,
@@ -127,7 +127,7 @@ namespace Uheer.ViewModels
         /// <summary>
         /// The Owner of the Channel. It can be set to be the email address, the MAC address or a regular username.
         /// </summary>
-        public string AuthorId { get; set; }
+        public UserResultViewModel Author { get; set; }
         /// <summary>
         /// The IP address that uniquely identifies the network used by the Owner of the channel.
         /// </summary>
@@ -171,7 +171,7 @@ namespace Uheer.ViewModels
             {
                 Id = c.Id,
                 Name = c.Name,
-                AuthorId = c.AuthorId,
+                Author = (UserResultViewModel)c.Author,
                 HostIpAddress = c.HostIpAddress,
                 HostMacAddress = c.HostMacAddress,
                 Loops = c.Loops,

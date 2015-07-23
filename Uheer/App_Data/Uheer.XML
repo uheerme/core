@@ -976,7 +976,7 @@
             The name of the Channel.
             </summary>
         </member>
-        <member name="P:Uheer.ViewModels.ChannelListResultViewModel.AuthorId">
+        <member name="P:Uheer.ViewModels.ChannelListResultViewModel.Author">
             <summary>
             The Owner of the Channel. It can be set to be the email address, the MAC address or a regular username.
             </summary>

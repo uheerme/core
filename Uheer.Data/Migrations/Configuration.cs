@@ -4,9 +4,7 @@ namespace Uheer.Data.Migrations
     using Microsoft.AspNet.Identity.EntityFramework;
     using System;
     using System.Collections.Generic;
-    using System.Data.Entity;
     using System.Data.Entity.Migrations;
-    using System.Linq;
     using Uheer.Core;
 
     public sealed class Configuration : DbMigrationsConfiguration<Uheer.Data.UheerContext>

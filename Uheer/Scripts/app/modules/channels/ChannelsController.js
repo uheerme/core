@@ -22,7 +22,7 @@ UheerApp
                         Validator.
                             take(response.data, response.status).
                             toastErrors();
-                    })
+                    });
             }
 
             $scope.deactivate = function (channel) {

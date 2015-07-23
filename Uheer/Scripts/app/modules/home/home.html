@@ -10,7 +10,7 @@
                     <a href="#/channels/{{ channel.Id }}">{{ channel.Name }}</a>
                 </h5>
                 <p>
-                    <strong>{{ channel.Owner }}</strong>'s.<br />
+                    <strong>{{ channel.Author.Email }}</strong>'s.<br />
                     <a href="#/listen/{{ channel.Id }}"
                        title="Listen to channel {{ channel.Name }}."
                        class="btn btn-primary"><span class="glyphicon glyphicon-headphones"></span></a>

@@ -3,6 +3,7 @@ UheerApp.controller(
     'DashboardController',
     ['$http', '$scope', 'config', 'channel', 'Validator', 'MusicUploader',
         function ($http, $scope, config, channel, Validator, MusicUploader) {
+            console.log(channel);
 
             MusicUploader.take($scope);
 

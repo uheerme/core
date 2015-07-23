@@ -1,4 +1,4 @@
-﻿<div class="container-fluid">
+﻿<div class="container">
     <h1>
         <a href="#/channels" title="Go back to all channels."><span class="glyphicon glyphicon-menu-left"></span></a>
 
@@ -6,16 +6,18 @@
         <small>#{{ channel.Id }}</small>
     </h1>
     <h2>
-        {{ channel.Owner }}, at {{ channel.HostMacAddress || channel.HostIpAddress }}.
+        {{ channel.Author.Email }}, at {{ channel.HostMacAddress || channel.HostIpAddress }}.
     </h2>
+</div>
 
-    <div ng-hide="channel.Musics.length" class="well text-center">
-        <h1>
-            <span class="glyphicon glyphicon-ban-circle"></span><br />
-            <small>Bad dj! there isn't any music to show.</small>
-        </h1>
-    </div>
+<div ng-hide="channel.Musics.length" class="well text-center">
+    <h1>
+        <span class="glyphicon glyphicon-ban-circle"></span><br />
+        <small>Bad dj! there isn't any music to show.</small>
+    </h1>
+</div>
 
+<div class="container">
     <div ng-show="channel.Musics.length">
         <div ng-show="loading || synchronizing" class="text-center">
             <div class="void"></div>

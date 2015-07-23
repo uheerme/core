@@ -18,13 +18,14 @@ namespace Uheer.Services
         public virtual async Task<Channel> FindWithMusics(int id)
         {
             return await Db.Channels
-                .Include(c => c.Musics)
+                .Include(c => c.Author).Include(c => c.Musics)
                 .SingleOrDefaultAsync(c => c.Id == id);
         }
 
         public virtual async Task<ICollection<Channel>> Paginate(int skip, int take)
         {
             return await Db.Channels
+                .Include(c => c.Author)
                 .OrderBy(c => c.DateDeactivated)
                 .ThenByDescending(c => c.Id)
                 .Skip(skip)
@@ -35,6 +36,7 @@ namespace Uheer.Services
         public virtual async Task<ICollection<Channel>> ActiveChannels(int skip, int take)
         {
             return await Db.Channels
+                .Include(c => c.Author)
                 .Where(c => c.DateDeactivated == null)
                 .OrderByDescending(c => c.Id)
                 .Skip(skip)

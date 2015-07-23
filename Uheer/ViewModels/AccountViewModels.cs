@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Uheer.Core;
 
 namespace Uheer.ViewModels
 {
@@ -39,5 +40,19 @@ namespace Uheer.ViewModels
         public string LoginProvider { get; set; }
 
         public string ProviderKey { get; set; }
+    }
+
+    public class UserResultViewModel
+    {
+        public string Id { get; set; }
+        public string Email { get; set; }
+
+        public static explicit operator UserResultViewModel(User u) {
+            return u == null ? null : new UserResultViewModel
+            {
+                Id = u.Id,
+                Email = u.Email
+            };
+        }
     }
 }
