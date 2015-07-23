@@ -581,25 +581,6 @@
             <param name="model">Holds basic information about the new account.</param>
             <returns>A Response with status code equals to 200, if succeeded. A BadRequest with the errors, otherwise.</returns>
         </member>
-        <member name="T:Uheer.Controllers.EventsController">
-            <summary>
-            The controller responsible for managing play, pause and update events for 
-            a channel.
-            </summary>
-        </member>
-        <member name="M:Uheer.Controllers.EventsController.GetEventsStream(System.Int32)">
-            <summary>
-            Get stream of events.
-            </summary>
-            <returns>A Stream of events that clients can listen.</returns>
-        </member>
-        <member name="M:Uheer.Controllers.EventsController.sendMessage(System.Int32,System.String)">
-            <summary>
-            Send a message to all peers connected to the specified channel
-            </summary>
-            <param name="channelId">Channel which the message is referencing</param>
-            <param name="message">Message that is intended to send</param>
-        </member>
         <member name="T:Uheer.Controllers.MusicsController">
             <summary>
             The Music resource's controller.
@@ -735,15 +716,6 @@
             </summary>
             <param name="id">The id of the Channel to be deleted.</param>
             <returns>The Channel deleted.</returns>
-        </member>
-        <member name="M:Uheer.Controllers.ChannelsController.GetMusicOfChannel(System.Int32,System.Int32,System.Int32)">
-            <summary>
-            Retrieve a music collection associated with a Channel.
-            </summary>
-            <param name="id">The Id of the channel that contains the music collection.</param>
-            <param name="skip">The number of musics to ignore.</param>
-            <param name="take">The maximum length of the collection retrieved.</param>
-            <returns></returns>
         </member>
         <member name="T:Uheer.Controllers.HomeController">
             <summary>

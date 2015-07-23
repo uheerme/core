@@ -29,8 +29,7 @@ UheerApp.controller(
                         console.log(error);
                         Validator.
                             take(error).
-                            toastErrors().
-                            otherwiseToastError();
+                            toastErrors();
                     }
                 );
             }
@@ -53,8 +52,7 @@ UheerApp.controller(
                         console.log(error);
                         Validator.
                             take(error).
-                            toastErrors().
-                            otherwiseToastError();
+                            toastErrors();
                     })
             }
 

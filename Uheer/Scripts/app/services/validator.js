@@ -1,39 +1,31 @@
 ﻿// Validator
 // Takes <param>data<param>, a object that represents the outcome of a HTTP requisition an tries to interpret its ModelState property.
+'use strict';
+
 angular
     .module('UheerApp')
     .factory('Validator', function () {
         return {
-            _data: null,
+            _data: {},
             _statusCode: null,
-            canReadErrors: function () {
-                return this.hasErrorMessage() || this.hasValidationErrors()
-            },
-            hasErrorMessage: function () {
-                return this._data && this._data.Message;
-            },
-            hasValidationErrors: function () {
-                return this._data && this._data.ModelState;
-            },
             take: function (data, statusCode) {
-                this._data = data;
-                this._statusCode = statusCode
+                this._data = data || {};
+                this._statusCode = statusCode;
 
                 return this;
             },
             errors: function () {
                 var result = [];
 
-                if (this.hasValidationErrors()) {
+                if (this._data.ModelState) {
                     var modelState = this._data.ModelState;
                     for (var err in modelState) {
-                        // Merge current set of errors to result.
                         result = result.concat(modelState[err]);
                     }
-                } else if (this.hasErrorMessage()) {
-                    var message = this._data.Message;
-                    result.push(message);
                 }
+
+                if (this._data.Message)           result.push(this._data.Message);
+                if (this._data.error_description) result.push(this._data.error_description);
 
                 return result;
             },
@@ -51,12 +43,10 @@ angular
             toastErrors: function () {
                 return this._toast(toastr.error)
             },
-            otherwiseToastError: function (message, title) {
-                if (!this.canReadErrors()) {
-                    message = message || 'Sorry, something went terribly wrong!';
-                    title = title || 'Error!';
-                    toastr.error(message, title);
-                }
+            toastDefaultError: function (message, title) {
+                message = message || 'Sorry, something went terribly wrong!';
+                title = title || 'Error!';
+                toastr.error(message, title);
                 return this;
             }
         };

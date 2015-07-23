@@ -21,8 +21,7 @@ UheerApp
                     function (response) {
                         Validator.
                             take(response.data, response.status).
-                            toastErrors().
-                            otherwiseToastError();
+                            toastErrors();
                     })
             }
 
@@ -37,8 +36,7 @@ UheerApp
                     .error(function (data) {
                         Validator.
                             take(response.data, response.status).
-                            toastErrors().
-                            otherwiseToastError();
+                            toastErrors();
                     });
             }
 

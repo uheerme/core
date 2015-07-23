@@ -37,7 +37,7 @@ UheerApp.factory('Authority',
                 error(function (error, status) {
                     console.log(error);
 
-                    _logOut();
+                    if (status == 403) _logOut();
                     deferred.reject(error);
                 });
 
@@ -45,10 +45,14 @@ UheerApp.factory('Authority',
         };
 
         var _logOut = function () {
-            localStorageService.remove('authorizationData');
+            $http
+                .post(config.apiUrl + 'Account/Logout')
+                .success(function (response) {
+                    localStorageService.clearAll();
 
-            _authentication.isAuth = false;
-            _authentication.UserName = "";
+                    _authentication.isAuth = false;
+                    _authentication.UserName = "";
+                });
         };
 
         var _fillAuthData = function () {
@@ -75,7 +79,6 @@ UheerApp.factory('authInterceptorService',
         var authInterceptorServiceFactory = {};
 
         var _request = function (config) {
-
             config.headers = config.headers || {};
 
             var authData = localStorageService.get('authorizationData');
@@ -90,6 +93,7 @@ UheerApp.factory('authInterceptorService',
             if (rejection.status === 401) {
                 $location.path('/sign');
             }
+
             return $q.reject(rejection);
         }
 

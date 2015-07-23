@@ -11,10 +11,9 @@ UheerApp.controller('SignController', ['$scope', '$http', '$location', 'config',
                         $location.path('/');
                     },
                     function (response) {
-                        Validator.
-                             take(response).
-                             toastErrors().
-                             otherwiseToastError();
+                        Validator
+                            .take(response)
+                            .toastErrors();
                     }
                 );
         }
@@ -31,10 +30,9 @@ UheerApp.controller('SignController', ['$scope', '$http', '$location', 'config',
                     $scope.registerData = {};
                 })
                 .error(function (response) {
-                    Validator.
-                        take(response).
-                        toastErrors().
-                        otherwiseToastError();
+                    Validator
+                        .take(response)
+                        .toastErrors();
                 });
         }
 

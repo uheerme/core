@@ -603,8 +603,7 @@ UheerApp
                             console.log(data);
                             Validator.
                                 take(data).
-                                toastErrors().
-                                otherwiseToastError();
+                                toastErrors();
 
                         }).finally(function () {
                             _this.remove(file);
