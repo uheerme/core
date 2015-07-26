@@ -66,10 +66,16 @@ namespace Uheer.ViewModels
         [DefaultValue(true)]
         public bool Loops { get; set; }
 
+        /// <summary>
+        /// The id of the music that is currently on play.
+        /// </summary>
+        public int? CurrentId { get; set; }
+
         public void Update(Channel c)
         {
             c.Name = Name;
             c.Loops = Loops;
+            c.CurrentId = CurrentId;
         }
     }
 

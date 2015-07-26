@@ -214,16 +214,13 @@ UheerApp
                     var actualPosition = this.audioOnPlay.currentTime * 1000;
                     var delay = ~~(expectedPosition - actualPosition);
 
-                    console.log('MusicPlayer: estimated sync offset is ' + delay + 'ms')
-
                     if (Math.abs(delay) < this.maxTolerableDelayInMilliseconds) {
-                        console.log('MusicPlayer: re-synchronization canceled.');
                         return;
                     }
 
                     this.audioOnPlay.currentTime = (expectedPosition + (.2 ? delay > 0 : 0) * delay) / 1000;
 
-                    console.log('MusicPlayer: re-synchronization finished. Position time set to ' + ~~this.audioOnPlay.currentTime + 's');
+                    console.log('Synchronizer: timeline position reset to ' + ~~this.audioOnPlay.currentTime + 's');
                 } catch (e) {
                     console.error(e);
                 }

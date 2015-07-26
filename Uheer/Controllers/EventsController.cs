@@ -17,41 +17,52 @@ namespace Uheer.Controllers
     /// The controller responsible for managing play, pause and update events for 
     /// a channel.
     /// </summary>
+    [RoutePrefix("api/Events")]
     public class EventsController : ApiController
     {
-
-        private static readonly ConcurrentDictionary<int, UheerPushStreamService> channelsStreams = new ConcurrentDictionary<int, UheerPushStreamService>();
+        /// <summary>
+        /// The map of ChannelID -> StreamService maintained in memory.
+        /// </summary>
+        protected static readonly ConcurrentDictionary<int, UheerPushStreamService> streams
+            = new ConcurrentDictionary<int, UheerPushStreamService>();
 
         /// <summary>
-        /// Get stream of events.
+        /// Get the event stream for a specific channel.
         /// </summary>
+        /// <param name="id">The id of the channel associated with the event stream.</param>
         /// <returns>A Stream of events that clients can listen.</returns>
-        [Route("api/Channels/{channelId}/Events")]
-        public HttpResponseMessage GetEventsStream([FromUri]int channelId)
+        [Route("{id}")]
+        public HttpResponseMessage GetEventsStream(int id)
         {
             var response = Request.CreateResponse();
-            UheerPushStreamService uheerPushStream = channelsStreams.GetOrAdd(channelId, (key) => 
-             new UheerPushStreamService());
-            response.Content = uheerPushStream.getResponseContext();
+
+            UheerPushStreamService s = streams.GetOrAdd(id, (key) => new UheerPushStreamService());
+            response.Content = s.GetResponseContext();
+
             return response;
         }
 
         /// <summary>
-        /// Send a message to all peers connected to the specified channel
+        /// Send a message to all peers connected to the specified channel.
         /// </summary>
-        /// <param name="channelId">Channel which the message is referencing</param>
+        /// <param name="id">Channel which the message is referencing</param>
         /// <param name="message">Message that is intended to send</param>
-        [Route("api/Channels/{channelId}/Events/{message}")]
-        [HttpGet]
-        public void sendMessage(int channelId, string message)
+        /// <returns>A Ok response.</returns>
+        [Route("{id}/{message}")]
+        public IHttpActionResult GetBroadcastMessage(int id, string message)
         {
-            UheerPushStreamService channelStream;
-            if (channelsStreams.TryGetValue(channelId, out channelStream) && !channelStream.sendMessage(message))
+            if (!streams.ContainsKey(id))
             {
-                channelsStreams.TryRemove(channelId, out channelStream);
-                // Is necessary a message to be sent to a channel that nobody is receiving events 
-                //to clean the channelStream from memory.
+                return BadRequest("Cannot broadcast to nonexistent channel #" + id + ".");
             }
+
+            UheerPushStreamService s;
+            if (streams.TryGetValue(id, out s) && !s.SendMessage(message))
+            {
+                streams.TryRemove(id, out s);
+            }
+
+            return Ok();
         }
     }
 }

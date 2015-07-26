@@ -1,25 +1,33 @@
 ﻿'use strict';
 
 function EventListener(config) {
-
-    function onMessage(event) {
-        //Exemplo de conexao aos eventos. Colocar um if para cada evento dentro da funcao, por exemplo Stop, Play e Update.
-        //Note que agora podemos assíncronamente atualizar informacoes da pagina com os dados recebidos no evento.
-        console.log(event);
-        toastr.success(event.data, 'Mensagem de stream recebida');
-    }
+    var source = null;
+    var rules = {};
 
     return {
-        _source: null,
         status: function () {
-            return this._source != null;
+            return source != null;
+        },
+        match: function (rule, action) {
+            if (!rule || !action) {
+                throw new Error('EventListener cannot match {' + rule + '} -> {' + action + '}.');
+            }
+
+            rules[rule] = action;
+            return this;
         },
         start: function (channelId) {
-            if (!this._source) {
+            if (!source) {
                 console.log('Event listener connected to channel ' + channelId + '.');
 
-                this._source = new EventSource(config.apiUrl + "Channels/" + channelId + "/Events");
-                this._source.onmessage = onMessage;
+                source = new EventSource(config.apiUrl + "Events/" + channelId);
+                source.onmessage = function (event) {
+                    console.log('Command received: ' + event.data);
+
+                    // Execute action, if data matches with any of the rules.
+                    var action = rules[event.data]
+                    if (action) action(event);
+                };
             }
 
             return this;

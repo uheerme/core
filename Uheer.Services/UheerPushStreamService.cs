@@ -14,18 +14,18 @@ namespace Uheer
         private readonly ConcurrentDictionary<StreamWriter, StreamWriter> connectedClients = new ConcurrentDictionary<StreamWriter, StreamWriter>();
         private static int messageCounter = 0;
 
-        public PushStreamContent getResponseContext()
+        public PushStreamContent GetResponseContext()
         {
-            return new PushStreamContent((Action<Stream, HttpContent, TransportContext>)onMessageAvailable, "text/event-stream");
+            return new PushStreamContent((Action<Stream, HttpContent, TransportContext>)OnMessageAvailable, "text/event-stream");
         }
 
-        private void onMessageAvailable(Stream stream, HttpContent content, TransportContext context)
+        private void OnMessageAvailable(Stream stream, HttpContent content, TransportContext context)
         {
             StreamWriter streamWriter = new StreamWriter(stream);
             connectedClients.TryAdd(streamWriter, streamWriter);
         }
 
-        public bool sendMessage(string s)
+        public bool SendMessage(string s)
         {
             foreach (var clientStream in connectedClients)
             {
@@ -35,16 +35,17 @@ namespace Uheer
                     clientStream.Value.WriteLine("data:" + s + "\n");
                     clientStream.Value.Flush();
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    if (ex.HResult == -2147023667) // Client disconnected.
+                    // Client disconnected.
+                    if (e.HResult == -2147023667)
                     {
                         StreamWriter ignored;
                         connectedClients.TryRemove(clientStream.Key, out ignored);
                     }
                     else
                     {
-                        throw ex;
+                        throw e;
                     }
                 }
             }

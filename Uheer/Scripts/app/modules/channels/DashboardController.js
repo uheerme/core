@@ -4,9 +4,15 @@ UheerApp.controller(
     ['$http', '$scope', 'config', 'channel', 'Validator', 'MusicUploader',
         function ($http, $scope, config, channel, Validator, MusicUploader) {
 
-            function updateChannel() {
+            function updateChannel(signalMessage) {
                 $scope.channel.$update(
-                    function (updatedChannel) { toastr.success('Saved!'); },
+                    function (updatedChannel) {
+                        toastr.success('Saved!');
+
+                        if (signalMessage) {
+                            $http.get(config.apiUrl + 'Events/' + channel.Id + '/' + signalMessage).error(function (e) { console.log(e); });
+                        }
+                    },
                     function (error) { Validator.take(error).toastErrors(); }
                 );
             }
@@ -24,12 +30,12 @@ UheerApp.controller(
 
             $scope.toogleLoop = function () {
                 $scope.channel.Loops = !$scope.channel.Loops;
-                updateChannel();
+                updateChannel('toogle-loop');
             }
 
             $scope.stop = function () {
                 $scope.channel.CurrentId = $scope.channel.CurrentStartTime = null;
-                updateChannel();
+                updateChannel('stop');
             }
 
             $scope.play = function (musicId) {
@@ -45,6 +51,9 @@ UheerApp.controller(
                     .success(function (data) {
                         $scope.channel.CurrentId = data.CurrentId;
                         $scope.channel.CurrentStartTime = new Date(data.CurrentStartTime);
+
+                        // Signal peers to start playing.
+                        $http.get(config.apiUrl + 'Events/' + channel.Id + '/play').error(function (e) { console.log(e); });
                     })
                     .error(function (error) {
                         console.log(error);
