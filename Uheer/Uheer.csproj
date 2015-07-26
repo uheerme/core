@@ -353,6 +353,7 @@
     <Content Include="Scripts\app\modules\listen\ListenController.js" />
     <Content Include="Scripts\app\modules\shared\NavbarController.js" />
     <Content Include="Scripts\app\services\AuthFactory.js" />
+    <Content Include="Scripts\app\services\EventListener.js" />
     <Content Include="Scripts\app\services\MusicFactory.js" />
     <Content Include="Scripts\app\modules\channels\channels.html" />
     <Content Include="Scripts\app\modules\channels\ChannelsRoutes.js" />

@@ -52,6 +52,12 @@ UheerApp.factory('Authority',
 
                     _authentication.isAuth = false;
                     _authentication.UserName = "";
+                })
+                .error(function (data) {
+                    console.log(data);
+                    Validator
+                        .take(data)
+                        .toastErrors();
                 });
         };
 

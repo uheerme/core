@@ -3,7 +3,13 @@ UheerApp.controller(
     'DashboardController',
     ['$http', '$scope', 'config', 'channel', 'Validator', 'MusicUploader',
         function ($http, $scope, config, channel, Validator, MusicUploader) {
-            console.log(channel);
+
+            function updateChannel() {
+                $scope.channel.$update(
+                    function (updatedChannel) { toastr.success('Saved!'); },
+                    function (error) { Validator.take(error).toastErrors(); }
+                );
+            }
 
             MusicUploader.take($scope);
 
@@ -18,21 +24,12 @@ UheerApp.controller(
 
             $scope.toogleLoop = function () {
                 $scope.channel.Loops = !$scope.channel.Loops;
-                $scope.channel.$update(
-                    function (updatedChannel) {
-                        toastr.success(
-                            updatedChannel.Name + ' will now ' +
-                            (updatedChannel.Loops ? 'loop at the end of the track' : 'stop at the end of the track.'),
-                            'Saved!'
-                        )
-                    },
-                    function (error) {
-                        console.log(error);
-                        Validator.
-                            take(error).
-                            toastErrors();
-                    }
-                );
+                updateChannel();
+            }
+
+            $scope.stop = function () {
+                $scope.channel.CurrentId = $scope.channel.CurrentStartTime = null;
+                updateChannel();
             }
 
             $scope.play = function (musicId) {
