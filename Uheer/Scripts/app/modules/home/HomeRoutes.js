@@ -8,7 +8,12 @@ angular.module('UheerApp')
                     url: '/',
                     templateUrl: 'Scripts/app/modules/home/home.html',
                     controller: 'HomeController'
+                })
+                .state('about', {
+                    url: '/about',
+                    'templateUrl': 'Scripts/app/modules/home/about.html',
+                    controller: 'HomeController'
                 });
 
-            $urlRouterProvider.otherwise('/')
-        }])
+            $urlRouterProvider.otherwise('/');
+        }]);

@@ -10,4 +10,4 @@ UheerApp.controller('HomeController', ['$scope', '$resource', 'config',
         }
 
         $scope.clear();
-    }])
+    }]);
