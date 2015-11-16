@@ -1,9 +1,9 @@
 ﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
-    word-wrap:break-word;
-    overflow-x:hidden;
-    position:relative;
+    word-wrap: break-word;
+    overflow-x: hidden;
+    position: relative;
 }
 
 /* Set padding to keep content from hitting the edges */
@@ -13,48 +13,62 @@
 }
 
 .void {
-    margin-bottom:10%
+    margin-bottom: 10%;
 }
 
 /**
  * List show/hide animation.
  */
 .animate-list {
-    margin-left:0;
-    opacity:1;
+    margin-left: 0;
+    opacity: 1;
     -webkit-transition: 1s linear all;
     transition: 1s linear all;
 }
 
-.animate-list.ng-move,
-.animate-list.ng-enter,
-.animate-list.ng-leave {
-    -webkit-transition:all linear 0.15s;
-    transition:all linear 0.15s;
+    .animate-list.ng-move,
+    .animate-list.ng-enter,
+    .animate-list.ng-leave {
+        -webkit-transition: all linear 0.15s;
+        transition: all linear 0.15s;
+    }
+
+        .animate-list.ng-leave.ng-leave-active,
+        .animate-list.ng-move,
+        .animate-list.ng-enter {
+            opacity: 0;
+            margin-left: -100px;
+        }
+
+            .animate-list.ng-leave,
+            .animate-list.ng-move.ng-move-active,
+            .animate-list.ng-enter.ng-enter-active {
+                opacity: 1;
+                margin-left: 0;
+            }
+
+    .animate-list.ng-leave-stagger {
+        -webkit-transition-delay: 0.15s;
+        transition-delay: 0.15s;
+        -webkit-transition-duration: 0s;
+        transition-duration: 0s;
+    }
+
+    .animate-list.ng-enter-stagger {
+        -webkit-transition-delay: 0.15s;
+        transition-delay: 0.15s;
+        -webkit-transition-duration: 0s;
+        transition-duration: 0s;
+    }
+
+.section-div-line {
+    margin-top: 4em;
+    height: 0;
+    border-color: #eee;
+    border-width: 5px;
 }
 
-.animate-list.ng-leave.ng-leave-active,
-.animate-list.ng-move,
-.animate-list.ng-enter {
-    opacity:0;
-    margin-left:-100px;
-}
-
-.animate-list.ng-leave,
-.animate-list.ng-move.ng-move-active,
-.animate-list.ng-enter.ng-enter-active {
-    opacity:1;
-    margin-left:0;
-}
-.animate-list.ng-leave-stagger {
-    -webkit-transition-delay: 0.15s;
-    transition-delay: 0.15s;
-    -webkit-transition-duration: 0s;
-    transition-duration: 0s;
-}
-.animate-list.ng-enter-stagger {
-    -webkit-transition-delay: 0.15s;
-    transition-delay: 0.15s;
-    -webkit-transition-duration: 0s;
-    transition-duration: 0s;
+.about-container h2, h3 {
+    margin-top: 2em;
+    margin-bottom: 1em;
 }
