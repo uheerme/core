@@ -15,22 +15,22 @@ namespace Uheer
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/code/jquery").Include(
-                "~/Scripts/jquery-{version}.js",
-                "~/Scripts/toastr.js"));
+                "~/Scripts/jquery-{version}.min.js",
+                "~/Scripts/toastr.min.js"));
 
             bundles.Add(new ScriptBundle("~/code/modernizr").Include(
                 "~/Scripts/modernizr-*"));
 
             bundles.Add(new ScriptBundle("~/code/bootstrap").Include(
-                "~/Scripts/bootstrap.js",
-                "~/Scripts/respond.js"));
+                "~/Scripts/bootstrap.min.js",
+                "~/Scripts/respond.min.js"));
 
             bundles.Add(new ScriptBundle("~/code/audiojs").Include(
                 "~/Scripts/audiojs/audio.min.js",
                 "~/Scripts/audiojs/audio-initialize.js"));
 
             bundles.Add(new ScriptBundle("~/code/uheerapp").Include(
-                "~/Scripts/angular.js",
+                "~/Scripts/angular.min.js",
                 "~/Scripts/angular-route.min.js",
                 "~/Scripts/angular-ui-router.min.js",
                 "~/Scripts/angular-resource.min.js",
@@ -47,7 +47,7 @@ namespace Uheer
                 "~/Scripts/app/modules/status/*.js"));
 
             bundles.Add(new StyleBundle("~/design/theme").Include(
-                "~/Content/bootstrap.css"));
+                "~/Content/bootstrap.min.css"));
 
             bundles.Add(new StyleBundle("~/design/override").Include(
                       "~/Content/toastr.min.css",
